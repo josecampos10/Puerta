@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">262983373970</string>
+    <string name="google_api_key" translatable="false">AIzaSyBgmtvZmL94XSfyKtUA1zUSA2ncuP3F6-8</string>
+    <string name="google_app_id" translatable="false">1:262983373970:android:c36820f63e9421ec9a024b</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBgmtvZmL94XSfyKtUA1zUSA2ncuP3F6-8</string>
+    <string name="google_storage_bucket" translatable="false">fir-lapuerta.firebasestorage.app</string>
+    <string name="project_id" translatable="false">fir-lapuerta</string>
+</resources>

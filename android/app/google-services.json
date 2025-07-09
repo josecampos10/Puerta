@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "262983373970",
+    "project_id": "fir-lapuerta",
+    "storage_bucket": "fir-lapuerta.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262983373970:android:c36820f63e9421ec9a024b",
+        "android_client_info": {
+          "package_name": "com.narkinc.lapuerta2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgmtvZmL94XSfyKtUA1zUSA2ncuP3F6-8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

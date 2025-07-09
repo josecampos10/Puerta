@@ -1,0 +1,1 @@
+D:\Proyectos_flutter\lapuerta2\android\app\build\intermediates\cxx\RelWithDebInfo\1l5c6b21\obj\arm64-v8a
