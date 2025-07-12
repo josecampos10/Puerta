@@ -15,7 +15,7 @@ final gridItems = [
 ];
 
 class GuesthomePrincipal extends StatefulWidget {
-  GuesthomePrincipal({Key? key}) : super(key: key);
+  const GuesthomePrincipal({super.key});
   @override
   State<GuesthomePrincipal> createState() => _GuesthomePrincipalState();
 }
@@ -31,7 +31,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
   late Stream<QuerySnapshot> feedStream;
   int currentSlideIndex = 0;
   CarouselSliderController carouselController = CarouselSliderController();
-  int _current = 0;
+  final int _current = 0;
   int selectedIndex = 0;
 
   @override
@@ -87,7 +87,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                           'Bienvenido',
                           style: TextStyle(
                               fontSize: size.height * 0.027,
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'Arial',
                               //fontWeight: FontWeight.bold,
                               color: const Color.fromARGB(255, 255, 255, 255)),
                         ), // 👈 your valid data here
@@ -225,9 +225,9 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                                         fontSize:
                                                             size.height * 0.017,
                                                         fontFamily:
-                                                            'Coolvetica',
+                                                            'Arial',
                                                         fontWeight:
-                                                            FontWeight.w500,
+                                                            FontWeight.normal,
                                                         color: (selectedIndex ==
                                                                 position)
                                                             ? Color.fromARGB(
@@ -312,7 +312,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                       },
                                       child: Hero(
                                         tag: sliderImage,
-                                        child: Container(
+                                        child: SizedBox(
                                           width: size.width * 0.9,
                                           //height: size.height * 0.24,
                                           child: Image.network(
@@ -373,7 +373,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                       },
                                       child: Hero(
                                         tag: sliderImage,
-                                        child: Container(
+                                        child: SizedBox(
                                           width: size.width * 0.9,
                                           child: Image.network(
                                             sliderImage['Image'],
@@ -433,7 +433,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                       },
                                       child: Hero(
                                         tag: sliderImage,
-                                        child: Container(
+                                        child: SizedBox(
                                           width: size.width * 0.9,
                                           child: Image.network(
                                             sliderImage['Image'],
@@ -622,9 +622,9 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                   '   Clases disponibles',
                   textAlign: TextAlign.start,
                   style: TextStyle(
-                    fontFamily: 'Coolvetica',
+                    fontFamily: 'Arial',
                       fontSize: size.height * 0.025,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.normal,
                       color: const Color.fromARGB(255, 148, 148, 148)),
                 ),
               ),
@@ -710,8 +710,8 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                                 snap[index]['Name'],
                                                 style: TextStyle(
                                                   fontSize: size.height * 0.025,
-                                                  fontFamily: 'Coolvetica',
-                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Arial',
+                                                  fontWeight: FontWeight.normal,
                                                   color: Color.fromRGBO(
                                                       255, 255, 255, 1),
                                                 ),

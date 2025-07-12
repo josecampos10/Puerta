@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -16,7 +17,7 @@ import 'package:lapuerta2/administrador/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class feedLaPuerta extends StatefulWidget {
-  const feedLaPuerta({Key? key}) : super(key: key);
+  const feedLaPuerta({super.key});
   @override
   State<feedLaPuerta> createState() => _feedLaPuertaState();
 }
@@ -121,6 +122,10 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(
+      Duration(),
+      () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+    );
     getProfilePicture();
     var feed = FirebaseFirestore.instance
         .collection('posts')
@@ -327,6 +332,18 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                     color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(0)),
                 child: TextField(
+                  onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  cursorColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   textInputAction: TextInputAction.newline,
@@ -336,14 +353,14 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                   }),
                   decoration: InputDecoration(
                     enabledBorder: const OutlineInputBorder(
-                        borderSide: const BorderSide(
+                        borderSide: BorderSide(
                             color: Color.fromARGB(0, 0, 0, 0), width: 0.0)),
                     labelText: 'Que desea escribir...',
                     prefixIcon: Icon(
                       Icons.add,
                       color: Theme.of(context).colorScheme.secondary,
                     ),
-                    labelStyle: TextStyle(fontSize: 14, fontFamily: 'Impact'),
+                    labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
                   ),
                 ),
               ),
@@ -415,7 +432,7 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                             }
                                             if (snapshot.connectionState ==
                                                 ConnectionState.done) {
-                                              return Container(
+                                              return SizedBox(
                                                 height: size.height * 0.06,
                                                 width: size.width * 0.5,
                                                 child: ElevatedButton(

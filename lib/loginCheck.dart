@@ -5,7 +5,7 @@ import 'package:lapuerta2/auth.dart';
 import 'package:lapuerta2/onboarding.dart';
 
 class LoginNow extends StatefulWidget {
-  const LoginNow({Key? key}) : super(key: key);
+  const LoginNow({super.key});
 
   @override
   State<LoginNow> createState() => _LoginNowState();
@@ -105,7 +105,7 @@ class _LoginNowState extends State<LoginNow> {
                 Icon(icon, color: const Color.fromARGB(255, 155, 155, 155)),
             labelStyle: TextStyle(
                 fontSize: size.height * 0.02,
-                fontFamily: 'Impact',
+                fontFamily: 'Arial',
                 color: const Color.fromARGB(255, 155, 155, 155)),
           ),
         ),
@@ -157,7 +157,7 @@ class _LoginNowState extends State<LoginNow> {
             ),
             labelStyle: TextStyle(
                 fontSize: size.height * 0.02,
-                fontFamily: 'Impact',
+                fontFamily: 'Arial',
                 color: const Color.fromARGB(255, 155, 155, 155)),
             suffix: IconButton(
               padding: const EdgeInsets.all(20),
@@ -192,7 +192,7 @@ class _LoginNowState extends State<LoginNow> {
 
   Widget _submitButton() {
     Size size = MediaQuery.of(context).size;
-    return Container(
+    return SizedBox(
       width: size.width * 0.9,
       height: size.height * 0.07,
       child: ElevatedButton(
@@ -457,7 +457,7 @@ class _LoginNowState extends State<LoginNow> {
                               Text(
                                 'elija su rol',
                                 style: TextStyle(
-                                    fontFamily: 'Impact',
+                                    fontFamily: 'Arial',
                                     color: const Color.fromARGB(
                                         255, 155, 155, 155),
                                     fontSize: size.height * 0.018),

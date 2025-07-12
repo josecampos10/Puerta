@@ -1,46 +1,67 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class Studentgedpm extends StatefulWidget {
-  const Studentgedpm({super.key});
+class Profeeslstudentspm2 extends StatefulWidget {
+  const Profeeslstudentspm2({super.key});
   @override
-  State<Studentgedpm> createState() => _StudentgedpmState();
+  State<Profeeslstudentspm2> createState() => _Profeeslstudentspm2State();
 }
 
-class _StudentgedpmState extends State<Studentgedpm> {
+class _Profeeslstudentspm2State extends State<Profeeslstudentspm2> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-  //CollectionReference users = FirebaseFirestore.instance.collection('postsGED');
+  CollectionReference users = FirebaseFirestore.instance.collection('postsESLpm2');
+  late Future<ListResult> futureFiles;
+  PlatformFile? pickedFile;
+  List<PlatformFile>? selectedFiles;
   Uint8List? pickedImage;
   final currentUsera = FirebaseAuth.instance.currentUser!;
-  late Stream<QuerySnapshot> base;
+
+  void pickFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+    );
+    if (result == null) return;
+    selectedFiles = result.files;
+    setState(() {});
+  }
+
+  Future uploadFile() async {
+    final path = 'ESLpmfiles2/${pickedFile!.name}';
+    final file = File(pickedFile!.path!);
+    final ref = FirebaseStorage.instance.ref().child(path);
+    ref.putFile(file);
+  }
+
+  void selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result == null) return;
+    setState(() {
+      pickedFile = result.files.first;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    futureFiles = FirebaseStorage.instance.ref('/ESLpmfiles2').listAll();
     getProfilePicture();
-    base = FirebaseFirestore.instance
-        .collection('postsGED')
-        .orderBy('Time', descending: true)
-        .snapshots();
+    //selectFile();
   }
 
   @override
   void dispose() {
     super.dispose();
     getProfilePicture();
-    base = FirebaseFirestore.instance
-        .collection('postsGED')
-        .orderBy('Time', descending: true)
-        .snapshots();
   }
 
   @override
@@ -79,12 +100,12 @@ class _StudentgedpmState extends State<Studentgedpm> {
             image: DecorationImage(
               image: AssetImage('assets/img/puntos.png'),
               fit: BoxFit.fill,
-              colorFilter: (Theme.of(context).colorScheme.tertiary !=
-                      Color.fromRGBO(4, 99, 128, 1))
-                  ? ColorFilter.mode(
-                      const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
-                  : ColorFilter.mode(
-                      const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
+                colorFilter: (Theme.of(context).colorScheme.tertiary !=
+                        Color.fromRGBO(4, 99, 128, 1))
+                    ? ColorFilter.mode(
+                        const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
+                    : ColorFilter.mode(
+                        const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
             ),
           ),
         ),
@@ -96,7 +117,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
                 height: size.height * 0.065,
                 width: size.height * 0.065,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiary,
+                  color: Color.fromRGBO(4, 99, 128, 1),
                   border: Border.all(
                     color: Color.fromRGBO(255, 255, 255, 0.174),
                     width: size.height * 0.003,
@@ -128,6 +149,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
         height: size.height,
         width: size.width,
         child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
           child: Column(
             children: [
               Align(
@@ -138,7 +160,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           filterQuality: FilterQuality.low,
-                          image: AssetImage('assets/img/GEDback.png'),
+                          image: AssetImage('assets/img/ESL back.png'),
                           fit: BoxFit.cover),
                       //color: Color.fromARGB(155, 255, 102, 0),
                       borderRadius: BorderRadius.all(Radius.circular(31))),
@@ -146,22 +168,22 @@ class _StudentgedpmState extends State<Studentgedpm> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'GED',
-                        textAlign: TextAlign.center,
+                        'ESL 2 pm',
+                        //textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
+                            fontSize: size.height * 0.06,
                             fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'General Education Development',
+                        'English as Second Language',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
+                            fontSize: size.height * 0.02,
                             fontFamily: 'Arial',
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Martes y Jueves',
@@ -170,7 +192,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
                             color: Colors.white,
                             fontSize: size.height * 0.017,
                             fontFamily: 'Arial',
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -179,41 +201,11 @@ class _StudentgedpmState extends State<Studentgedpm> {
                             color: Colors.white,
                             fontSize: size.height * 0.017,
                             fontFamily: 'Arial',
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Container(
-                height: size.height * 0.055,
-                width: size.width,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(0)),
-                    border: Border(
-                        bottom: BorderSide(width: 1, color: Colors.grey))),
-                child: TextButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/studentGEDpm_files'),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: size.width * 0.01,
-                        ),
-                        Icon(Icons.folder_copy_outlined,  color: Theme.of(context).colorScheme.secondary),
-                        SizedBox(
-                          width: size.width * 0.01,
-                        ),
-                        Text(
-                          'Archivos',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: size.height * 0.022,
-                              fontFamily: 'Arial',  color: Theme.of(context).colorScheme.secondary),
-                        ),
-                      ],
-                    )),
               ),
               SingleChildScrollView(
                 reverse: false,
@@ -221,27 +213,26 @@ class _StudentgedpmState extends State<Studentgedpm> {
                 child: Column(
                   children: [
                     StreamBuilder<QuerySnapshot>(
-                        stream: base,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Column(children: []);
-                          }
-                          if (snapshot.hasData) {
-                            final snap = snapshot.data!.docs;
-                            return RefreshIndicator(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              backgroundColor: Colors.white,
-                              displacement: 1,
-                              strokeWidth: 3,
-                              onRefresh: () async {},
-                              child: SizedBox(
-                                height: size.height * 0.533,
-                                width: double.infinity,
-                                child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: MasonryGridView.builder(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .orderBy('name', descending: false)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasData) {
+                          final snap = snapshot.data!.docs;
+                          return RefreshIndicator(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            backgroundColor: Colors.white,
+                            displacement: 1,
+                            strokeWidth: 3,
+                            onRefresh: () async {},
+                            child: SizedBox(
+                              height: size.height * 0.589,
+                              width: double.infinity,
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: MasonryGridView.builder(
                                     padding: EdgeInsets.zero,
                                     gridDelegate:
                                         SliverSimpleGridDelegateWithFixedCrossAxisCount(
@@ -257,45 +248,46 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                     itemBuilder: (context, index) {
                                       // final DocumentSnapshot documentSnapshot =
                                       //  snapshot.data!.docs[index];
-                                      return AnimationConfiguration
-                                          .staggeredList(
-                                        position: index,
-                                        child: ScaleAnimation(
-                                          duration: Duration(milliseconds: 300),
-                                          child: FadeInAnimation(
-                                            child: GestureDetector(
-                                              onTap: () {},
+                                      //DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
+                                      if (snap[index]['ESLpm2'] == 'inscrito') {
+                                        return AnimationConfiguration
+                                            .staggeredList(
+                                          position: index,
+                                          child: ScaleAnimation(
+                                            duration:
+                                                Duration(milliseconds: 300),
+                                            child: FadeInAnimation(
                                               child: Card(
                                                 shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            size.width * 0.04)),
-                                                elevation: size.height * 0.01,
+                                                            size.width * 0.02)),
+                                                elevation: size.height * 0.0,
                                                 shadowColor: Colors.black,
-                                                color: Theme.of(context).colorScheme.primary,
+                                                color: Color.fromRGBO(
+                                                    219, 219, 219, 0),
                                                 child: Container(
                                                   //constraints: const BoxConstraints(minHeight: ),
                                                   //width: 180,
                                                   //height: 20,
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              width: 1,
+                                                              color: const Color.fromARGB(148, 163, 163, 163)))),
                                                   child: Padding(
                                                     padding: EdgeInsets.all(
                                                         size.width * 0.03),
                                                     child: Column(
                                                       children: [
                                                         Row(children: [
-                                                          CircleAvatar(
-                                                            backgroundImage:
-                                                                NetworkImage(snap[
-                                                                        index]
-                                                                    ['Image']),
-                                                              minRadius:
-                                                                  size.height *
-                                                                      0.023,
-                                                              maxRadius:
-                                                                  size.height *
-                                                                      0.023,
-                                                              backgroundColor:
-                                                                  Theme.of(context).colorScheme.tertiary),
+                                                          Icon(
+                                                            Icons.person_3,
+                                                            size: size.height *
+                                                                0.02,
+                                                            color:
+                                                                Color.fromRGBO(0, 129, 168, 1),
+                                                          ),
                                                           SizedBox(
                                                             width: size.width *
                                                                 0.02,
@@ -305,7 +297,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                                                 .topLeft,
                                                             child: Text(
                                                               snap[index]
-                                                                  ['Name'],
+                                                                  ['name'],
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     size.height *
@@ -315,32 +307,13 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w500,
-                                                                color: Theme.of(context).colorScheme.secondary
+                                                                color: Theme.of(context).colorScheme.secondary,
                                                               ),
                                                             ),
                                                           ),
                                                           SizedBox(
-                                                              width:
-                                                                  size.width *
-                                                                      0.02),
-                                                          Text(
-                                                            snap[index]['Time'],
-                                                            style: TextStyle(
-                                                                fontSize:
-                                                                    size.height *
-                                                                        0.013,
-                                                                fontFamily:
-                                                                    'JosefinSans',
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    168,
-                                                                    168,
-                                                                    168)),
-                                                          ),
-                                                          SizedBox(
                                                             width: size.width *
-                                                                0.02,
+                                                                0.3,
                                                           ),
                                                         ]),
                                                         Row(
@@ -348,34 +321,47 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                                             SizedBox(
                                                               width:
                                                                   size.width *
-                                                                      0.12,
+                                                                      0.065,
                                                             ),
-                                                            Text(
-                                                              snap[index]
-                                                                  ['Date'],
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      size.height *
-                                                                          0.013,
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                snap[index]
+                                                                    ['rol'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
                                                                   fontFamily:
-                                                                      'JosefinSans',
-                                                                  color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    168,
-                                                                    168,
-                                                                    168)),
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  color: Color.fromRGBO(0, 129, 168, 1),
+                                                                ),
+                                                              ),
                                                             ),
                                                           ],
                                                         ),
-                                                        Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: Linkify(
-                                                              linkStyle: TextStyle(
-                                                                  decoration:
-                                                                      TextDecoration
-                                                                          .none,
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.065,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                snap[index]
+                                                                    ['email'],
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: size
                                                                           .height *
                                                                       0.0162,
@@ -384,13 +370,29 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      94,
-                                                                      145,
-                                                                      255)),
-                                                              style: TextStyle(
+                                                                  color: Color.fromARGB(255, 153, 153, 153)
+                                                                      
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.065,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                snap[index]
+                                                                    ['phone'],
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: size
                                                                           .height *
                                                                       0.0162,
@@ -398,23 +400,13 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                                                       'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .normal,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary),
-                                                              text: snap[index]
-                                                                  ['Comment'],
-                                                              onOpen:
-                                                                  (link) async {
-                                                                if (!await launchUrl(
-                                                                    Uri.parse(link
-                                                                        .url))) {
-                                                                  throw Exception(
-                                                                      'Could not launch ${link.url}');
-                                                                }
-                                                              },
-                                                            )),
+                                                                          .w600,
+                                                                  color: Color.fromARGB(255, 153, 153, 153)
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ],
                                                     ),
                                                   ),
@@ -422,25 +414,37 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
+                                        );
+                                      } else {
+                                        return SizedBox();
+                                      }
+                                    }),
                               ),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        })
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('error');
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    )
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future downloadFile(Reference ref) async {
+    final Directory dir = Directory('/storage/emulated/0/Download');
+    final file = File('${dir.path}/${ref.name}');
+    await ref.writeToFile(file);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('${ref.name} descargado')));
   }
 
   Future<void> getProfilePicture() async {

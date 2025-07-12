@@ -11,8 +11,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class AdminPosts extends StatefulWidget {
   const AdminPosts({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<AdminPosts> createState() => _AdminclasesState();
@@ -244,9 +244,9 @@ class _AdminclasesState extends State<AdminPosts> {
                                                               size.height *
                                                                   0.019,
                                                           fontFamily:
-                                                              'JosefinSans',
+                                                              'Arial',
                                                           fontWeight:
-                                                              FontWeight.w700,
+                                                              FontWeight.normal,
                                                           color:
                                                               Theme.of(context)
                                                                   .colorScheme
@@ -263,9 +263,9 @@ class _AdminclasesState extends State<AdminPosts> {
                                                         fontSize:
                                                             size.height * 0.014,
                                                         fontFamily:
-                                                            'JosefinSans',
+                                                            'Arial',
                                                         fontWeight:
-                                                            FontWeight.w700,
+                                                            FontWeight.normal,
                                                         color: const Color
                                                             .fromARGB(
                                                             255, 167, 167, 167),
@@ -280,9 +280,9 @@ class _AdminclasesState extends State<AdminPosts> {
                                                         fontSize:
                                                             size.height * 0.014,
                                                         fontFamily:
-                                                            'JosefinSans',
+                                                            'Arial',
                                                         fontWeight:
-                                                            FontWeight.w700,
+                                                            FontWeight.normal,
                                                         color: const Color
                                                             .fromARGB(
                                                             255, 167, 167, 167),
@@ -301,9 +301,9 @@ class _AdminclasesState extends State<AdminPosts> {
                                                                 size.height *
                                                                     0.0162,
                                                             fontFamily:
-                                                                'Impact',
+                                                                'Arial',
                                                             fontWeight:
-                                                                FontWeight.w600,
+                                                                FontWeight.normal,
                                                             color: const Color
                                                                 .fromARGB(255,
                                                                 94, 145, 255)),
@@ -312,7 +312,7 @@ class _AdminclasesState extends State<AdminPosts> {
                                                                 size.height *
                                                                     0.0162,
                                                             fontFamily:
-                                                                'Impact',
+                                                                'Arial',
                                                             fontWeight:
                                                                 FontWeight
                                                                     .normal,
@@ -369,7 +369,7 @@ class _AdminclasesState extends State<AdminPosts> {
                                                                     ).image),
                                                           ),
                                                         )
-                                                      : Container(
+                                                      : SizedBox(
                                                           height:
                                                               size.height * 0.0,
                                                           width: size.height,

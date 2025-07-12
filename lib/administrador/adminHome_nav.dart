@@ -65,6 +65,7 @@ class _AdminhomeNavState extends State<AdminhomeNav> with TickerProviderStateMix
 }
 class SlideRoute extends PageRouteBuilder {
   final Widget page;
+  @override
   final RouteSettings settings;
   SlideRoute({required this.page, required this.settings})
       : super(

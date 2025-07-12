@@ -58,6 +58,7 @@ class _AdminWishlistState extends State<AdminWishlist> with TickerProviderStateM
 }
 class SlideRoute extends PageRouteBuilder {
   final Widget page;
+  @override
   final RouteSettings settings;
   SlideRoute({required this.page, required this.settings})
       : super(

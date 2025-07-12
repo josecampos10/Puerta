@@ -6,7 +6,7 @@ import 'package:lapuerta2/guest/guest_mainwrapper.dart';
 import 'package:lapuerta2/widget_tree.dart';
 
 class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({Key? key}) : super(key: key);
+  const OnboardingPage({super.key});
 
   @override
   State<OnboardingPage> createState() => _OnboardingPage();
@@ -131,7 +131,7 @@ class _OnboardingPage extends State<OnboardingPage>
                     onPressed: () =>
                         //CHANGE THIS FOR ADMIN AND USER
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => AdminWidgetTree())),
+                            builder: (context) => WidgetTree())),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(

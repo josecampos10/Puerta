@@ -177,7 +177,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                           ),
                           Column(
                             children: [
-                              Container(
+                              SizedBox(
                                 width: size.width * 0.9,
                                 child: Row(
                                   children: [
@@ -185,7 +185,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                                       'Contraseña actual',
                                       style: TextStyle(
                                           color: Theme.of(context).colorScheme.secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02),
                                     )
                                   ],
@@ -252,7 +252,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                               SizedBox(
                                 height: size.height * 0.017,
                               ),
-                              Container(
+                              SizedBox(
                                 width: size.width * 0.9,
                                 child: Row(
                                   children: [
@@ -260,7 +260,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                                       'Contraseña nueva',
                                       style: TextStyle(
                                           color: Theme.of(context).colorScheme.secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02),
                                     ),
                                     IconButton(
@@ -325,7 +325,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                               SizedBox(
                                 height: size.height * 0.01,
                               ),
-                              Container(
+                              SizedBox(
                                 width: size.width * 0.9,
                                // height: size.height*0.02,
                                 child: Row(
@@ -334,7 +334,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                                       'Confirmar contraseña',
                                       style: TextStyle(
                                           color: Theme.of(context).colorScheme.secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02),
                                     ),
                                     SizedBox(width: size.width*0.05,),
@@ -389,7 +389,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                           SizedBox(
                             height: size.height * 0.03,
                           ),
-                          Container(
+                          SizedBox(
                             width: size.width * 0.9,
                             height: size.height * 0.06,
                             child: ElevatedButton(
@@ -462,7 +462,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                               child: Text(
                                 'Confirmar',
                                 style: TextStyle(
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     color: Colors.white,
                                     fontSize: size.height * 0.02),
                               ),

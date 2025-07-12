@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lapuerta2/administrador/adminHome_nav.dart';
-import 'package:lapuerta2/administrador/admin_profileHome.dart';
 import 'package:lapuerta2/administrador/admin_wishlist_nav.dart';
 
 class AdminMainwrapper extends StatefulWidget {

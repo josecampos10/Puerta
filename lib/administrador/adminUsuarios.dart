@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lapuerta2/administrador/admin_detalles_users.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:lapuerta2/main.dart';
 
 final gridItems = [
   'Todos',
@@ -17,8 +20,8 @@ final gridItems = [
 
 class AdminUsuarios extends StatefulWidget {
   const AdminUsuarios({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<AdminUsuarios> createState() => _AdminUsuariosState();
@@ -28,7 +31,85 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
   final TextEditingController controller = TextEditingController();
   final TextEditingController controllerdes = TextEditingController();
   final currentUser = FirebaseAuth.instance.currentUser!;
+  final user = FirebaseAuth.instance.customAuthDomain;
   int selectedIndex = 0;
+
+Future<void> deleteUserByEmail(String email) async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print('❌ Usuario no autenticado');
+      return;
+    }
+
+    // 🔁 Refrescar token
+    await user.getIdToken(true);
+
+    final callable = FirebaseFunctions.instance.httpsCallable('deleteUser');
+    print('✅ Llamando deleteUser como: ${user.email}');
+
+    final result = await callable.call({'email': email});
+
+    if (result.data != null && result.data['message'] != null) {
+      print(result.data['message']);
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text(result.data['message'])),
+      );
+    }
+  } on FirebaseFunctionsException catch (e) {
+    print('🔥 FirebaseFunctionsException: ${e.code} - ${e.message}');
+    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+      SnackBar(content: Text('❌ ${e.message}')),
+    );
+  } catch (e) {
+    print('❌ Error inesperado: $e');
+  }
+}
+
+
+
+
+Future<void> checkIfUserIsAdmin() async {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  if (user != null) {
+    final idTokenResult = await user.getIdTokenResult();
+    final claims = idTokenResult.claims;
+
+    if (claims != null && claims['admin'] == true) {
+      print('✅ El usuario es admin.');
+    } else {
+      print('❌ El usuario NO es admin.');
+    }
+  }
+}
+
+
+
+Future<void> checkUserRoles() async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    final idTokenResult = await user.getIdTokenResult(); // sin .getIdToken(true)
+    final claims = idTokenResult.claims;
+
+    print('👉 Claims: $claims');
+    if (claims?['superadmin'] == true) {
+      print('✅ Usuario con rol: SUPERADMIN');
+    } else if (claims?['admin'] == true) {
+      print('✅ Usuario con rol: ADMIN');
+    } else {
+      print('⚠️ Usuario sin roles asignados');
+    }
+  }
+}
+
+
+@override
+void initState() {
+  super.initState();
+  checkUserRoles(); // ✅ ya no necesitas usar setState aquí
+}
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +160,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
               padding: EdgeInsets.all(size.width * 0.001),
               child: Column(
                 children: [
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     height: size.height * 0.045,
                     child: GridView.builder(
@@ -87,7 +168,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                       scrollDirection: Axis.horizontal,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
-                          childAspectRatio: size.width * 0.0009),
+                          childAspectRatio: size.width * 0.00079),
                       shrinkWrap: true,
                       primary: false,
                       itemCount: gridItems.length,
@@ -130,9 +211,9 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                 gridItems[position],
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
-                                                  fontSize: size.height * 0.018,
-                                                  fontFamily: '',
-                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.height * 0.017,
+                                                  fontFamily: 'Arial',
+                                                  fontWeight: FontWeight.normal,
                                                   color: (selectedIndex ==
                                                           position)
                                                       ? Color.fromRGBO(
@@ -230,9 +311,20 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                  'Eliminar recurso'),
+                                                                'Eliminar usuario',
+                                                                style: TextStyle(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                              ),
                                                               content: Text(
-                                                                  'Estás seguro que quieres borrar un recurso?'),
+                                                                  'Estás seguro que desea eliminar este usuario?',
+                                                                  style: TextStyle(
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .secondary)),
                                                               actions: [
                                                                 TextButton(
                                                                     onPressed:
@@ -242,7 +334,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Aceptar')),
+                                                                        'Aceptar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary))),
                                                                 TextButton(
                                                                     onPressed:
                                                                         () {
@@ -251,7 +346,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'))
+                                                                        'Cancelar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary)))
                                                               ],
                                                             );
                                                           });
@@ -272,101 +370,111 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                     documentSnapshot)));
                                               },
                                               child: Card(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        size.width * 0.02)),
-                                            elevation: size.height * 0.0,
-                                            shadowColor: Colors.black,
-                                            color: Color.fromRGBO(
-                                                219, 219, 219, 0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          width: 1,
-                                                          color: const Color
-                                                              .fromARGB(127,
-                                                              211, 211, 211)))),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                    size.width * 0.01),
-                                                child: Column(
-                                                  children: [
-                                                    Row(children: [
-                                                      Icon(
-                                                        Icons.person_3,
-                                                        size:
-                                                            size.height * 0.02,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .tertiary,
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Text(
-                                                          snap[index]['name'],
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.018,
-                                                            fontFamily:
-                                                                'Coolvetica',
-                                                            fontWeight:
-                                                                FontWeight.normal,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            size.width * 0.02)),
+                                                elevation: size.height * 0.0,
+                                                shadowColor: Colors.black,
+                                                color: Color.fromRGBO(
+                                                    219, 219, 219, 0),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              width: 1,
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  127,
+                                                                  211,
+                                                                  211,
+                                                                  211)))),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                        size.width * 0.01),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(children: [
+                                                          Icon(
+                                                            Icons.person_3,
+                                                            size: size.height *
+                                                                0.02,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
-                                                                .secondary,
+                                                                .tertiary,
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                    ]),
-                                                    Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          width: size.width *
-                                                              0.065,
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              Alignment.topLeft,
-                                                          child: Text(
-                                                            snap[index]['rol'],
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  size.height *
-                                                                      0.0162,
-                                                              fontFamily:
-                                                                  'Coolvetica',
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              color: const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  172,
-                                                                  172,
-                                                                  172),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .topLeft,
+                                                            child: Text(
+                                                              snap[index]
+                                                                  ['name'],
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    size.height *
+                                                                        0.018,
+                                                                fontFamily:
+                                                                    'Arial',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                              ),
                                                             ),
                                                           ),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                        ]),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.065,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                snap[index]
+                                                                    ['rol'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      172,
+                                                                      172,
+                                                                      172),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
                                             ),
                                           ),
                                         ),
@@ -433,9 +541,9 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                  'Eliminar recurso'),
+                                                                  'Eliminar usuario'),
                                                               content: Text(
-                                                                  'Estás seguro que quieres borrar un recurso?'),
+                                                                  'Estás seguro que quieres eliminar este usuario?'),
                                                               actions: [
                                                                 TextButton(
                                                                     onPressed:
@@ -445,7 +553,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Aceptar')),
+                                                                        'Aceptar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary))),
                                                                 TextButton(
                                                                     onPressed:
                                                                         () {
@@ -454,7 +565,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'))
+                                                                        'Cancelar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary)))
                                                               ],
                                                             );
                                                           });
@@ -475,101 +589,111 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                     documentSnapshot)));
                                               },
                                               child: Card(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        size.width * 0.02)),
-                                            elevation: size.height * 0.0,
-                                            shadowColor: Colors.black,
-                                            color: Color.fromRGBO(
-                                                219, 219, 219, 0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          width: 1,
-                                                          color: const Color
-                                                              .fromARGB(127,
-                                                              211, 211, 211)))),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                    size.width * 0.01),
-                                                child: Column(
-                                                  children: [
-                                                    Row(children: [
-                                                      Icon(
-                                                        Icons.person_3,
-                                                        size:
-                                                            size.height * 0.02,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .tertiary,
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Text(
-                                                          snap[index]['name'],
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.018,
-                                                            fontFamily:
-                                                                'Coolvetica',
-                                                            fontWeight:
-                                                                FontWeight.w700,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            size.width * 0.02)),
+                                                elevation: size.height * 0.0,
+                                                shadowColor: Colors.black,
+                                                color: Color.fromRGBO(
+                                                    219, 219, 219, 0),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              width: 1,
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  127,
+                                                                  211,
+                                                                  211,
+                                                                  211)))),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                        size.width * 0.01),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(children: [
+                                                          Icon(
+                                                            Icons.person_3,
+                                                            size: size.height *
+                                                                0.02,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
-                                                                .secondary,
+                                                                .tertiary,
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                    ]),
-                                                    Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          width: size.width *
-                                                              0.065,
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              Alignment.topLeft,
-                                                          child: Text(
-                                                            snap[index]['rol'],
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  size.height *
-                                                                      0.0162,
-                                                              fontFamily:
-                                                                  'Coolvetica',
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              color: const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  172,
-                                                                  172,
-                                                                  172),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .topLeft,
+                                                            child: Text(
+                                                              snap[index]
+                                                                  ['name'],
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    size.height *
+                                                                        0.018,
+                                                                fontFamily:
+                                                                    'Arial',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                              ),
                                                             ),
                                                           ),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                        ]),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.065,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                snap[index]
+                                                                    ['rol'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      172,
+                                                                      172,
+                                                                      172),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
                                             ),
                                           ),
                                         ),
@@ -636,9 +760,9 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                  'Eliminar recurso'),
+                                                                  'Eliminar usuario'),
                                                               content: Text(
-                                                                  'Estás seguro que quieres borrar un recurso?'),
+                                                                  'Estás seguro que quieres eliminar este usuario?'),
                                                               actions: [
                                                                 TextButton(
                                                                     onPressed:
@@ -648,7 +772,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Aceptar')),
+                                                                        'Aceptar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary))),
                                                                 TextButton(
                                                                     onPressed:
                                                                         () {
@@ -657,7 +784,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'))
+                                                                        'Cancelar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary)))
                                                               ],
                                                             );
                                                           });
@@ -678,101 +808,111 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                     documentSnapshot)));
                                               },
                                               child: Card(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        size.width * 0.02)),
-                                            elevation: size.height * 0.0,
-                                            shadowColor: Colors.black,
-                                            color: Color.fromRGBO(
-                                                219, 219, 219, 0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          width: 1,
-                                                          color: const Color
-                                                              .fromARGB(127,
-                                                              211, 211, 211)))),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                    size.width * 0.01),
-                                                child: Column(
-                                                  children: [
-                                                    Row(children: [
-                                                      Icon(
-                                                        Icons.person_3,
-                                                        size:
-                                                            size.height * 0.02,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .tertiary,
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Text(
-                                                          snap[index]['name'],
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.018,
-                                                            fontFamily:
-                                                                'Coolvetica',
-                                                            fontWeight:
-                                                                FontWeight.w700,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            size.width * 0.02)),
+                                                elevation: size.height * 0.0,
+                                                shadowColor: Colors.black,
+                                                color: Color.fromRGBO(
+                                                    219, 219, 219, 0),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              width: 1,
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  127,
+                                                                  211,
+                                                                  211,
+                                                                  211)))),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                        size.width * 0.01),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(children: [
+                                                          Icon(
+                                                            Icons.person_3,
+                                                            size: size.height *
+                                                                0.02,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
-                                                                .secondary,
+                                                                .tertiary,
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                    ]),
-                                                    Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          width: size.width *
-                                                              0.065,
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              Alignment.topLeft,
-                                                          child: Text(
-                                                            snap[index]['rol'],
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  size.height *
-                                                                      0.0162,
-                                                              fontFamily:
-                                                                  'Coolvetica',
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              color: const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  172,
-                                                                  172,
-                                                                  172),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .topLeft,
+                                                            child: Text(
+                                                              snap[index]
+                                                                  ['name'],
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    size.height *
+                                                                        0.018,
+                                                                fontFamily:
+                                                                    'Arial',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                              ),
                                                             ),
                                                           ),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                        ]),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.065,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                snap[index]
+                                                                    ['rol'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      172,
+                                                                      172,
+                                                                      172),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
                                             ),
                                           ),
                                         ),
@@ -839,9 +979,9 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                  'Eliminar recurso'),
+                                                                  'Eliminar usuario'),
                                                               content: Text(
-                                                                  'Estás seguro que quieres borrar un recurso?'),
+                                                                  'Estás seguro que quieres eliminar este usuario?'),
                                                               actions: [
                                                                 TextButton(
                                                                     onPressed:
@@ -851,7 +991,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Aceptar')),
+                                                                        'Aceptar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary))),
                                                                 TextButton(
                                                                     onPressed:
                                                                         () {
@@ -860,7 +1003,10 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'))
+                                                                        'Cancelar',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary)))
                                                               ],
                                                             );
                                                           });
@@ -881,101 +1027,111 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                     documentSnapshot)));
                                               },
                                               child: Card(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        size.width * 0.02)),
-                                            elevation: size.height * 0.0,
-                                            shadowColor: Colors.black,
-                                            color: Color.fromRGBO(
-                                                219, 219, 219, 0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          width: 1,
-                                                          color: const Color
-                                                              .fromARGB(127,
-                                                              211, 211, 211)))),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                    size.width * 0.01),
-                                                child: Column(
-                                                  children: [
-                                                    Row(children: [
-                                                      Icon(
-                                                        Icons.person_3,
-                                                        size:
-                                                            size.height * 0.02,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .tertiary,
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Text(
-                                                          snap[index]['name'],
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.018,
-                                                            fontFamily:
-                                                                'Coolvetica',
-                                                            fontWeight:
-                                                                FontWeight.w700,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            size.width * 0.02)),
+                                                elevation: size.height * 0.0,
+                                                shadowColor: Colors.black,
+                                                color: Color.fromRGBO(
+                                                    219, 219, 219, 0),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              width: 1,
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  127,
+                                                                  211,
+                                                                  211,
+                                                                  211)))),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                        size.width * 0.01),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(children: [
+                                                          Icon(
+                                                            Icons.person_3,
+                                                            size: size.height *
+                                                                0.02,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
-                                                                .secondary,
+                                                                .tertiary,
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                    ]),
-                                                    Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          width: size.width *
-                                                              0.065,
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              Alignment.topLeft,
-                                                          child: Text(
-                                                            snap[index]['rol'],
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  size.height *
-                                                                      0.0162,
-                                                              fontFamily:
-                                                                  'Coolvetica',
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              color: const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  172,
-                                                                  172,
-                                                                  172),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .topLeft,
+                                                            child: Text(
+                                                              snap[index]
+                                                                  ['name'],
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    size.height *
+                                                                        0.018,
+                                                                fontFamily:
+                                                                    'Arial',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                              ),
                                                             ),
                                                           ),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                        ]),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.065,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                snap[index]
+                                                                    ['rol'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: const Color
+                                                                      .fromARGB(
+                                                                      255,
+                                                                      172,
+                                                                      172,
+                                                                      172),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
                                             ),
                                           ),
                                         ),
@@ -1039,26 +1195,67 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                           context) {
                                                         return AlertDialog(
                                                           title: Text(
-                                                              'Eliminar recurso'),
+                                                              'Eliminar usuario'),
                                                           content: Text(
-                                                              'Estás seguro que quieres borrar un recurso?'),
+                                                              'Estás seguro que quieres eliminar este usuario?'),
                                                           actions: [
                                                             TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
+                                                                onPressed: () async {
+                                                                  //delete user info in the database
+                                                                  /*FirebaseFirestore
+                                                                      .instance
+                                                                      .collection(
+                                                                          'users')
+                                                                      .doc(snap[
+                                                                              index]
+                                                                          [
+                                                                          'email'])
+                                                                      .delete();*/
+
+                                                                  //delete user
+                                                                  //deleteUserByEmail(snap[index]['email'].toString());
+                                                                  //currentUser.delete();
+                                                                  /*FirebaseAuth
+                                                                      .instance
+                                                                      .signOut();*/
+                                                                  //(FirebaseStorage.instance.ref().child(currentUser.email.toString()).g)
+                                                                 FirebaseStorage
+                                                                      .instance
+                                                                      .ref()
+                                                                      .child(snap[index]['email'])
+                                                                      .delete();
+                                                                  Navigator.of(context).pop();
+
+  // 🔁 Refrescar token y esperar propagación
+  final user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    await user.getIdToken(true);
+    await Future.delayed(Duration(seconds: 1)); // <- DALE TIEMPO
+  }
+
+  await checkUserRoles(); // Esto solo imprime, pero asegura que el token ya está propagado
+
+  await deleteUserByEmail(snap[index]['email']);
                                                                 },
                                                                 child: Text(
-                                                                    'Aceptar')),
+                                                                    'Aceptar',
+                                                                    style: TextStyle(
+                                                                        color: Theme.of(context)
+                                                                            .colorScheme
+                                                                            .secondary))),
                                                             TextButton(
                                                                 onPressed: () {
                                                                   Navigator.of(
                                                                           context)
                                                                       .pop();
+                                                                      checkIfUserIsAdmin();
                                                                 },
                                                                 child: Text(
-                                                                    'Cancelar'))
+                                                                    'Cancelar',
+                                                                    style: TextStyle(
+                                                                        color: Theme.of(context)
+                                                                            .colorScheme
+                                                                            .secondary)))
                                                           ],
                                                         );
                                                       });
@@ -1123,9 +1320,9 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                 size.height *
                                                                     0.018,
                                                             fontFamily:
-                                                                'Coolvetica',
+                                                                'Arial',
                                                             fontWeight:
-                                                                FontWeight.w700,
+                                                                FontWeight.normal,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
@@ -1154,7 +1351,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                   size.height *
                                                                       0.0162,
                                                               fontFamily:
-                                                                  'Coolvetica',
+                                                                  'Arial',
                                                               fontWeight:
                                                                   FontWeight
                                                                       .normal,
@@ -1195,3 +1392,5 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
     );
   }
 }
+
+

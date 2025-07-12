@@ -9,9 +9,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProfeCosmetologiafiles extends StatefulWidget {
-  const ProfeCosmetologiafiles({Key? key}) : super(key: key);
+  const ProfeCosmetologiafiles({super.key});
   @override
   State<ProfeCosmetologiafiles> createState() => _ProfeCosmetologiafilesState();
 }
@@ -186,8 +188,8 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -195,9 +197,9 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -210,8 +212,8 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
-                                    fontWeight: FontWeight.w500),
+                                    fontFamily: 'Arial',
+                                    fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 '10:00 am - 12:00 pm',
@@ -219,8 +221,8 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
-                                    fontWeight: FontWeight.w500),
+                                    fontFamily: 'Arial',
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -235,7 +237,7 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                               Text(
@@ -244,7 +246,7 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                             ],
@@ -288,7 +290,7 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                       child: Text(
                                         'Archivo seleccionado',
                                         style: TextStyle(
-                                            fontFamily: 'Coolvetica',
+                                            fontFamily: 'Arial',
                                             fontSize: size.height * 0.02,
                                             color: Theme.of(context).colorScheme.secondary),
                                       ),
@@ -447,7 +449,7 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                                       color:
                                                           const Color.fromARGB(148, 163, 163, 163)))),
                                           child: ListTile(
-                                            leading: Container(
+                                            leading: SizedBox(
                                                 width: size.width * 0.2,
                                                 child: Row(
                                                   mainAxisAlignment:
@@ -455,7 +457,7 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                                   children: [
                                                     IconButton(
                                                         onPressed: () =>
-                                                            downloadFile(file),
+                                                            downloadFileIOS(file),
                                                         icon: Icon(
                                                             Icons.download,
                                                             size: size.height *
@@ -469,7 +471,7 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
                                                 style: TextStyle(
                                                     fontSize:
                                                         size.height * 0.02,
-                                                    fontFamily: 'Coolvetica')),
+                                                    fontFamily: 'Arial')),
                                           ),
                                         ),
                                       )),
@@ -514,4 +516,19 @@ class _ProfeCosmetologiafilesState extends State<ProfeCosmetologiafiles> {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('${ref.name} descargado')));
   }
+  Future<void> downloadFileIOS(Reference ref) async {
+  final dir = await getApplicationDocumentsDirectory();
+  final path = '${dir.path}/${ref.name}';
+  final file = File(path);
+
+  try {
+    await ref.writeToFile(file);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Archivo descargado')));
+
+    await OpenFile.open(path);  // ← Esto abre el archivo con la app adecuada
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+  }
+}
 }

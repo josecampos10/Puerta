@@ -9,7 +9,7 @@ import 'package:lapuerta2/scan_page.dart';
 
 class Wishlist extends StatefulWidget{
   
-  const Wishlist({Key? key,}): super(key: key);
+  const Wishlist({super.key,});
   @override
   State<Wishlist> createState() => _WishlistState();
 }
@@ -59,6 +59,7 @@ class _WishlistState extends State<Wishlist> with TickerProviderStateMixin {
 }
 class SlideRoute extends PageRouteBuilder {
   final Widget page;
+  @override
   final RouteSettings settings;
   SlideRoute({required this.page, required this.settings})
       : super(

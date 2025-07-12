@@ -4,7 +4,7 @@ import 'package:lapuerta2/guest/guest_mainwrapper.dart';
 import 'package:lapuerta2/onboarding.dart';
 
 class SelectLanguage extends StatefulWidget {
-  const SelectLanguage({Key? key}) : super(key: key);
+  const SelectLanguage({super.key});
 
   @override
   State<SelectLanguage> createState() => _SelectLanguage();

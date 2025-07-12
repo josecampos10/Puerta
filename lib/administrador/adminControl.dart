@@ -22,8 +22,8 @@ final gridItems = [
 
 class AdminControl extends StatefulWidget {
   const AdminControl({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<AdminControl> createState() => _AdminControlState();
@@ -275,9 +275,9 @@ class _AdminControlState extends State<AdminControl> {
                                                               size.height *
                                                                   0.017,
                                                           fontFamily:
-                                                              'Coolvetica',
+                                                              'Arial',
                                                           fontWeight:
-                                                              FontWeight.w500,
+                                                              FontWeight.normal,
                                                           color:
                                                               (selectedIndex ==
                                                                       position)
@@ -365,7 +365,7 @@ class _AdminControlState extends State<AdminControl> {
                                         },
                                         child: Hero(
                                           tag: sliderImage,
-                                          child: Container(
+                                          child: SizedBox(
                                             width: size.width * 0.85,
                                             // height: size.height * 0.2,
                                             child: Image.network(
@@ -423,7 +423,7 @@ class _AdminControlState extends State<AdminControl> {
                                           tag: sliderImage,
                                           child: Stack(
                                             children: <Widget>[
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.8,
                                                 child: Image.network(
                                                   sliderImage['Image'],
@@ -439,7 +439,7 @@ class _AdminControlState extends State<AdminControl> {
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.end,
                                                   children: [
-                                                    Container(
+                                                    SizedBox(
                                                         height:
                                                             size.height * 0.05,
                                                         child: Container(
@@ -508,7 +508,7 @@ class _AdminControlState extends State<AdminControl> {
                                         },
                                         child: Hero(
                                           tag: sliderImage,
-                                          child: Container(
+                                          child: SizedBox(
                                             width: size.width * 0.8,
                                             child: Image.network(
                                               sliderImage['Image'],
@@ -754,7 +754,7 @@ class _AdminControlState extends State<AdminControl> {
                       if (snapshot.hasData) {
                         final snap = snapshot.data!.docs;
 
-                        return Container(
+                        return SizedBox(
                           height: 150,
                           width: 150,
                           child: PieChart(PieChartData(sections: [
@@ -770,7 +770,7 @@ class _AdminControlState extends State<AdminControl> {
                         return const SizedBox();
                       }
                     }),
-                Container(
+                SizedBox(
                   height: 150,
                   width: 150,
                   child: PieChart(PieChartData(sections: [

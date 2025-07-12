@@ -16,10 +16,10 @@ class _GuestMainWrapperState extends State<GuestMainwrapper> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      bottomNavigationBar: Container(
+      bottomNavigationBar: SizedBox(
         //padding: EdgeInsets.only(top: 40),
 
-        height: size.height * 0.065,
+        height: size.height * 0.09,
         child: BottomNavigationBar(
           type: BottomNavigationBarType.shifting,
             showSelectedLabels: false,

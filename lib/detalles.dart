@@ -4,8 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class DetallesHome extends StatelessWidget {
   final DocumentSnapshot documentSnapshot;
-  const DetallesHome({Key? key, required this.documentSnapshot})
-      : super(key: key);
+  const DetallesHome({super.key, required this.documentSnapshot});
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +79,7 @@ class DetallesHome extends StatelessWidget {
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: size.width * 0.16,
-                        fontFamily: 'Anton'),
+                        fontFamily: 'Arial'),
                   ),
                 ],
               ),
@@ -101,7 +100,7 @@ class DetallesHome extends StatelessWidget {
                   SizedBox(
                     height: size.height * 0.006,
                   ),
-                  Container(
+                  SizedBox(
                     width: size.width - 20,
                     height: size.height * 0.48,
                     child: Text(
@@ -113,7 +112,7 @@ class DetallesHome extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Container(
+                  SizedBox(
                     height: size.height * 0.055,
                     width: size.width * 0.55,
                     child: ElevatedButton(
@@ -142,10 +141,10 @@ class DetallesHome extends StatelessWidget {
 
 
 Future _launchUrlclass() async {
-  final Uri _url = Uri.parse(
+  final Uri url = Uri.parse(
       "https://www.lapuertawaco.com/educacion"); // Replace with your YouTube video URL
 
-  if (!await launchUrl(_url)) {
-    throw Exception("Could not launch $_url");
+  if (!await launchUrl(url)) {
+    throw Exception("Could not launch $url");
   }
 }

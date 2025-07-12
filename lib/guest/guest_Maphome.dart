@@ -3,7 +3,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:lapuerta2/onboarding.dart';
 
 class GuestMapHome extends StatefulWidget {
-  GuestMapHome({Key? key}) : super(key: key);
+  const GuestMapHome({super.key});
   @override
   State<GuestMapHome> createState() => _GuestMapHomeState();
 }

@@ -95,6 +95,8 @@ dependencies:
   pinch_zoom: ^2.0.1
   flutter_linkify: ^6.0.0
   fl_chart: ^1.0.0
+  open_file: ^3.5.10
+  share_plus: ^11.0.0
 
 
   

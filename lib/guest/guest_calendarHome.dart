@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class GuestcalendarHome extends StatefulWidget {
-  GuestcalendarHome({Key? key}) : super(key: key);
+  const GuestcalendarHome({super.key});
   @override
   State<GuestcalendarHome> createState() => _GuestcalendarHomeState();
 }
@@ -45,7 +45,7 @@ class _GuestcalendarHomeState extends State<GuestcalendarHome> {
         ),
         resizeToAvoidBottomInset: true,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        body: Container(
+        body: SizedBox(
           height: size.height,
           width: size.width,
           child: Column(

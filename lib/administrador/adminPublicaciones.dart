@@ -13,8 +13,8 @@ import 'package:lapuerta2/administrador/utils.dart';
 
 class Adminpublicaciones extends StatefulWidget {
   const Adminpublicaciones({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<Adminpublicaciones> createState() => _AdminpublicacionesState();
@@ -282,14 +282,14 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                 }),
                 decoration: InputDecoration(
                   enabledBorder: const OutlineInputBorder(
-                      borderSide: const BorderSide(
+                      borderSide: BorderSide(
                           color: Color.fromARGB(0, 0, 0, 0), width: 0.0)),
                   labelText: 'Que desea escribir...',
                   prefixIcon: Icon(
                     Icons.add,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
-                  labelStyle: TextStyle(fontSize: 14, fontFamily: 'Impact'),
+                  labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
                 ),
               ),
             ),
@@ -361,7 +361,7 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                           }
                                           if (snapshot.connectionState ==
                                               ConnectionState.done) {
-                                            return Container(
+                                            return SizedBox(
                                               height: size.height * 0.06,
                                               width: size.width * 0.5,
                                               child: ElevatedButton(

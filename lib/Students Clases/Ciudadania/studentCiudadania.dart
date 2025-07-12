@@ -12,7 +12,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StudentCiudadania extends StatefulWidget {
-  const StudentCiudadania({Key? key}) : super(key: key);
+  const StudentCiudadania({super.key});
   @override
   State<StudentCiudadania> createState() => _StudentCiudadaniaState();
 }
@@ -149,7 +149,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -158,7 +158,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -167,7 +167,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -176,7 +176,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -208,7 +208,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',  color: Theme.of(context).colorScheme.secondary,),
+                            fontFamily: 'Arial',  color: Theme.of(context).colorScheme.secondary,),
                         ),
                       ],
                     )),
@@ -321,7 +321,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                                                                     size.height *
                                                                         0.019,
                                                                 fontFamily:
-                                                                    'Coolvetica',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w500,
@@ -385,7 +385,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -400,7 +400,7 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,

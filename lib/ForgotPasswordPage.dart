@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lapuerta2/widget_tree.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  const ForgotPasswordPage({super.key});
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -19,7 +19,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   Widget _submitButton() {
     Size size = MediaQuery.of(context).size;
-    return Container(
+    return SizedBox(
       width: size.width * 0.9,
       height: size.height * 0.07,
       child: ElevatedButton(
@@ -184,7 +184,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     labelStyle: TextStyle(
                         fontSize: size.height * 0.02,
-                        fontFamily: 'Impact',
+                        fontFamily: 'Arial',
                         color: const Color.fromARGB(255, 155, 155, 155)),
                   ),
                 ),

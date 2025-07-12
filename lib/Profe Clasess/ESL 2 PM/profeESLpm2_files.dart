@@ -10,16 +10,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
-class Profeeslfilespm extends StatefulWidget {
-  const Profeeslfilespm({Key? key}) : super(key: key);
+class Profeeslfilespm2 extends StatefulWidget {
+  const Profeeslfilespm2({super.key});
   @override
-  State<Profeeslfilespm> createState() => _ProfeeslfilespmState();
+  State<Profeeslfilespm2> createState() => _Profeeslfilespm2State();
 }
 
-class _ProfeeslfilespmState extends State<Profeeslfilespm> {
+class _Profeeslfilespm2State extends State<Profeeslfilespm2> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-  CollectionReference users = FirebaseFirestore.instance.collection('postsESL');
+  CollectionReference users = FirebaseFirestore.instance.collection('postsESLpm2');
   late Future<ListResult> futureFiles;
   PlatformFile? pickedFile;
   List<PlatformFile>? selectedFiles;
@@ -30,7 +33,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
   UploadTask? uploadTask;
 
   Future uploadFile() async {
-    final path = 'ESLfiles/${pickedFile!.name}';
+    final path = 'ESLpmfiles2/${pickedFile!.name}';
     final file = File(pickedFile!.path!);
     final ref = FirebaseStorage.instance.ref().child(path);
     setState(() {
@@ -56,7 +59,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
   @override
   void initState() {
     super.initState();
-    futureFiles = FirebaseStorage.instance.ref('/ESLfiles').listAll();
+    futureFiles = FirebaseStorage.instance.ref('/ESLpmfiles2').listAll();
     getProfilePicture();
     //uploadTask = null;
     //selectFile();
@@ -188,12 +191,12 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'ESL',
+                        'ESL 2 pm',
                         //textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -201,9 +204,9 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Martes y Jueves',
@@ -211,8 +214,8 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -220,8 +223,8 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -260,7 +263,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                                       child: Text(
                                         'Archivo seleccionado',
                                         style: TextStyle(
-                                            fontFamily: 'Coolvetica',
+                                            fontFamily: 'Arial',
                                             fontSize: size.height * 0.02,
                                             color: Theme.of(context).colorScheme.secondary),
                                       ),
@@ -398,7 +401,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                   children: [
                     FutureBuilder<ListResult>(
                       future:
-                          FirebaseStorage.instance.ref('/ESLfiles').listAll(),
+                          FirebaseStorage.instance.ref('/ESLpmfiles2').listAll(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final files = snapshot.data!.items;
@@ -437,14 +440,14 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                                                                   FirebaseStorage
                                                                       .instance
                                                                       .ref(
-                                                                          '/ESLfiles')
+                                                                          '/ESLpmfiles2')
                                                                       .listAll();
                                                                   setState(() {
                                                                     FirebaseStorage
                                                                         .instance
                                                                         .ref()
                                                                         .child(
-                                                                            'ESLfiles/${file.name}')
+                                                                            'ESLpmiles2/${file.name}')
                                                                         .delete();
                                                                   });
                                                                   ScaffoldMessenger.of(
@@ -487,7 +490,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                                                   bottom:
                                                       BorderSide(width: 1.1, color: const Color.fromARGB(148, 163, 163, 163)))),
                                           child: ListTile(
-                                            leading: Container(
+                                            leading: SizedBox(
                                                 width: size.width * 0.2,
                                                 child: Row(
                                                   mainAxisAlignment:
@@ -495,7 +498,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                                                   children: [
                                                     IconButton(
                                                         onPressed: () =>
-                                                            downloadFile(file),
+                                                            downloadFileIOS(file),
                                                         icon: Icon(
                                                             Icons.download,
                                                             size: size.height *
@@ -509,7 +512,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                                                 style: TextStyle(
                                                     fontSize:
                                                         size.height * 0.02,
-                                                    fontFamily: 'Coolvetica')),
+                                                    fontFamily: 'Arial')),
                                           ),
                                         ),
                                       )),
@@ -585,6 +588,24 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('${ref.name} descargado')));
   }
+
+ Future<void> downloadFileIOS(Reference ref) async {
+  final dir = await getApplicationDocumentsDirectory();
+  final path = '${dir.path}/${ref.name}';
+  final file = File(path);
+
+  try {
+    await ref.writeToFile(file);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Archivo descargado')));
+
+    await OpenFile.open(path);  // ← Esto abre el archivo con la app adecuada
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+  }
+}
+
+
 
 
 }

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 
 
 class StudentCosmetologiafiles extends StatefulWidget {
-  const StudentCosmetologiafiles({Key? key}) : super(key: key);
+  const StudentCosmetologiafiles({super.key});
   @override
   State<StudentCosmetologiafiles> createState() => _StudentCosmetologiafilesState();
 }
@@ -149,7 +149,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -158,7 +158,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'ARial',
                             fontWeight: FontWeight.w500),
                       ),
                       Row(
@@ -172,7 +172,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                               Text(
@@ -181,7 +181,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                             ],
@@ -197,7 +197,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                               Text(
@@ -206,7 +206,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                             ],
@@ -255,7 +255,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
                                         file.name,
                                         style:  TextStyle(
                                             fontSize: size.height * 0.02,
-                                            fontFamily: 'Coolvetica',
+                                            fontFamily: 'Arial',
                                             color: Theme.of(context).colorScheme.secondary),
                                       ),
                                       trailing: IconButton(

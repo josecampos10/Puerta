@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class StudentCosturafilesAM extends StatefulWidget {
-  const StudentCosturafilesAM({Key? key}) : super(key: key);
+  const StudentCosturafilesAM({super.key});
   @override
   State<StudentCosturafilesAM> createState() => _StudentCosturafilesAMState();
 }
@@ -148,7 +148,7 @@ class _StudentCosturafilesAMState extends State<StudentCosturafilesAM> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -157,7 +157,7 @@ class _StudentCosturafilesAMState extends State<StudentCosturafilesAM> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -166,7 +166,7 @@ class _StudentCosturafilesAMState extends State<StudentCosturafilesAM> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -175,7 +175,7 @@ class _StudentCosturafilesAMState extends State<StudentCosturafilesAM> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -218,7 +218,7 @@ class _StudentCosturafilesAMState extends State<StudentCosturafilesAM> {
                                         file.name,
                                         style: TextStyle(
                                             fontSize: size.height * 0.02,
-                                            fontFamily: 'Coolvetica',
+                                            fontFamily: 'Arial',
                                             color: Theme.of(context).colorScheme.secondary),
                                       ),
                                       trailing: IconButton(

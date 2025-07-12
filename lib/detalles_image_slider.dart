@@ -5,8 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ImageDetallesHomeSlider extends StatelessWidget {
   final DocumentSnapshot sliderImage;
-  const ImageDetallesHomeSlider({Key? key, required this.sliderImage})
-      : super(key: key);
+  const ImageDetallesHomeSlider({super.key, required this.sliderImage});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +13,7 @@ class ImageDetallesHomeSlider extends StatelessWidget {
     // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
     return Scaffold(
       backgroundColor: Color.fromRGBO(0, 0, 0, 1).withOpacity(0.8),
-      body: Container(
+      body: SizedBox(
         height: size.height,
         width: size.width,
         /*decoration: BoxDecoration(
@@ -27,7 +26,7 @@ class ImageDetallesHomeSlider extends StatelessWidget {
         ),*/
         child: SingleChildScrollView(
           child: Column(children: [
-            Container(
+            SizedBox(
               width: size.width,
               height: size.height * 0.2,
               
@@ -105,10 +104,10 @@ class ImageDetallesHomeSlider extends StatelessWidget {
 }
 
 Future _launchUrlclass() async {
-  final Uri _url = Uri.parse(
+  final Uri url = Uri.parse(
       "https://www.lapuertawaco.com/educacion"); // Replace with your YouTube video URL
 
-  if (!await launchUrl(_url)) {
-    throw Exception("Could not launch $_url");
+  if (!await launchUrl(url)) {
+    throw Exception("Could not launch $url");
   }
 }

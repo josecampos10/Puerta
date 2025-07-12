@@ -12,7 +12,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StudentCosturaAM extends StatefulWidget {
-  const StudentCosturaAM({Key? key}) : super(key: key);
+  const StudentCosturaAM({super.key});
   @override
   State<StudentCosturaAM> createState() => _StudentCosturaAMState();
 }
@@ -152,7 +152,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.075,
-                          fontFamily: 'Coolvetica',
+                          fontFamily: 'Arial',
                           fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -161,7 +161,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.022,
-                          fontFamily: 'Coolvetica',
+                          fontFamily: 'Arial',
                           fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -170,7 +170,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.017,
-                          fontFamily: 'Coolvetica',
+                          fontFamily: 'Arial',
                           fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -179,7 +179,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.017,
-                          fontFamily: 'Coolvetica',
+                          fontFamily: 'Arial',
                           fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -211,7 +211,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica', color: Theme.of(context).colorScheme.secondary,),
+                            fontFamily: 'Arial', color: Theme.of(context).colorScheme.secondary,),
                         ),
                       ],
                     )),
@@ -322,7 +322,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                                                                     size.height *
                                                                         0.019,
                                                                 fontFamily:
-                                                                    'Coolvetica',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w500,
@@ -386,7 +386,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -401,7 +401,7 @@ class _StudentCosturaAMState extends State<StudentCosturaAM> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,

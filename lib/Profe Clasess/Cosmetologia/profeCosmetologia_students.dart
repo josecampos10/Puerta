@@ -11,7 +11,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class Profecosmetologiastudents extends StatefulWidget {
-  const Profecosmetologiastudents({Key? key}) : super(key: key);
+  const Profecosmetologiastudents({super.key});
   @override
   State<Profecosmetologiastudents> createState() =>
       _ProfecosmetologiastudentsState();
@@ -154,7 +154,7 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
           child: Column(
             children: [
               Align(
-                alignment: Alignment.topCenter,
+                alignment: Alignment.center,
                 child: Container(
                   width: size.width,
                   height: size.height * 0.2,
@@ -169,15 +169,15 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                       //color: Color.fromARGB(155, 255, 102, 0),
                       borderRadius: BorderRadius.all(Radius.circular(31))),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'Cosmetologia',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -185,9 +185,9 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -200,8 +200,8 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
-                                    fontWeight: FontWeight.w500),
+                                    fontFamily: 'Arial',
+                                    fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 '10:00 am - 12:00 pm',
@@ -209,8 +209,8 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
-                                    fontWeight: FontWeight.w500),
+                                    fontFamily: 'Arial',
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -225,7 +225,7 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                               Text(
@@ -234,7 +234,7 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                             ],
@@ -342,7 +342,7 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                                                     size.height *
                                                                         0.019,
                                                                 fontFamily:
-                                                                    'Coolvetica',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w500,
@@ -375,7 +375,7 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w700,
@@ -405,7 +405,7 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -435,7 +435,7 @@ class _ProfecosmetologiastudentsState extends State<Profecosmetologiastudents> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,

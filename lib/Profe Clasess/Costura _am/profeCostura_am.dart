@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -12,7 +13,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfeCosturaAM extends StatefulWidget {
-  const ProfeCosturaAM({Key? key}) : super(key: key);
+  const ProfeCosturaAM({super.key});
   @override
   State<ProfeCosturaAM> createState() => _ProfeCosturaAMState();
 }
@@ -33,6 +34,10 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(
+      Duration(),
+      () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+    );
     getProfilePicture();
     //final streaming;
   }
@@ -150,8 +155,8 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -159,9 +164,9 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Miercoles y Viernes',
@@ -169,8 +174,8 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '10:00 am - 12:00 pm',
@@ -178,8 +183,8 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -204,13 +209,13 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                       height: size.height * 0.07,
                       width: MediaQuery.of(context).size.width,
                       color: Theme.of(context).colorScheme.primary,
-                      child: Container(
+                      child: SizedBox(
                         width: size.width,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SizedBox(width: size.width * 0.01),
-                            Container(
+                            SizedBox(
                               height: size.height * 0.06,
                               width: size.width * 0.98,
                               child: Container(
@@ -226,6 +231,18 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                                         Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(15)),
                                 child: TextField(
+                                  onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  cursorColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
                                   //textAlign: TextAlign.,
                                   autofocus: false,
                                   minLines: 1,
@@ -248,7 +265,7 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                                                 0, 0, 187, 212)),
                                       ),
                                       //isCollapsed: true,
-                                      hintText: "Mensaje",
+                                      hintText: "mensaje...",
                                       hintStyle: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -404,7 +421,7 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.02,
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'Arial',
                               color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
@@ -440,7 +457,7 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.02,
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'Arial',
                               color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
@@ -554,7 +571,7 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                                                                       size.height *
                                                                           0.019,
                                                                   fontFamily:
-                                                                      'Coolvetica',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w500,
@@ -683,7 +700,7 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                                                                     size.height *
                                                                         0.0162,
                                                                 fontFamily:
-                                                                    'Impact',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
@@ -699,7 +716,7 @@ class _ProfeCosturaAMState extends State<ProfeCosturaAM> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,

@@ -6,7 +6,7 @@ import 'package:lapuerta2/onboarding.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
 class GuestdonateHome extends StatefulWidget {
-  GuestdonateHome({Key? key}) : super(key: key);
+  const GuestdonateHome({super.key});
   @override
   State<GuestdonateHome> createState() => _GuestdonateHomeState();
 }
@@ -71,7 +71,7 @@ class _GuestdonateHomeState extends State<GuestdonateHome> {
                           'Ubicación',
                           style: TextStyle(
                               fontSize: size.height * 0.027,
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'Arial',
                               //fontWeight: FontWeight.bold,
                               color: const Color.fromARGB(255, 255, 255, 255)),
                         ), // 👈 your valid data here
@@ -129,6 +129,7 @@ class _GuestdonateHomeState extends State<GuestdonateHome> {
         //),
 
         child: SingleChildScrollView(
+          //physics: NeverScrollableScrollPhysics(),
           child: Column(
             children: [
               SizedBox(
@@ -170,7 +171,7 @@ class _GuestdonateHomeState extends State<GuestdonateHome> {
           markers: {
             const Marker(
               visible: true,
-              markerId: const MarkerId("La Puerta"),
+              markerId: MarkerId("La Puerta"),
               position: LatLng(31.552747572929263, -97.1278868172345),
               infoWindow:
                   InfoWindow(title: "La Puerta", snippet: "500 Clay Ave"),

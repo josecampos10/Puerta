@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Studentgedfilespm extends StatefulWidget {
-  const Studentgedfilespm({Key? key}) : super(key: key);
+  const Studentgedfilespm({super.key});
   @override
   State<Studentgedfilespm> createState() => _StudentgedfilespmState();
 }
@@ -142,7 +142,7 @@ class _StudentgedfilespmState extends State<Studentgedfilespm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -151,7 +151,7 @@ class _StudentgedfilespmState extends State<Studentgedfilespm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -160,7 +160,7 @@ class _StudentgedfilespmState extends State<Studentgedfilespm> {
                         style:TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -169,7 +169,7 @@ class _StudentgedfilespmState extends State<Studentgedfilespm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -211,7 +211,7 @@ class _StudentgedfilespmState extends State<Studentgedfilespm> {
                                         file.name,
                                         style: TextStyle(
                                             fontSize: size.height * 0.02,
-                                            fontFamily: 'Coolvetica',
+                                            fontFamily: 'Arial',
                                             color: Theme.of(context).colorScheme.secondary),
                                       ),
                                       trailing: IconButton(

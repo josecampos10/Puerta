@@ -128,7 +128,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
             fontWeight: FontWeight.bold,
             fontSize: size.height * 0.023,
             color: const Color.fromARGB(255, 255, 255, 255)),
-        backgroundColor: Color.fromRGBO(4, 99, 128, 1),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         actions: [
           Column(
             mainAxisAlignment: MainAxisAlignment.start,

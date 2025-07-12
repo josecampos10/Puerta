@@ -8,7 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class AdminUserslist extends StatefulWidget {
-  AdminUserslist({Key? key}) : super(key: key);
+  const AdminUserslist({super.key});
   @override
   State<AdminUserslist> createState() => _AdminUserslistState();
 
@@ -244,10 +244,10 @@ class _AdminUserslistState extends State<AdminUserslist> {
                                                                       size.height *
                                                                           0.019,
                                                                   fontFamily:
-                                                                      'JosefinSans',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w700,
+                                                                          .normal,
                                                                   color: const Color
                                                                           .fromARGB(
                                                                           255,
@@ -276,7 +276,7 @@ class _AdminUserslistState extends State<AdminUserslist> {
                                                                     size.height *
                                                                         0.0162,
                                                                 fontFamily:
-                                                                    'Impact',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .normal,

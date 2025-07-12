@@ -5,8 +5,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class Adminrecursos extends StatefulWidget {
   const Adminrecursos({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<Adminrecursos> createState() => _AdminrecursosState();
@@ -88,7 +88,7 @@ class _AdminrecursosState extends State<Adminrecursos> {
                         labelText: 'Nombre del recurso',
                         prefixIcon: Icon(Icons.add),
                         labelStyle:
-                            TextStyle(fontSize: size.height*0.018, fontFamily: 'Impact',color: Theme.of(context).colorScheme.secondary),
+                            TextStyle(fontSize: size.height*0.018, fontFamily: 'Arial',color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
                   ),
@@ -117,7 +117,7 @@ class _AdminrecursosState extends State<Adminrecursos> {
                         labelText: 'Descripcion del recurso',
                         prefixIcon: Icon(Icons.add),
                         labelStyle:
-                            TextStyle(fontSize: size.height*0.018, fontFamily: 'Impact', color: Theme.of(context).colorScheme.secondary),
+                            TextStyle(fontSize: size.height*0.018, fontFamily: 'Arial', color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
                   ),
@@ -260,7 +260,7 @@ class _AdminrecursosState extends State<Adminrecursos> {
                                       label: 'borrar',
                                     )
                                   ]),
-                              child: Container(
+                              child: SizedBox(
                                 height: size.height * 0.07,
                                 width: size.width,
                                 child: GestureDetector(
@@ -297,9 +297,9 @@ class _AdminrecursosState extends State<Adminrecursos> {
                                                     style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.022,
-                                                      fontFamily: '',
+                                                      fontFamily: 'Arial',
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                          FontWeight.normal,
                                                       color: Theme.of(context).colorScheme.secondary,
                                                     ),
                                                   ),

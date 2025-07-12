@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class UsermapHome extends StatefulWidget {
-  const UsermapHome({Key? key}) : super(key: key);
+  const UsermapHome({super.key});
   @override
   State<UsermapHome> createState() => _UsermapHomeState();
 }
@@ -18,6 +18,7 @@ class _UsermapHomeState extends State<UsermapHome> {
   int _notificationCountCostura = 0;
   int _notificationCountCiudadania = 0;
   int _notificationcountCosmetologia = 0;
+  int _notificationcountESLpm2 = 0;
   Uint8List? pickedImage;
   final currentUsera = FirebaseAuth.instance.currentUser!;
   late Stream<DocumentSnapshot<Map<String, dynamic>>> streamfeed;
@@ -30,6 +31,20 @@ class _UsermapHomeState extends State<UsermapHome> {
       if (snapshot.docChanges.isNotEmpty) {
         setState(() {
           _notificationCountESLpm +=
+              snapshot.docChanges.length; // Increase count
+        });
+      }
+    });
+  }
+
+  void _listenForNewPostsESLpm2() {
+    FirebaseFirestore.instance
+        .collection('postsESL')
+        .snapshots()
+        .listen((snapshot) {
+      if (snapshot.docChanges.isNotEmpty) {
+        setState(() {
+          _notificationcountESLpm2 +=
               snapshot.docChanges.length; // Increase count
         });
       }
@@ -100,6 +115,7 @@ class _UsermapHomeState extends State<UsermapHome> {
     _listenForNewPostsCostura();
     _listenForNewPostsCiudadania();
     _listenForNewPostsCosmetologia();
+    _listenForNewPostsESLpm2();
     super.initState();
     getProfilePicture();
     streamfeed = FirebaseFirestore.instance
@@ -141,7 +157,7 @@ streamfeed = FirebaseFirestore.instance
                 Text(
                   'Mis clases',
                   style: TextStyle(
-                      //fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.bold,
                       fontSize: size.width * 0.055,
                       color: Colors.white,
                       fontFamily: ''),
@@ -324,15 +340,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "ESL PM",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountESLpm >
@@ -459,15 +475,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "GED PM",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountGEDpm >
@@ -595,15 +611,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "Costura",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCostura >
@@ -731,15 +747,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.3,
                                             child: Text(
                                               "Ciudadania",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCiudadania >
@@ -870,15 +886,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.35,
                                             child: Text(
                                               "Cosmetología",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCiudadania >
@@ -929,13 +945,6 @@ streamfeed = FirebaseFirestore.instance
                   return Container(); // 👈 your valid data here
                 },
               ),
-
-              /*TableCalendar(
-                focusedDay: DateTime.now(), 
-                firstDay: DateTime.utc(2025, 1, 1), 
-                lastDay: DateTime.utc(2030,12,31),
-                //eventLoader: (day) => _getEventsForDay(day),
-                ),*/
 
               //PARTE DE PROFESORES********************************************
               StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -1017,18 +1026,155 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
-                                            width: size.width * 0.2,
+                                          SizedBox(
+                                            width: size.width * 0.3,
                                             child: Text(
-                                              "ESL PM",
+                                              "ESL 1 pm",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountESLpm >
+                                              0) // Show badge only if there are new notifications
+                                            Container(
+                                                padding: EdgeInsets.only(),
+                                                decoration: BoxDecoration(
+                                                  color: const Color.fromARGB(
+                                                      255, 221, 0, 0),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                constraints: BoxConstraints(
+                                                    maxHeight:
+                                                        size.width * 0.08,
+                                                    maxWidth: size.width * 0.08,
+                                                    minWidth: size.width * 0.08,
+                                                    minHeight:
+                                                        size.width * 0.08),
+                                                child: Icon(
+                                                  Icons.notification_add,
+                                                  color: const Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                )
+                                                /*Text(
+                                                '$_notificationCountESLpm',
+                                                style: TextStyle(
+                                                  color: const Color.fromARGB(
+                                                      255, 0, 0, 0),
+                                                  fontSize: size.width * 0.05,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),*/
+                                                ),
+                                        ],
+                                      )),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Profesor") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profeESLpm2');
+                                setState(() {
+                                  _notificationcountESLpm2 = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Center(
+                                          child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 pm",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          if (_notificationcountESLpm2 >
                                               0) // Show badge only if there are new notifications
                                             Container(
                                                 padding: EdgeInsets.only(),
@@ -1151,15 +1297,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "GED PM",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountGEDpm >
@@ -1286,15 +1432,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "Costura",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCostura >
@@ -1422,15 +1568,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.3,
                                             child: Text(
                                               "Ciudadania",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCiudadania >
@@ -1561,15 +1707,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.35,
                                             child: Text(
                                               "Cosmetología",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationcountCosmetologia >
@@ -1699,15 +1845,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.45,
                                             child: Text(
                                               "La Puerta Feed", textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           
@@ -1805,15 +1951,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "ESL PM",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountESLpm >
@@ -1940,15 +2086,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "GED PM",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountGEDpm >
@@ -2076,15 +2222,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "Costura",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCostura >
@@ -2212,15 +2358,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.3,
                                             child: Text(
                                               "Ciudadania",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCiudadania >
@@ -2351,15 +2497,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.35,
                                             child: Text(
                                               "Cosmetología",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCiudadania >
@@ -2488,15 +2634,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "ESL PM",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountESLpm >
@@ -2622,15 +2768,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "GED PM",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountGEDpm >
@@ -2757,15 +2903,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.2,
                                             child: Text(
                                               "Costura",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCostura >
@@ -2893,15 +3039,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.3,
                                             child: Text(
                                               "Ciudadania",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCiudadania >
@@ -3032,15 +3178,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.35,
                                             child: Text(
                                               "Cosmetología",
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           if (_notificationCountCiudadania >
@@ -3170,15 +3316,15 @@ streamfeed = FirebaseFirestore.instance
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             width: size.width * 0.45,
                                             child: Text(
                                               "La Puerta Feed", textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: size.width * 0.055,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
                                                   color: Colors.white,
-                                                  fontFamily: 'Coolvetica'),
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
                                           

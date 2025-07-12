@@ -11,7 +11,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class Profegedstudentspm extends StatefulWidget {
-  const Profegedstudentspm({Key? key}) : super(key: key);
+  const Profegedstudentspm({super.key});
   @override
   State<Profegedstudentspm> createState() => _ProfegedstudentspmState();
 }
@@ -173,8 +173,8 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: size.height * 0.075,
-                          fontFamily: 'Coolvetica',
+                          fontSize: size.height * 0.06,
+                          fontFamily: 'Arial',
                           fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -182,9 +182,9 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: size.height * 0.022,
-                          fontFamily: 'Coolvetica',
-                          fontWeight: FontWeight.w500),
+                          fontSize: size.height * 0.02,
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Martes y Jueves',
@@ -192,8 +192,8 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.017,
-                          fontFamily: 'Coolvetica',
-                          fontWeight: FontWeight.w500),
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -201,8 +201,8 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.017,
-                          fontFamily: 'Coolvetica',
-                          fontWeight: FontWeight.w500),
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -302,7 +302,7 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                                                                 size.height *
                                                                     0.019,
                                                             fontFamily:
-                                                                'Coolvetica',
+                                                                'Arial',
                                                             fontWeight:
                                                                 FontWeight
                                                                     .w500,
@@ -335,7 +335,7 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                                                                       .height *
                                                                   0.0162,
                                                               fontFamily:
-                                                                  'Impact',
+                                                                  'Arial',
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w700,
@@ -365,7 +365,7 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                                                                       .height *
                                                                   0.0162,
                                                               fontFamily:
-                                                                  'Impact',
+                                                                  'Arial',
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w600,
@@ -395,7 +395,7 @@ class _ProfegedstudentspmState extends State<Profegedstudentspm> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'ARial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,

@@ -4,8 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class DetallesClassHome extends StatelessWidget {
   final DocumentSnapshot documentSnapshot;
-  const DetallesClassHome({Key? key, required this.documentSnapshot})
-      : super(key: key);
+  const DetallesClassHome({super.key, required this.documentSnapshot});
 
   @override
   Widget build(BuildContext context) {
@@ -78,12 +77,12 @@ class DetallesClassHome extends StatelessWidget {
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: size.width * 0.14,
-                      fontFamily: 'Anton'),
+                      fontFamily: 'Arial'),
                 ),
               ],
             ),
           ),
-          Container(
+          SizedBox(
             width: size.width * 0.9,
             child: Column(
               children: [
@@ -96,7 +95,7 @@ class DetallesClassHome extends StatelessWidget {
                     Text(
                       'Horario',
                       style: TextStyle(
-                          fontFamily: 'Coolvetica',
+                          fontFamily: 'Arial',
                           fontSize: size.width * 0.056,
                           fontWeight: FontWeight.w500,
                           color: Colors.white),
@@ -110,14 +109,14 @@ class DetallesClassHome extends StatelessWidget {
                   documentSnapshot['Days'],
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontFamily: 'Coolvetica',
+                      fontFamily: 'Arial',
                       color: Colors.white,
                       fontSize: size.width * 0.05),
                 ),
                 Text(
                   documentSnapshot['Time'],
                   style: TextStyle(
-                      fontFamily: 'Coolvetica',
+                      fontFamily: 'Arial',
                       color: const Color.fromARGB(255, 204, 204, 204),
                       fontSize: size.width * 0.045),
                 ),
@@ -132,14 +131,14 @@ class DetallesClassHome extends StatelessWidget {
                             documentSnapshot['Days 2'],
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                fontFamily: 'Coolvetica',
+                                fontFamily: 'Arial',
                                 color: Colors.white,
                                 fontSize: size.width * 0.05),
                           ),
                           Text(
                             documentSnapshot['Time 2'],
                             style: TextStyle(
-                                fontFamily: 'Coolvetica',
+                                fontFamily: 'Arial',
                                 color: const Color.fromARGB(255, 204, 204, 204),
                                 fontSize: size.width * 0.045),
                           ),
@@ -182,7 +181,7 @@ class DetallesClassHome extends StatelessWidget {
                             documentSnapshot['Descripcion'],
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'Arial',
                               color: const Color.fromARGB(255, 0, 0, 0),
                               fontSize: size.width * 0.04,
                               fontWeight: FontWeight.w500,
@@ -196,7 +195,7 @@ class DetallesClassHome extends StatelessWidget {
                 SizedBox(
                   height: size.height * 0.03,
                 ),
-                Container(
+                SizedBox(
                   height: size.height * 0.055,
                   width: size.width * 0.9,
                   child: ElevatedButton(
@@ -211,7 +210,7 @@ class DetallesClassHome extends StatelessWidget {
                       style: TextStyle(
                           fontSize: size.width * 0.045,
                           color: const Color.fromARGB(255, 255, 255, 255),
-                          fontFamily: 'Coolvetica'),
+                          fontFamily: 'Arial'),
                     ),
                   ),
                 )
@@ -225,10 +224,10 @@ class DetallesClassHome extends StatelessWidget {
 }
 
 Future _launchUrlclass() async {
-  final Uri _url = Uri.parse(
+  final Uri url = Uri.parse(
       "https://www.lapuertawaco.com/educacion"); // Replace with your YouTube video URL
 
-  if (!await launchUrl(_url)) {
-    throw Exception("Could not launch $_url");
+  if (!await launchUrl(url)) {
+    throw Exception("Could not launch $url");
   }
 }

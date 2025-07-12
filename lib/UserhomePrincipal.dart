@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -27,7 +28,7 @@ class UserhomePrincipal extends StatefulWidget {
   @override
   State<UserhomePrincipal> createState() => _UserhomePrincipalState();
 
-  const UserhomePrincipal({Key? key}) : super(key: key);
+  const UserhomePrincipal({super.key});
 }
 
 class _UserhomePrincipalState extends State<UserhomePrincipal> {
@@ -74,10 +75,11 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
   }
 
   Future<void> launchPhoneDialer(String contactNumber) async {
-    final Uri _phoneUri = Uri(scheme: "tel", path: contactNumber);
+    final Uri phoneUri = Uri(scheme: "tel", path: contactNumber);
     try {
-      if (await canLaunch(_phoneUri.toString()))
-        await launch(_phoneUri.toString());
+      if (await canLaunch(phoneUri.toString())) {
+        await launch(phoneUri.toString());
+      }
     } catch (error) {
       throw ("Cannot dial");
     }
@@ -115,6 +117,10 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(
+      Duration(),
+      () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+    );
     setState(() {
       imageCache.clear();
       imageCache.clearLiveImages();
@@ -145,10 +151,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
   @override
   void dispose() {
     super.dispose();
-    setState(() {
-      imageCache.clear();
-      imageCache.clearLiveImages();
-    });
+
     getProfilePicture();
     var firebase = FirebaseFirestore.instance;
     imageStream = firebase.collection("Image_Slider").snapshots();
@@ -192,7 +195,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                   builder: (context) => Padding(
                       padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: Container(
+                      child: SizedBox(
                         width: size.width,
                         child: Column(
                           //crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,7 +223,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                 style: TextStyle(
                                     fontSize: size.height * 0.035,
                                     fontWeight: FontWeight.bold,
-                                    fontFamily: 'Coolvetica'),
+                                    fontFamily: 'Arial'),
                               ),
                             ),
                             Center(
@@ -275,7 +278,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                             255, 155, 155, 155)),
                                     labelStyle: TextStyle(
                                         fontSize: size.height * 0.02,
-                                        fontFamily: 'Coolvetica',
+                                        fontFamily: 'Arial',
                                         color: const Color.fromARGB(
                                             255, 155, 155, 155)),
                                   ),
@@ -341,7 +344,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                             255, 155, 155, 155)),
                                     labelStyle: TextStyle(
                                         fontSize: size.height * 0.02,
-                                        fontFamily: 'Coolvetica',
+                                        fontFamily: 'Arial',
                                         color: const Color.fromARGB(
                                             255, 155, 155, 155)),
                                   ),
@@ -351,7 +354,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                             SizedBox(
                               height: size.height * 0.01,
                             ),
-                            Container(
+                            SizedBox(
                               width: size.width * 0.9,
                               height: size.height * 0.07,
                               child: ElevatedButton(
@@ -377,7 +380,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                               255, 255, 255, 255),
                                           fontSize: size.height * 0.021,
                                           fontWeight: FontWeight.bold,
-                                          fontFamily: 'Coolvetica'),
+                                          fontFamily: 'Arial'),
                                     ),
                                   )),
                             ),
@@ -402,7 +405,8 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                 Icon(
                                   Icons.call,
                                   size: size.height * 0.02,
-                                  color: Theme.of(context).colorScheme.secondary,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                 ),
                                 SizedBox(
                                   width: size.width * 0.008,
@@ -413,10 +417,11 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                   },
                                   child: Text('(254) 754-3503',
                                       style: TextStyle(
-                                          color: const Color.fromARGB(239, 38, 130, 236),
+                                          color: const Color.fromARGB(
+                                              239, 38, 130, 236),
                                           fontSize: size.height * 0.017,
                                           fontWeight: FontWeight.bold,
-                                          fontFamily: 'Coolvetica')),
+                                          fontFamily: 'Arial')),
                                 )
                               ],
                             ),
@@ -504,8 +509,8 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                     data['name'],
                                     style: TextStyle(
                                         fontSize: size.height * 0.027,
-                                        fontFamily: 'Coolvetica',
-                                        //fontWeight: FontWeight.bold,
+                                        fontFamily: 'Arial',
+                                        fontWeight: FontWeight.bold,
                                         color: const Color.fromARGB(
                                             255, 255, 255, 255)),
                                   )
@@ -544,21 +549,20 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                 height: size.height * 0.065,
                 width: size.height * 0.065,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiary,
-                  border: Border.all(
-                    color: Color.fromRGBO(255, 255, 255, 0.174),
-                    width: size.height * 0.003,
-                  ),
-                  shape: BoxShape.circle,
-                  image: pickedImage != null
-                      ? 
-                      DecorationImage(
-                          fit: BoxFit.cover,
-                          image: Image.memory(
-                            pickedImage!,
-                            key: UniqueKey(),
-                          ).image)
-                      : null),
+                    color: Theme.of(context).colorScheme.tertiary,
+                    border: Border.all(
+                      color: Color.fromRGBO(255, 255, 255, 0.174),
+                      width: size.height * 0.003,
+                    ),
+                    shape: BoxShape.circle,
+                    image: pickedImage != null
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                            image: Image.memory(
+                              pickedImage!,
+                              key: UniqueKey(),
+                            ).image)
+                        : null),
               ),
               SizedBox(
                 width: size.width * 0.03,
@@ -670,10 +674,9 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                       style: TextStyle(
                                                         fontSize:
                                                             size.height * 0.017,
-                                                        fontFamily:
-                                                            'Coolvetica',
+                                                        fontFamily: 'Arial',
                                                         fontWeight:
-                                                            FontWeight.w500,
+                                                            FontWeight.bold,
                                                         color: (selectedIndex ==
                                                                 position)
                                                             ? Color.fromARGB(
@@ -758,7 +761,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                       },
                                       child: Hero(
                                         tag: sliderImage,
-                                        child: Container(
+                                        child: SizedBox(
                                           width: size.width * 0.85,
                                           // height: size.height * 0.2,
                                           child: Image.network(
@@ -814,7 +817,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                       },
                                       child: Hero(
                                         tag: sliderImage,
-                                        child: Container(
+                                        child: SizedBox(
                                           width: size.width * 0.8,
                                           child: Image.network(
                                             sliderImage['Image'],
@@ -869,7 +872,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                       },
                                       child: Hero(
                                         tag: sliderImage,
-                                        child: Container(
+                                        child: SizedBox(
                                           width: size.width * 0.8,
                                           child: Image.network(
                                             sliderImage['Image'],
@@ -935,7 +938,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                 setState(() {});
                               },
                               child: SizedBox(
-                                height: size.height * 0.591,
+                                height: size.height * 0.528,
                                 width: size.width,
                                 child: Align(
                                   alignment: Alignment.topCenter,
@@ -1027,10 +1030,10 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                       'Image']),
                                                               minRadius:
                                                                   size.height *
-                                                                      0.023,
+                                                                      0.021,
                                                               maxRadius:
                                                                   size.height *
-                                                                      0.023,
+                                                                      0.021,
                                                               backgroundColor:
                                                                   const Color
                                                                       .fromARGB(
@@ -1054,12 +1057,12 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         size.height *
-                                                                            0.019,
+                                                                            0.018,
                                                                     fontFamily:
-                                                                        'Coolvetica',
+                                                                        'Arial',
                                                                     fontWeight:
                                                                         FontWeight
-                                                                            .w500,
+                                                                            .bold,
                                                                     color: Theme.of(
                                                                             context)
                                                                         .colorScheme
@@ -1078,11 +1081,11 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                 snap[index]
                                                                     ['Time'],
                                                                 style: TextStyle(
-                                                                    fontSize: size
-                                                                            .height *
-                                                                        0.0125,
+                                                                    fontSize:
+                                                                        size.height *
+                                                                            0.011,
                                                                     fontFamily:
-                                                                        '',
+                                                                        'Arial',
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold,
@@ -1114,7 +1117,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                           size.height *
                                                                               0.011,
                                                                       fontFamily:
-                                                                          '',
+                                                                          'Arial',
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .bold,
@@ -1134,52 +1137,54 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                     0.003,
                                                           ),
                                                           Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: Linkify(
-                                                              linkStyle: TextStyle(
-                                                                  decoration:
-                                                                      TextDecoration
-                                                                          .none,
-                                                                  fontSize: size
-                                                                          .height *
-                                                                      0.0162,
-                                                                  fontFamily:
-                                                                      'Impact',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      94,
-                                                                      145,
-                                                                      255)),
-                                                              style: TextStyle(
-                                                                  fontSize: size
-                                                                          .height *
-                                                                      0.0162,
-                                                                  fontFamily:
-                                                                      'Impact',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary),
-                                                              text: snap[index]
-                                                                  ['Comment'],
-                                                              onOpen:
-                                                                  (link) async {
-                                                                if (!await launchUrl(
-                                                                    Uri.parse(link
-                                                                        .url))) {
-                                                                  throw Exception(
-                                                                      'Could not launch ${link.url}');
-                                                                }
-                                                              },
-                                                            )),
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Linkify(
+                                                                linkStyle: TextStyle(
+                                                                    decoration:
+                                                                        TextDecoration
+                                                                            .none,
+                                                                    fontSize: size
+                                                                            .height *
+                                                                        0.0155,
+                                                                    fontFamily:
+                                                                        'Arial',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .normal,
+                                                                    color: const Color
+                                                                        .fromARGB(
+                                                                        255,
+                                                                        94,
+                                                                        145,
+                                                                        255)),
+                                                                style: TextStyle(
+                                                                    fontSize: size
+                                                                            .height *
+                                                                        0.0155,
+                                                                    fontFamily:
+                                                                        'Arial',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .normal,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                                text: snap[
+                                                                        index]
+                                                                    ['Comment'],
+                                                                onOpen:
+                                                                    (link) async {
+                                                                  if (!await launchUrl(
+                                                                      Uri.parse(
+                                                                          link.url))) {
+                                                                    throw Exception(
+                                                                        'Could not launch ${link.url}');
+                                                                  }
+                                                                },
+                                                              )),
                                                           SizedBox(
                                                             height:
                                                                 size.height *
@@ -1235,7 +1240,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                     ),
                                                                   ),
                                                                 )
-                                                              : Container(
+                                                              : SizedBox(
                                                                   height:
                                                                       size.height *
                                                                           0.0,

@@ -12,7 +12,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Profegedpm extends StatefulWidget {
-  const Profegedpm({Key? key}) : super(key: key);
+  const Profegedpm({super.key});
   @override
   State<Profegedpm> createState() => _ProfegedpmState();
 }
@@ -146,12 +146,12 @@ class _ProfegedpmState extends State<Profegedpm> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'GED',
+                        'GED pm',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -159,9 +159,9 @@ class _ProfegedpmState extends State<Profegedpm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Martes y Jueves',
@@ -169,8 +169,8 @@ class _ProfegedpmState extends State<Profegedpm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -178,8 +178,8 @@ class _ProfegedpmState extends State<Profegedpm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -204,13 +204,13 @@ class _ProfegedpmState extends State<Profegedpm> {
                       height: size.height * 0.07,
                       width: MediaQuery.of(context).size.width,
                       color: Theme.of(context).colorScheme.primary,
-                      child: Container(
+                      child: SizedBox(
                         width: size.width,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SizedBox(width: size.width * 0.01),
-                            Container(
+                            SizedBox(
                               height: size.height * 0.06,
                               width: size.width * 0.98,
                               child: Container(
@@ -226,6 +226,18 @@ class _ProfegedpmState extends State<Profegedpm> {
                                         Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(15)),
                                 child: TextField(
+                                  onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  cursorColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
                                   //textAlign: TextAlign.,
                                   autofocus: false,
                                   minLines: 1,
@@ -248,7 +260,7 @@ class _ProfegedpmState extends State<Profegedpm> {
                                                 0, 0, 187, 212)),
                                       ),
                                       //isCollapsed: true,
-                                      hintText: "Mensaje",
+                                      hintText: "mensaje...",
                                       hintStyle: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -401,7 +413,7 @@ class _ProfegedpmState extends State<Profegedpm> {
                             textAlign: TextAlign.start,
                             style: TextStyle(
                                 fontSize: size.height * 0.02,
-                                fontFamily: 'Coolvetica',
+                                fontFamily: 'Arial',
                                 color:
                                     Theme.of(context).colorScheme.secondary)),
                       ],
@@ -433,7 +445,7 @@ class _ProfegedpmState extends State<Profegedpm> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.02,
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'Arial',
                               color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
@@ -548,7 +560,7 @@ class _ProfegedpmState extends State<Profegedpm> {
                                                                       size.height *
                                                                           0.019,
                                                                   fontFamily:
-                                                                      'Coolvetica',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w500,
@@ -676,7 +688,7 @@ class _ProfegedpmState extends State<Profegedpm> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -691,7 +703,7 @@ class _ProfegedpmState extends State<Profegedpm> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,

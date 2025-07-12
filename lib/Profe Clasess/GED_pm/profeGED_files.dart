@@ -9,10 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 class Profegedfilespm extends StatefulWidget {
-  const Profegedfilespm({Key? key}) : super(key: key);
+  const Profegedfilespm({super.key});
   @override
   State<Profegedfilespm> createState() => _ProfegedfilespmState();
 }
@@ -182,8 +184,8 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: size.height * 0.075,
-                          fontFamily: 'Coolvetica',
+                          fontSize: size.height * 0.06,
+                          fontFamily: 'Arial',
                           fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -191,9 +193,9 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: size.height * 0.022,
-                          fontFamily: 'Coolvetica',
-                          fontWeight: FontWeight.w500),
+                          fontSize: size.height * 0.02,
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.bold),
                       ),
                       
                       Text(
@@ -202,8 +204,8 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.017,
-                          fontFamily: 'Coolvetica',
-                          fontWeight: FontWeight.w500),
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -211,8 +213,8 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: size.height * 0.017,
-                          fontFamily: 'Coolvetica',
-                          fontWeight: FontWeight.w500),
+                          fontFamily: 'Arial',
+                          fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -252,7 +254,7 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                                       child: Text(
                                         'Archivo seleccionado',
                                         style: TextStyle(
-                                            fontFamily: 'Coolvetica',
+                                            fontFamily: 'Arial',
                                             fontSize: size.height * 0.02,
                                             color: Theme.of(context).colorScheme.secondary),
                                       ),
@@ -401,7 +403,7 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                                                   bottom:
                                                       BorderSide(width: 1.1, color: const Color.fromARGB(148, 163, 163, 163)))),
                                           child: ListTile(
-                                            leading: Container(
+                                            leading: SizedBox(
                                                 width: size.width * 0.2,
                                                 child: Row(
                                                   mainAxisAlignment:
@@ -409,7 +411,7 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                                                   children: [
                                                     IconButton(
                                                         onPressed: () =>
-                                                            downloadFile(file),
+                                                            downloadFileIOS(file),
                                                         icon: Icon(
                                                             Icons.download,
                                                             size: size.height *
@@ -423,7 +425,7 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
                                                 style: TextStyle(
                                                     fontSize:
                                                         size.height * 0.02,
-                                                    fontFamily: 'Coolvetica')),
+                                                    fontFamily: 'Arial')),
                                           ),
                                         ),
                                       )),
@@ -467,4 +469,19 @@ class _ProfegedfilespmState extends State<Profegedfilespm> {
       print('Profile Picture could not be found');
     }
   }
+  Future<void> downloadFileIOS(Reference ref) async {
+  final dir = await getApplicationDocumentsDirectory();
+  final path = '${dir.path}/${ref.name}';
+  final file = File(path);
+
+  try {
+    await ref.writeToFile(file);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Archivo descargado')));
+
+    await OpenFile.open(path);  // ← Esto abre el archivo con la app adecuada
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+  }
+}
 }

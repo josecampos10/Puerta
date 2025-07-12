@@ -20,8 +20,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Profilehome extends StatefulWidget {
   const Profilehome({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<Profilehome> createState() => _ProfileHomeState();
@@ -137,7 +137,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                   data['name'],
                                   style: TextStyle(
                                       fontSize: size.height * 0.027,
-                                      fontFamily: 'Coolvetica',
+                                      fontFamily: 'Arial',
                                       //fontWeight: FontWeight.bold,
                                       color: const Color.fromARGB(
                                           255, 255, 255, 255)),
@@ -188,7 +188,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                     data['rol'],
                                     style: TextStyle(
                                         fontSize: size.height * 0.018,
-                                        fontFamily: 'Coolvetica',
+                                        fontFamily: 'Arial',
                                         fontWeight: FontWeight.w500,
                                         color: const Color.fromARGB(
                                             255, 255, 255, 255)),
@@ -208,7 +208,7 @@ class _ProfileHomeState extends State<Profilehome> {
                           ? Text(currentUser.email.toString(),
                               style: TextStyle(
                                   fontSize: size.height * 0.018,
-                                  fontFamily: 'Coolvetica',
+                                  fontFamily: 'Arial',
                                   fontWeight: FontWeight.w500,
                                   color:
                                       const Color.fromARGB(140, 255, 255, 255)))
@@ -293,7 +293,7 @@ class _ProfileHomeState extends State<Profilehome> {
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
                         fontSize: size.height * 0.025,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Coolvetica'),
+                        fontFamily: 'Arial'),
                   )
                 ],
               ),
@@ -332,7 +332,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Coolvetica'),
+                                fontFamily: 'Arial'),
                           ),
                           Icon(
                               color: Color.fromRGBO(255, 255, 255, 1),
@@ -378,7 +378,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Coolvetica'),
+                                fontFamily: 'Arial'),
                           ),
                           Icon(
                               color: Color.fromRGBO(255, 255, 255, 1),
@@ -432,7 +432,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'Política de Privacidad',
@@ -449,7 +449,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'Última actualización: 6/2/2025',
@@ -469,7 +469,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'La presente Política de Privacidad describe cómo la aplicación móvil de La Puerta Waco recopila, utiliza y protege la información personal de sus usuarios. Al utilizar esta aplicación, usted acepta los términos aquí establecidos.',
@@ -489,7 +489,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '1. Uso de la Aplicación',
@@ -509,7 +509,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'La aplicación de La Puerta Waco ha sido desarrollada exclusivamente con fines educativos e informativos. Su propósito es servir como un canal de comunicación y formación interna para los miembros de nuestra comunidad.',
@@ -529,7 +529,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '1. Información Recopilada',
@@ -549,7 +549,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'Durante el proceso de registro, solicitamos a los usuarios los siguientes datos: Nombre completo, Correo electrónico, Contraseña. El número de teléfono es un dato que puede ser proporcionado por el usuario dentro de la aplicación (elegida por el usuario). Esta información es almacenada de forma segura en la plataforma Firebase de Google, la cual cuenta con estándares de seguridad reconocidos a nivel mundial.',
@@ -569,7 +569,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '3. Acceso a la Información',
@@ -589,7 +589,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'El acceso a los datos personales está restringido exclusivamente a los administradores del sistema, quienes los utilizarán únicamente para fines internos de la organización y para el correcto funcionamiento de la app.',
@@ -609,7 +609,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '4. Seguriad y Privacidad',
@@ -629,7 +629,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'Nos comprometemos a proteger la privacidad de nuestros usuarios. La información almacenada se encuentra resguardada mediante los protocolos de seguridad proporcionados por Firebase, incluyendo cifrado y control de acceso.',
@@ -649,7 +649,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '5. Consentimiento del Usuario',
@@ -669,7 +669,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   'Al registrarse en la aplicación, usted acepta los términos y condiciones de uso, incluyendo:',
@@ -684,7 +684,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                           ),
                                           Row(
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '•	El almacenamiento de su nombre, correo y contraseña en nuestra base de datos.',
@@ -699,7 +699,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                           ),
                                           Row(
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '•	El uso exclusivo de esta información para el funcionamiento de la app y los fines internos de La Puerta Waco.',
@@ -719,7 +719,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
                                                   '6. Cambios a esta Politica',
@@ -739,7 +739,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                   width: size.width * 0.6,
                                                   child: Linkify(
                                                     linkStyle: TextStyle(
@@ -782,7 +782,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Coolvetica'),
+                                fontFamily: 'Arial'),
                           ),
                           Icon(
                               color: Color.fromRGBO(255, 255, 255, 1),
@@ -827,7 +827,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Coolvetica'),
+                                fontFamily: 'Arial'),
                           ),
                           Icon(
                               color: Color.fromRGBO(255, 255, 255, 1),
@@ -854,7 +854,7 @@ class _ProfileHomeState extends State<Profilehome> {
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
                         fontSize: size.height * 0.025,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Coolvetica'),
+                        fontFamily: 'Arial'),
                   )
                 ],
               ),
@@ -918,7 +918,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Coolvetica'),
+                                fontFamily: 'Arial'),
                           ),
                           StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                             stream: FirebaseFirestore.instance
@@ -996,7 +996,7 @@ class _ProfileHomeState extends State<Profilehome> {
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
                         fontSize: size.height * 0.025,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'Coolvetica'),
+                        fontFamily: 'Arial'),
                   )
                 ],
               ),
@@ -1057,7 +1057,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Coolvetica'),
+                                fontFamily: 'Arial'),
                           ),
                           Icon(
                               color: Color.fromRGBO(255, 255, 255, 1),
@@ -1160,7 +1160,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 fontSize: size.height * 0.015,
                                 color: const Color.fromARGB(255, 255, 255, 255),
                                 fontWeight: FontWeight.w500,
-                                fontFamily: 'Coolvetica'),
+                                fontFamily: 'Arial'),
                           ),
                           Icon(
                               color: Color.fromRGBO(255, 255, 255, 1),
@@ -1206,7 +1206,7 @@ class _ProfileHomeState extends State<Profilehome> {
 }
 
 class editProfile extends StatefulWidget {
-  const editProfile({Key? key}) : super(key: key);
+  const editProfile({super.key});
   @override
   State<editProfile> createState() => _editProfile();
 }

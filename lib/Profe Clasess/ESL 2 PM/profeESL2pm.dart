@@ -6,27 +6,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class Profeeslpm extends StatefulWidget {
-  const Profeeslpm({Key? key}) : super(key: key);
+class Profeeslpm2 extends StatefulWidget {
+  const Profeeslpm2({super.key});
   @override
-  State<Profeeslpm> createState() => _ProfeeslpmState();
+  State<Profeeslpm2> createState() => _Profeeslpm2State();
 }
 
-class _ProfeeslpmState extends State<Profeeslpm> {
+class _Profeeslpm2State extends State<Profeeslpm2> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final usuario =
       FirebaseFirestore.instance.collection('users').doc().snapshots();
 
-  CollectionReference users = FirebaseFirestore.instance.collection('postsESL');
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('postsESLpm2');
   final controller = TextEditingController();
   final streaming = FirebaseFirestore.instance
-      .collection('postsESL')
+      .collection('postsESLpm2')
       .orderBy('createdAt', descending: true)
       .snapshots();
   Uint8List? pickedImage;
@@ -36,6 +38,10 @@ class _ProfeeslpmState extends State<Profeeslpm> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(
+      Duration(),
+      () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+    );
     getProfilePicture();
 
     //final streaming;
@@ -152,12 +158,12 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'ESL',
+                        'ESL 2 pm',
                         //textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -165,9 +171,9 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Martes y Jueves',
@@ -175,8 +181,8 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -184,8 +190,8 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -210,13 +216,13 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                       height: size.height * 0.07,
                       width: MediaQuery.of(context).size.width,
                       color: Theme.of(context).colorScheme.primary,
-                      child: Container(
+                      child: SizedBox(
                         width: size.width,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SizedBox(width: size.width * 0.01),
-                            Container(
+                            SizedBox(
                               height: size.height * 0.06,
                               width: size.width * 0.98,
                               child: Container(
@@ -234,6 +240,18 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                 child: TextField(
                                   // specialTextSpanBuilder: MySpecialTextSpanBuilder(),
                                   //textAlign: TextAlign.,
+                                  onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  cursorColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
                                   autofocus: false,
                                   minLines: 1,
                                   maxLines: null,
@@ -255,7 +273,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                 0, 0, 187, 212)),
                                       ),
                                       //isCollapsed: true,
-                                      hintText: "Mensaje",
+                                      hintText: "mensaje...",
                                       hintStyle: TextStyle(color: Colors.grey),
                                       suffixIcon: IconButton(
                                         onPressed: () {
@@ -292,7 +310,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                 FirebaseFirestore
                                                                     .instance
                                                                     .collection(
-                                                                        'postsESL')
+                                                                        'postsESLpm2')
                                                                     .doc(DateTime(
                                                                             DateTime.now().year,
                                                                             DateTime.now().month,
@@ -398,7 +416,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                             color: const Color.fromARGB(148, 163, 163, 163)))),
                 child: TextButton(
                     onPressed: () =>
-                        Navigator.pushNamed(context, '/profeESLpm_files'),
+                        Navigator.pushNamed(context, '/profeESLpm2_files'),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -417,7 +435,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.02,
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'Arial',
                               color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
@@ -434,7 +452,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                             color: const Color.fromARGB(148, 163, 163, 163)))),
                 child: TextButton(
                     onPressed: () =>
-                        Navigator.pushNamed(context, '/studentESLpm_students'),
+                        Navigator.pushNamed(context, '/studentESLpm2_students'),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -453,7 +471,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.02,
-                              fontFamily: 'Coolvetica',
+                              fontFamily: 'ARial',
                               color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
@@ -575,7 +593,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                       size.height *
                                                                           0.019,
                                                                   fontFamily:
-                                                                      'Coolvetica',
+                                                                      'ARial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w500,
@@ -639,7 +657,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                         TextButton(
                                                                             onPressed:
                                                                                 () {
-                                                                              FirebaseFirestore.instance.collection('postsESL').doc(snapshot.data!.docs[index].id).delete();
+                                                                              FirebaseFirestore.instance.collection('postsESLpm2').doc(snapshot.data!.docs[index].id).delete();
 
                                                                               Navigator.of(context).pop();
                                                                             },
@@ -704,7 +722,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                     size.height *
                                                                         0.0162,
                                                                 fontFamily:
-                                                                    'Impact',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600,
@@ -716,11 +734,11 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                     255),
                                                               ),
                                                               style: TextStyle(
-                                                                  fontSize: size
-                                                                          .height *
-                                                                      0.0162,
+                                                                  fontSize:
+                                                                      size.height *
+                                                                          0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,

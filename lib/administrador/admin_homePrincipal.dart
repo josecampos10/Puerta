@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -7,12 +9,48 @@ import 'package:lapuerta2/detalles.dart';
 import 'package:lapuerta2/detalles_class.dart';
 
 class AdminhomePrincipal extends StatefulWidget {
-  AdminhomePrincipal({Key? key}) : super(key: key);
+  const AdminhomePrincipal({super.key});
   @override
   State<AdminhomePrincipal> createState() => _AdminhomePrincipalState();
 }
 
+
+
 class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
+
+Future<void> checkUserRoles() async {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  if (user != null) {
+    final idTokenResult = await user.getIdTokenResult(true); // fuerza refresh
+    final claims = idTokenResult.claims;
+
+    if (claims != null) {
+      print('👉 Claims: $claims');
+
+      if (claims['superadmin'] == true) {
+        print('✅ Usuario con rol: SUPERADMIN');
+      } else if (claims['admin'] == true) {
+        print('✅ Usuario con rol: ADMIN');
+      } else {
+        print('⚠️ Usuario sin roles asignados');
+      }
+    }
+  } else {
+    print('❌ No hay usuario autenticado');
+  }
+}
+
+@override
+  void initState() {
+    super.initState();
+    setState(() {
+      checkUserRoles();
+    });
+    
+  }
+
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -68,8 +106,35 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
               SizedBox(
                 height: size.height * 0.01,
               ),
+
               TextButton(
-                  onPressed: () => Navigator.pushNamed(context, '/recursos'),
+  onPressed: () async {
+    final uidToMakeAdmin = 'UID_DEL_OTRO_USUARIO'; // reemplaza con el UID real
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('setAdminRole');
+      final result = await callable.call({'uid': uidToMakeAdmin});
+      print(result.data['message']);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('✅ Usuario promovido a ADMIN')),
+      );
+    } catch (e) {
+      print('Error al asignar admin: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Error al asignar admin')),
+      );
+    }
+  },
+  child: Text(
+    'Asignar rol ADMIN',
+    style: TextStyle(fontSize: 16, color: Colors.black),
+  ),
+),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/recursos');
+                    checkUserRoles();
+                  },
+                  
                   child: Text(
                     'Editar recursos',
                     style: TextStyle(
@@ -99,7 +164,7 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
                           }
                           if (snapshot.hasData) {
                             final snap = snapshot.data!.docs;
-                            return Container(
+                            return SizedBox(
                               width: double.infinity,
                               height: size.height * 0.07777,
                               child: GridView.builder(
@@ -168,10 +233,10 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
                                                               fontSize:
                                                                   size.height *
                                                                       0.022,
-                                                              fontFamily: '',
+                                                              fontFamily: 'Arial',
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .bold,
+                                                                      .normal,
                                                               color: Color
                                                                   .fromRGBO(
                                                                       255,
@@ -322,9 +387,9 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
                                                       style: TextStyle(
                                                         fontSize:
                                                             size.height * 0.022,
-                                                        fontFamily: '',
+                                                        fontFamily: 'Arial',
                                                         fontWeight:
-                                                            FontWeight.bold,
+                                                            FontWeight.normal,
                                                         color: Color.fromRGBO(
                                                             255, 255, 255, 1),
                                                       ),
@@ -472,10 +537,10 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
                                                                     size.height *
                                                                         0.019,
                                                                 fontFamily:
-                                                                    'JosefinSans',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w700,
+                                                                        .normal,
                                                                 color: const Color
                                                                         .fromARGB(
                                                                         255,
@@ -498,10 +563,10 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
                                                                   size.height *
                                                                       0.014,
                                                               fontFamily:
-                                                                  'JosefinSans',
+                                                                  'Arial',
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .w700,
+                                                                      .normal,
                                                               color: const Color
                                                                       .fromARGB(
                                                                       255,
@@ -523,10 +588,10 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
                                                                   size.height *
                                                                       0.014,
                                                               fontFamily:
-                                                                  'JosefinSans',
+                                                                  'Arial',
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .w700,
+                                                                      .normal,
                                                               color: const Color
                                                                       .fromARGB(
                                                                       255,
@@ -549,7 +614,7 @@ class _AdminhomePrincipalState extends State<AdminhomePrincipal> {
                                                                   size.height *
                                                                       0.0162,
                                                               fontFamily:
-                                                                  'Impact',
+                                                                  'Arial',
                                                               fontWeight:
                                                                   FontWeight
                                                                       .normal,

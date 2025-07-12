@@ -224,11 +224,11 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                             ),
                           ),
                           SizedBox(
-                            height: size.height * 0.05,
+                            height: size.height * 0.02,
                           ),
                           Column(
                             children: [
-                              Container(
+                              SizedBox(
                                 width: size.width * 0.9,
                                 child: Row(
                                   children: [
@@ -238,7 +238,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02),
                                     )
                                   ],
@@ -271,7 +271,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02,
                                           fontWeight: FontWeight.w500),
                                       controller: _controllerName,
@@ -283,7 +283,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                           hintStyle: TextStyle(
                                               color: const Color.fromARGB(
                                                   193, 167, 167, 167),
-                                              fontFamily: 'Coolvetica'),
+                                              fontFamily: 'Arial'),
                                           contentPadding:
                                               EdgeInsets.only(left: 20),
                                           border: InputBorder.none),
@@ -294,7 +294,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                               SizedBox(
                                 height: size.height * 0.02,
                               ),
-                              Container(
+                              SizedBox(
                                 width: size.width * 0.9,
                                 child: Row(
                                   children: [
@@ -304,7 +304,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02),
                                     ),
                                     IconButton(
@@ -363,7 +363,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02,
                                           fontWeight: FontWeight.w500),
                                       controller: _controllerEmail,
@@ -387,7 +387,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                               SizedBox(
                                 height: size.height * 0.02,
                               ),
-                              Container(
+                              SizedBox(
                                 width: size.width * 0.9,
                                 child: Row(
                                   children: [
@@ -397,7 +397,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02),
                                     ),
                                     IconButton(
@@ -453,7 +453,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
-                                          fontFamily: 'Coolvetica',
+                                          fontFamily: 'Arial',
                                           fontSize: size.height * 0.02,
                                           fontWeight: FontWeight.w500),
                                       keyboardType: TextInputType.phone,
@@ -481,7 +481,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                           SizedBox(
                             height: size.height * 0.03,
                           ),
-                          Container(
+                          SizedBox(
                             width: size.width * 0.9,
                             height: size.height * 0.06,
                             child: ElevatedButton(
@@ -545,7 +545,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                               child: Text(
                                 'Guardar cambios',
                                 style: TextStyle(
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     color: Colors.white,
                                     fontSize: size.height * 0.02),
                               ),

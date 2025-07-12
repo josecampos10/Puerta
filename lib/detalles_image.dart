@@ -9,8 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ImageDetallesHome extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
-  ImageDetallesHome({Key? key, required this.documentSnapshot})
-      : super(key: key);
+  const ImageDetallesHome({super.key, required this.documentSnapshot});
 
   @override
   State<ImageDetallesHome> createState() => _ImageDetallesHomeState();
@@ -27,7 +26,7 @@ class _ImageDetallesHomeState extends State<ImageDetallesHome> {
     // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
     return Scaffold(
       backgroundColor: Color.fromRGBO(0, 0, 0, 1).withOpacity(0.8),
-      body: Container(
+      body: SizedBox(
         height: size.height,
         width: size.width,
         /*decoration: BoxDecoration(
@@ -40,7 +39,7 @@ class _ImageDetallesHomeState extends State<ImageDetallesHome> {
         ),*/
         child: SingleChildScrollView(
           child: Column(children: [
-            Container(
+            SizedBox(
               width: size.width,
               height: size.height * 0.2,
               child: Column(
@@ -122,7 +121,7 @@ class _ImageDetallesHomeState extends State<ImageDetallesHome> {
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: size.height * 0.02,
-                                      fontFamily: 'Coolvetica'),
+                                      fontFamily: 'Arial'),
                                 ),
                                 
                               ],
@@ -135,7 +134,7 @@ class _ImageDetallesHomeState extends State<ImageDetallesHome> {
                               style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 128, 128, 128),
-                                  fontFamily: 'Coolvetica',
+                                  fontFamily: 'Arial',
                                   fontSize: size.height * 0.017),
                             )
                           ],
@@ -150,7 +149,7 @@ class _ImageDetallesHomeState extends State<ImageDetallesHome> {
                               style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 128, 128, 128),
-                                      fontFamily: 'Coolvetica',
+                                      fontFamily: 'Arial',
                                   fontSize: size.height * 0.016),
                             ),
                           ],
@@ -182,10 +181,10 @@ class _ImageDetallesHomeState extends State<ImageDetallesHome> {
 }
 
 Future _launchUrlclass() async {
-  final Uri _url = Uri.parse(
+  final Uri url = Uri.parse(
       "https://www.lapuertawaco.com/educacion"); // Replace with your YouTube video URL
 
-  if (!await launchUrl(_url)) {
-    throw Exception("Could not launch $_url");
+  if (!await launchUrl(url)) {
+    throw Exception("Could not launch $url");
   }
 }

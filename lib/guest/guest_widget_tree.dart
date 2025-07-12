@@ -6,7 +6,7 @@ import 'package:lapuerta2/onboarding.dart';
 
 
 class GuestWidgetTree extends StatefulWidget{
-  const GuestWidgetTree({Key? key}) : super(key: key);
+  const GuestWidgetTree({super.key});
 
   @override 
   State<GuestWidgetTree> createState() => _GuestWidgetTreeState();

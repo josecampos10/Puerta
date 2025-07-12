@@ -5,13 +5,16 @@ import 'package:lapuerta2/Profe%20Clasess/Cosmetologia/profeCosmetolog%C3%ADa_fi
 import 'package:lapuerta2/Profe%20Clasess/Cosmetologia/profeCosmetologia.dart';
 import 'package:lapuerta2/Profe%20Clasess/Cosmetologia/profeCosmetologia_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/Costura%20_am/profeCostura_students.dart';
-import 'package:lapuerta2/Profe%20Clasess/ESL_pm/profeESLpm_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%201%20%20pm/profeESLpm_students.dart';
 
 import 'package:lapuerta2/Profe%20Clasess/Ciudadania/profeCiudadania_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/Costura%20_am/profeCostura_am.dart';
 import 'package:lapuerta2/Profe%20Clasess/Costura%20_am/profeCostura_files_AM.dart';
-import 'package:lapuerta2/Profe%20Clasess/ESL_pm/profeESLpm.dart';
-import 'package:lapuerta2/Profe%20Clasess/ESL_pm/profeESLpm_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%201%20%20pm/profeESLpm.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%201%20%20pm/profeESLpm_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%202%20PM/profeESL2pm.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%202%20PM/profeESLpm2_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%202%20PM/profeESLpm2_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_students.dart';
@@ -101,7 +104,7 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               if (settings.name == '/studentGEDpm_students') {
                 return Profegedstudentspm();
               }
-              //ESL PM///
+              //ESL PM 1 //
               if (settings.name == '/profeESLpm') {
                 return Profeeslpm();
               }
@@ -110,6 +113,16 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               }
               if (settings.name == '/studentESLpm_students') {
                 return Profeeslstudentspm();
+              }
+              ////// ESL PM 2 /////
+              if (settings.name == '/profeESLpm2') {
+                return Profeeslpm2();
+              }
+              if (settings.name == '/profeESLpm2_files') {
+                return Profeeslfilespm2();
+              }
+              if (settings.name == '/studentESLpm2_students') {
+                return Profeeslstudentspm2();
               }
               /////COSTURA AM ///////
               if (settings.name == '/profeCosturaAM') {
@@ -156,6 +169,7 @@ class _StudentclasesNavState extends State<StudentclasesNav>
 
 class SlideRoute extends PageRouteBuilder {
   final Widget page;
+  @override
   final RouteSettings settings;
   SlideRoute({required this.page, required this.settings})
       : super(

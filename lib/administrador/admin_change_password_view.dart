@@ -148,7 +148,7 @@ class _AdminchangePasswordViewState extends State<AdminchangePasswordView> {
                       SizedBox(
                         height: size.height * 0.03,
                       ),
-                      Container(
+                      SizedBox(
                         width: size.height * 0.35,
                         height: size.height * 0.06,
                         child: ElevatedButton(

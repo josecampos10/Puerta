@@ -1,13 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lapuerta2/main.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class AdminDetallesHome extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
-  const AdminDetallesHome({Key? key, required this.documentSnapshot})
-      : super(key: key);
+  const AdminDetallesHome({super.key, required this.documentSnapshot});
 
   @override
   State<AdminDetallesHome> createState() => _AdminDetallesHomeState();
@@ -74,8 +71,23 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
     Size size = MediaQuery.of(context).size;
     // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
+        centerTitle: true,
+        title: Text(
+                    'Control de cursos',
+                    style: TextStyle(
+                        fontSize: size.width * 0.045,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+        toolbarHeight: size.height*0.09,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+      ),
+      backgroundColor: const Color.fromARGB(255, 202, 202, 202),
+      body: SizedBox(
         height: size.height,
         width: size.width,
         /*decoration: BoxDecoration(
@@ -88,39 +100,8 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
         ),*/
         child: SingleChildScrollView(
           child: Column(children: [
-            Container(
-              width: size.width,
-              height: size.height * 0.2,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: size.height * 0.08,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          height: size.width * 0.12,
-                          width: size.width * 0.12,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              color: Colors.grey.withOpacity(0.5)),
-                          child: Icon(Icons.close,
-                              color: const Color.fromARGB(255, 179, 179, 179)),
-                        ),
-                      ),
-                      SizedBox(
-                        width: size.width * 0.04,
-                      )
-                    ],
-                  ),
-                  //SizedBox( height: size.height * 0.1 ),
-                ],
-              ),
+            SizedBox(
+              height: size.height*0.06,
             ),
             Container(
               width: size.width - 30,
@@ -145,10 +126,10 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
                             child: Text(
                           'La Puerta Waco',
                           style: TextStyle(
-                              fontSize: size.height * 0.025,
+                              fontSize: size.height * 0.02,
                               fontWeight: FontWeight.normal,
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                              fontFamily: 'Coolvetica'),
+                              color: const Color.fromARGB(255, 186, 186, 186),
+                              fontFamily: 'Arial'),
                         )),
                       ],
                     ),
@@ -172,7 +153,7 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: size.height * 0.028,
-                                              fontFamily: 'Coolvetica'),
+                                              fontFamily: 'Arial'),
                                           textAlign: TextAlign.center,
                                         ),
                                       ],
@@ -188,10 +169,9 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
                                         Text(
                                           widget.documentSnapshot['email'],
                                           style: TextStyle(
-                                              color: const Color.fromARGB(
-                                                  255, 197, 197, 197),
-                                              fontSize: size.height * 0.015,
-                                              fontFamily: 'Coolvetica'),
+                                              color: Color.fromRGBO(4, 99, 128, 1),
+                                              fontSize: size.height * 0.017,
+                                              fontFamily: 'Arial'),
                                           textAlign: TextAlign.center,
                                         ),
                                       ],
@@ -207,10 +187,9 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
                                         Text(
                                           widget.documentSnapshot['rol'],
                                           style: TextStyle(
-                                              color: const Color.fromARGB(
-                                                  255, 197, 197, 197),
-                                              fontSize: size.height * 0.015,
-                                              fontFamily: 'Coolvetica'),
+                                              color: Color.fromRGBO(4, 99, 128, 1),
+                                              fontSize: size.height * 0.017,
+                                              fontFamily: 'Arial'),
                                           textAlign: TextAlign.center,
                                         ),
                                       ],

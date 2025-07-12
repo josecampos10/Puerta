@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class UserchatHome extends StatefulWidget {
-  const UserchatHome({Key? key}) : super(key: key);
+  const UserchatHome({super.key});
   @override
   State<UserchatHome> createState() => _UserchatHomeState();
 }

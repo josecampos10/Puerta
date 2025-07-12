@@ -12,7 +12,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StudentCosmetologia extends StatefulWidget {
-  const StudentCosmetologia({Key? key}) : super(key: key);
+  const StudentCosmetologia({super.key});
   @override
   State<StudentCosmetologia> createState() => _StudentCosmetologiaState();
 }
@@ -152,7 +152,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -161,7 +161,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Row(
@@ -175,7 +175,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                               Text(
@@ -184,7 +184,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                             ],
@@ -200,7 +200,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                               Text(
@@ -209,7 +209,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: size.height * 0.017,
-                                    fontFamily: 'Coolvetica',
+                                    fontFamily: 'Arial',
                                     fontWeight: FontWeight.w500),
                               ),
                             ],
@@ -245,7 +245,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             color: Theme.of(context).colorScheme.secondary ),
                         ),
                       ],
@@ -356,7 +356,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                                                                     size.height *
                                                                         0.019,
                                                                 fontFamily:
-                                                                    'Coolvetica',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w500,
@@ -420,7 +420,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -435,7 +435,7 @@ class _StudentCosmetologiaState extends State<StudentCosmetologia> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,

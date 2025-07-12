@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 
 class AdminWidgetTree extends StatefulWidget{
-  const AdminWidgetTree({Key? key}) : super(key: key);
+  const AdminWidgetTree({super.key});
 
   @override 
   State<AdminWidgetTree> createState() => _AdminWidgetTreeState();

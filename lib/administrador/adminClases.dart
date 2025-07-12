@@ -5,8 +5,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class Adminclases extends StatefulWidget {
   const Adminclases({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<Adminclases> createState() => _AdminclasesState();
@@ -62,13 +62,21 @@ class _AdminclasesState extends State<Adminclases> {
           ),
         ),*/
         child: SingleChildScrollView(
+          
           //physics: NeverScrollableScrollPhysics(),
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           reverse: false,
           child: Column(children: [
-            
+            SizedBox(
+              height: size.height*0.0,
+            ),
             Container(
+              decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(size.width * 0.08),
+                topRight: Radius.circular(size.width * 0.08))),
               child: Column(
                 children: [
                  
@@ -95,7 +103,7 @@ class _AdminclasesState extends State<Adminclases> {
                         prefixIcon: Icon(Icons.add),
                         labelStyle: TextStyle(
                             fontSize: size.height * 0.018,
-                            fontFamily: 'Impact',
+                            fontFamily: 'Arial',
                             color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
@@ -123,7 +131,7 @@ class _AdminclasesState extends State<Adminclases> {
                         prefixIcon: Icon(Icons.add),
                         labelStyle: TextStyle(
                             fontSize: size.height * 0.018,
-                            fontFamily: 'Impact',
+                            fontFamily: 'Arial',
                             color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
@@ -154,7 +162,7 @@ class _AdminclasesState extends State<Adminclases> {
                         prefixIcon: Icon(Icons.add),
                         labelStyle: TextStyle(
                             fontSize: 14,
-                            fontFamily: 'Impact',
+                            fontFamily: 'Arial',
                             color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
@@ -195,7 +203,7 @@ class _AdminclasesState extends State<Adminclases> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        content: Container(
+                                        content: SizedBox(
                                           height: size.height * 0.12,
                                           child: Column(
                                             children: [
@@ -234,7 +242,7 @@ class _AdminclasesState extends State<Adminclases> {
                             labelText: 'Días - Principal',
                             labelStyle: TextStyle(
                                 fontSize: size.height * 0.018,
-                                fontFamily: 'Impact',
+                                fontFamily: 'Arial',
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
@@ -269,7 +277,7 @@ class _AdminclasesState extends State<Adminclases> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        content: Container(
+                                        content: SizedBox(
                                           height: size.height * 0.2,
                                           child: Column(
                                             children: [
@@ -308,7 +316,7 @@ class _AdminclasesState extends State<Adminclases> {
                             labelText: 'Días - Secundario',
                             labelStyle: TextStyle(
                                 fontSize: size.height * 0.018,
-                                fontFamily: 'Impact',
+                                fontFamily: 'Arial',
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
@@ -348,7 +356,7 @@ class _AdminclasesState extends State<Adminclases> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        content: Container(
+                                        content: SizedBox(
                                           height: size.height * 0.12,
                                           child: Column(
                                             children: [
@@ -387,7 +395,7 @@ class _AdminclasesState extends State<Adminclases> {
                             labelText: 'Horario - Principal',
                             labelStyle: TextStyle(
                                 fontSize: size.height * 0.018,
-                                fontFamily: 'Impact',
+                                fontFamily: 'Arial',
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
@@ -422,7 +430,7 @@ class _AdminclasesState extends State<Adminclases> {
                                     context: context,
                                     builder: (context) {
                                       return AlertDialog(
-                                        content: Container(
+                                        content: SizedBox(
                                           height: size.height * 0.12,
                                           child: Column(
                                             children: [
@@ -461,18 +469,16 @@ class _AdminclasesState extends State<Adminclases> {
                             labelText: 'Horario - Secundario',
                             labelStyle: TextStyle(
                                 fontSize: size.height * 0.018,
-                                fontFamily: 'Impact',
+                                fontFamily: 'Arial',
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                       ),
                     ],
                   ),
+                  
                   SizedBox(
                     height: size.height * 0.02,
-                  ),
-                  SizedBox(
-                    height: size.height * 0.05,
                   ),
                   SizedBox(
                     width: size.height * 0.35,
@@ -648,7 +654,7 @@ class _AdminclasesState extends State<Adminclases> {
                                           label: 'borrar',
                                         )
                                       ]),
-                                  child: Container(
+                                  child: SizedBox(
                                     height: size.height * 0.07,
                                     width: size.width,
                                     child: GestureDetector(
@@ -690,9 +696,9 @@ class _AdminclasesState extends State<Adminclases> {
                                                           fontSize:
                                                               size.height *
                                                                   0.022,
-                                                          fontFamily: '',
+                                                          fontFamily: 'Arial',
                                                           fontWeight:
-                                                              FontWeight.bold,
+                                                              FontWeight.normal,
                                                           color:
                                                               Theme.of(context)
                                                                   .colorScheme

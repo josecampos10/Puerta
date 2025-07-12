@@ -105,9 +105,11 @@ class _MainWrapperState extends State<Mainwrapper> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      bottomNavigationBar: Container(
-        height: size.height * 0.065,
+      bottomNavigationBar: SizedBox(
+        height: size.height * 0.09,
         child: BottomNavigationBar(
+          //enableFeedback: false,
+          //iconSize: 19,
             type: BottomNavigationBarType.shifting,
             showSelectedLabels: false,
             showUnselectedLabels: false,

@@ -12,7 +12,7 @@ import 'package:lapuerta2/mainwrapper.dart';
 
 // ignore: must_be_immutable
 class Notifications extends StatefulWidget {
-  Notifications({super.key});
+  const Notifications({super.key});
 
   @override
   State<Notifications> createState() => _NotificationsState();
@@ -288,7 +288,7 @@ class _NotificationsState extends State<Notifications> {
                                                                       size.height *
                                                                           0.019,
                                                                   fontFamily:
-                                                                      'JosefinSans',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w700,
@@ -312,7 +312,7 @@ class _NotificationsState extends State<Notifications> {
                                                                       size.height *
                                                                           0.014,
                                                                   fontFamily:
-                                                                      'JosefinSans',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w700,
@@ -336,7 +336,7 @@ class _NotificationsState extends State<Notifications> {
                                                                       size.height *
                                                                           0.014,
                                                                   fontFamily:
-                                                                      'JosefinSans',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w700,
@@ -371,7 +371,7 @@ class _NotificationsState extends State<Notifications> {
                                                                             .height *
                                                                         0.0162,
                                                                     fontFamily:
-                                                                        'Impact',
+                                                                        'Arial',
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .normal,

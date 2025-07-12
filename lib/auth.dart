@@ -36,7 +36,7 @@ class Auth {
       if(e.message.toString() == ''){
         
       }
-    } catch (e) {}
+    }
   }
 
   Future<void> createUserWithEmailAndPassword({
@@ -84,7 +84,7 @@ class Auth {
       if(e.message.toString() == ''){
         
       }
-    } catch (e) {}
+    }
   }
 
   Future<void> signOut() async {

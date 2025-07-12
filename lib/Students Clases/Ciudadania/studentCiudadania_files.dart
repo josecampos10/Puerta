@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 
 
 class StudentCiudadaniafiles extends StatefulWidget {
-  const StudentCiudadaniafiles({Key? key}) : super(key: key);
+  const StudentCiudadaniafiles({super.key});
   @override
   State<StudentCiudadaniafiles> createState() => _StudentCiudadaniafilesState();
 }
@@ -149,7 +149,7 @@ class _StudentCiudadaniafilesState extends State<StudentCiudadaniafiles> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -158,7 +158,7 @@ class _StudentCiudadaniafilesState extends State<StudentCiudadaniafiles> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.width * 0.04,
-                            fontFamily: 'Impact',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w600),
                       ),
                       Text(
@@ -167,7 +167,7 @@ class _StudentCiudadaniafilesState extends State<StudentCiudadaniafiles> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                       Text(
@@ -176,7 +176,7 @@ class _StudentCiudadaniafilesState extends State<StudentCiudadaniafiles> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -221,7 +221,7 @@ class _StudentCiudadaniafilesState extends State<StudentCiudadaniafiles> {
                                         file.name,
                                         style:  TextStyle(
                                             fontSize: size.height * 0.02,
-                                            fontFamily: 'Coolvetica',
+                                            fontFamily: 'Arial',
                                             color: Theme.of(context).colorScheme.secondary),
                                       ),
                                       trailing: IconButton(

@@ -11,7 +11,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class Profeeslstudentspm extends StatefulWidget {
-  const Profeeslstudentspm({Key? key}) : super(key: key);
+  const Profeeslstudentspm({super.key});
   @override
   State<Profeeslstudentspm> createState() => _ProfeeslstudentspmState();
 }
@@ -153,7 +153,7 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
           child: Column(
             children: [
               Align(
-                alignment: Alignment.topCenter,
+                alignment: Alignment.center,
                 child: Container(
                   width: size.width,
                   height: size.height * 0.2,
@@ -165,15 +165,15 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                       //color: Color.fromARGB(155, 255, 102, 0),
                       borderRadius: BorderRadius.all(Radius.circular(31))),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'ESL',
+                        'ESL 1 pm',
                         //textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -181,9 +181,9 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Martes y Jueves',
@@ -191,8 +191,8 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -200,8 +200,8 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -303,10 +303,10 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                                                                     size.height *
                                                                         0.019,
                                                                 fontFamily:
-                                                                    'Coolvetica',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w500,
+                                                                        .bold,
                                                                 color: Theme.of(context).colorScheme.secondary,
                                                               ),
                                                             ),
@@ -336,10 +336,10 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w700,
+                                                                          .bold,
                                                                   color: Color.fromRGBO(0, 129, 168, 1),
                                                                 ),
                                                               ),
@@ -366,10 +366,10 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w600,
+                                                                          .normal,
                                                                   color: Color.fromARGB(255, 153, 153, 153)
                                                                       
                                                                 ),
@@ -397,10 +397,10 @@ class _ProfeeslstudentspmState extends State<Profeeslstudentspm> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w600,
+                                                                          .normal,
                                                                   color: Color.fromARGB(255, 153, 153, 153)
                                                                 ),
                                                               ),

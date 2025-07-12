@@ -11,7 +11,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class ProfeCiudadaniastudents extends StatefulWidget {
-  const ProfeCiudadaniastudents({Key? key}) : super(key: key);
+  const ProfeCiudadaniastudents({super.key});
   @override
   State<ProfeCiudadaniastudents> createState() =>
       _ProfeCiudadaniastudentsState();
@@ -175,8 +175,8 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.075,
-                            fontFamily: 'Coolvetica',
+                            fontSize: size.height * 0.06,
+                            fontFamily: 'Arial',
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -184,9 +184,9 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: size.height * 0.022,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontSize: size.height * 0.02,
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Martes y Jueves',
@@ -194,8 +194,8 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '5:30 pm - 7:30 pm',
@@ -203,8 +203,8 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: size.height * 0.017,
-                            fontFamily: 'Coolvetica',
-                            fontWeight: FontWeight.w500),
+                            fontFamily: 'Arial',
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -308,7 +308,7 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                                                                     size.height *
                                                                         0.019,
                                                                 fontFamily:
-                                                                    'Coolvetica',
+                                                                    'Arial',
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w500,
@@ -341,7 +341,7 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w700,
@@ -371,7 +371,7 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -401,7 +401,7 @@ class _ProfeCiudadaniastudentsState extends State<ProfeCiudadaniastudents> {
                                                                           .height *
                                                                       0.0162,
                                                                   fontFamily:
-                                                                      'Impact',
+                                                                      'Arial',
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,

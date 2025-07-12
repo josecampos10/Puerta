@@ -5,7 +5,7 @@ import 'package:lapuerta2/administrador/admin_auth.dart';
 import 'package:lapuerta2/onboarding.dart';
 
 class AdminLoginNow extends StatefulWidget {
-  const AdminLoginNow({Key? key}) : super(key: key);
+  const AdminLoginNow({super.key});
 
   @override
   State<AdminLoginNow> createState() => _AdminLoginNowState();
@@ -86,7 +86,7 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
                 Icon(icon, color: const Color.fromARGB(255, 155, 155, 155)),
             labelStyle: TextStyle(
                 fontSize: size.height * 0.02,
-                fontFamily: 'Impact',
+                fontFamily: 'Arial',
                 color: const Color.fromARGB(255, 155, 155, 155)),
           ),
         ),
@@ -138,7 +138,7 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
             ),
             labelStyle: TextStyle(
                 fontSize: size.height * 0.02,
-                fontFamily: 'Impact',
+                fontFamily: 'Arial',
                 color: const Color.fromARGB(255, 155, 155, 155)),
             suffix: IconButton(
               padding: const EdgeInsets.all(20),
