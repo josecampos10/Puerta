@@ -25,7 +25,8 @@ class FirebaseApi {
     );
 
     // iOS: muestra notis cuando está foreground
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: true,
       sound: true,
       badge: true,
@@ -45,33 +46,33 @@ class FirebaseApi {
   }
 
   Future<void> initializeLocalNotifications() async {
-  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings =
+        AndroidInitializationSettings('@mipmap/launcer_icon');
 
-  final iosSettings = DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: true,
-  );
+    final iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
-  final initSettings = InitializationSettings(
-    android: androidSettings,
-    iOS: iosSettings,
-  );
+    final initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
 
-  // Crear canal en Android (no afecta iOS)
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(const AndroidNotificationChannel(
-        'default_channel', // 👈 debe coincidir con el ID usado en AndroidNotificationDetails
-        'General Notifications',
-        description: 'Notificaciones generales de la app',
-        importance: Importance.high,
-      ));
+    // Crear canal en Android (no afecta iOS)
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(const AndroidNotificationChannel(
+          'default_channel', // 👈 debe coincidir con el ID usado en AndroidNotificationDetails
+          'General Notifications',
+          description: 'Notificaciones generales de la app',
+          importance: Importance.high,
+        ));
 
-  await flutterLocalNotificationsPlugin.initialize(initSettings);
-}
-
+    await flutterLocalNotificationsPlugin.initialize(initSettings);
+  }
 
   void showLocalNotification(String title, String body) {
     const androidDetails = AndroidNotificationDetails(
@@ -111,16 +112,21 @@ class FirebaseApi {
 
     // App foreground
     FirebaseMessaging.onMessage.listen((m) {
+      final notification = m.notification;
       final data = m.data;
-      final title = data['title'] ?? m.notification?.title ?? 'Notificación';
-      final body = data['body'] ?? m.notification?.body ?? '';
 
-      print('🔔 foreground: $title');
+      // 🔎 Solo mostrar notificación local si NO viene con notification
+      if (notification == null && data.isNotEmpty) {
+        final title = data['title'] ?? 'La Puerta';
+        final body = data['body'] ?? '';
 
-      if (Platform.isAndroid) {
-        showLocalNotification(title, body); // solo en Android
+        if (Platform.isAndroid) {
+          showLocalNotification(title, body);
+        }
       }
-      // En iOS ya se muestra automáticamente
+
+      // 👇 Siempre imprimir para depurar
+      print('🔔 foreground: title=${notification?.title ?? data['title']}');
     });
   }
 }

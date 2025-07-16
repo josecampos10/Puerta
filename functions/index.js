@@ -62,12 +62,13 @@ exports.setAdminRole = onCall(async (data, context) => {
 });
 
 // ✅ sendPostNotification: al crear post, notifica a todos los usuarios con token
+// ✅ sendPostNotification: al crear post, notifica a todos los usuarios con token
 exports.sendPostNotification = onDocumentCreated("posts/{postId}", async (event) => {
   const post = event.data?.data();
   if (!post) return;
 
-  const content = post.Comment ?? ""; // ✅ ahora lee 'Comment' correctamente
-  const authorName = post.User ?? "Alguien";
+  const content = post.Comment ?? "";
+  const authorName = post.User ?? "La Puerta";
 
   const usersSnap = await db.collection("users").get();
   const tokens = usersSnap.docs
@@ -81,13 +82,12 @@ exports.sendPostNotification = onDocumentCreated("posts/{postId}", async (event)
 
   const message = {
     tokens,
+    data: {
+      title: `${authorName}`,
+      body: content.slice(0, 100) + (content.length > 100 ? "…" : ""),
+    },
     android: {
       priority: "high",
-      notification: {
-        title: `${authorName}`,
-        body: content.slice(0, 100) + (content.length > 100 ? "…" : ""),
-        sound: "default",
-      },
     },
     apns: {
       headers: {
@@ -95,11 +95,7 @@ exports.sendPostNotification = onDocumentCreated("posts/{postId}", async (event)
       },
       payload: {
         aps: {
-          alert: {
-            title: `${authorName}`,
-            body: content.slice(0, 100) + (content.length > 100 ? "…" : ""),
-          },
-          badge: 1,
+          contentAvailable: true,
           sound: "default",
         },
       },
@@ -115,6 +111,7 @@ exports.sendPostNotification = onDocumentCreated("posts/{postId}", async (event)
     return;
   }
 });
+
 
 
 
