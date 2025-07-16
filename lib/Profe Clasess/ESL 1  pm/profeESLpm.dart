@@ -385,6 +385,17 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                       'new'
                                                                 });
 
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'postsState')
+                                                                    .doc(
+                                                                        'ESLpm')
+                                                                    .set({
+                                                                  'lastpost':
+                                                                      'new'
+                                                                });
+
                                                                 Navigator.of(
                                                                         context)
                                                                     .pop();

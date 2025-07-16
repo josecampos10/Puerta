@@ -424,7 +424,17 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                                                               .now(),
                                                                       'UserEmail': currentUser?.email ?? '',
                                                                     });
-
+                                                                    ScaffoldMessenger.of(
+                                                                              context)
+                                                                          .showSnackBar(
+                                                                        SnackBar(
+                                                                            backgroundColor:
+                                                                                Theme.of(context).colorScheme.tertiary,
+                                                                            content: Text(
+                                                                              'Publicado',
+                                                                              style: TextStyle(color: Colors.white),
+                                                                            )),
+                                                                      );
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
