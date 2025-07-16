@@ -13,6 +13,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lapuerta2/firebase_api.dart';
+import 'package:lapuerta2/main.dart';
 import 'package:lapuerta2/notification_services.dart';
 import 'package:lapuerta2/onboarding.dart';
 import 'package:lapuerta2/widget_tree.dart';
@@ -1193,30 +1194,85 @@ class _ProfileHomeState extends State<Profilehome> {
                                             fontFamily: 'Arial'),
                                       )),
                                   TextButton(
-                                      onPressed: () async {
-                                        //delete user info in the database
-                                        FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(currentUser.email)
-                                            .delete();
+                                    onPressed: () async {
+                                      final currentUser =
+                                          FirebaseAuth.instance.currentUser;
+                                      final userEmail = currentUser?.email;
 
-                                        //delete user
-                                        currentUser.delete();
-                                        FirebaseAuth.instance.signOut();
-                                        //(FirebaseStorage.instance.ref().child(currentUser.email.toString()).g)
-                                        FirebaseStorage.instance
-                                            .ref()
-                                            .child(currentUser.email.toString())
-                                            .delete();
+                                      // 1. Cierra sesión y navega primero (evita errores visuales por datos en uso)
+                                     
 
-                                        //go to sign up log in page
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    OnboardingPage()));
-                                      },
-                                      child: Text('Aceptar',style: TextStyle(fontFamily: 'Arial', color: Theme.of(context).colorScheme.secondary),)),
+                                      // 2. Espera brevemente para asegurar salida del árbol de widgets
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 300));
+
+                                          
+
+                                      // 3. Navegar a pantalla de inicio
+                                      if (navigatorKey.currentState?.mounted ??
+                                          false) {
+                                        navigatorKey.currentState
+                                            ?.pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const OnboardingPage()),
+                                          (route) => false,
+                                        );
+                                      }
+                                      await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(userEmail)
+                                              .delete();
+
+                                      // 4. Espera a que la navegación se complete antes de continuar
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 300));
+
+                                      try {
+                                        // 5. Eliminar posts del usuario
+                                        if (userEmail != null) {
+                                          final postsSnapshot =
+                                              await FirebaseFirestore.instance
+                                                  .collection('posts')
+                                                  .where('UserEmail',
+                                                      isEqualTo: userEmail)
+                                                  .get();
+
+                                          for (final doc
+                                              in postsSnapshot.docs) {
+                                            await doc.reference.delete();
+                                          }
+
+                                          // 6. Eliminar imagen de perfil
+                                          try {
+                                            await FirebaseStorage.instance
+                                                .ref(userEmail)
+                                                .delete();
+                                          } catch (_) {}
+
+                                          // 7. Eliminar documento del usuario
+                                          
+                                        }
+
+                                        // 8. Finalmente eliminar la cuenta (si no se hizo ya por alguna política)
+                                        await currentUser?.delete();
+
+                                         await FirebaseAuth.instance.signOut();
+                                      } catch (e) {
+                                        print(
+                                            "❌ Error eliminando usuario después del cierre: $e");
+                                      }
+                                    },
+                                    child: Text(
+                                      'Aceptar',
+                                      style: TextStyle(
+                                        fontFamily: 'Arial',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               );
                             });

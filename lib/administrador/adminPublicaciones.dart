@@ -421,7 +421,8 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                                                           .toString(),
                                                                       'createdAt':
                                                                           Timestamp
-                                                                              .now()
+                                                                              .now(),
+                                                                      'UserEmail': currentUser?.email ?? '',
                                                                     });
 
                                                                     Navigator.of(

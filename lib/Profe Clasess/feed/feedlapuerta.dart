@@ -333,17 +333,13 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                     borderRadius: BorderRadius.circular(0)),
                 child: TextField(
                   onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                                  cursorColor:
-                                      Theme.of(context).colorScheme.secondary,
-                                  style: TextStyle(
-                                      fontFamily: 'Arial',
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary),
+                    print('onTapOutside');
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
+                  cursorColor: Theme.of(context).colorScheme.secondary,
+                  style: TextStyle(
+                      fontFamily: 'Arial',
+                      color: Theme.of(context).colorScheme.secondary),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   textInputAction: TextInputAction.newline,
@@ -484,13 +480,20 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                             .data
                                                                             .toString(),
                                                                         'createdAt':
-                                                                            Timestamp.now()
+                                                                            Timestamp.now(),
+                                                                      'UserEmail': currentUser?.email ?? '',
                                                                       });
-                                                                      ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.tertiary,
-        content: Text('Publicado', style: TextStyle(color: Colors.white),)),
-    );
+                                                                      ScaffoldMessenger.of(
+                                                                              context)
+                                                                          .showSnackBar(
+                                                                        SnackBar(
+                                                                            backgroundColor:
+                                                                                Theme.of(context).colorScheme.tertiary,
+                                                                            content: Text(
+                                                                              'Publicado',
+                                                                              style: TextStyle(color: Colors.white),
+                                                                            )),
+                                                                      );
                                                                       Navigator.of(
                                                                               context)
                                                                           .pop();
@@ -723,8 +726,7 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                               ],
                             ),
                           );
-                  }
-                  ),
+                  }),
             ],
           ),
         ),

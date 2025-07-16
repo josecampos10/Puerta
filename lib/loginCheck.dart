@@ -107,7 +107,7 @@ class _LoginNowState extends State<LoginNow> {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                   },
-          cursorColor: Theme.of(context).colorScheme.secondary,
+          cursorColor: Colors.black,
           style: TextStyle(
               fontSize: size.height * 0.018,
               color: const Color.fromARGB(255, 0, 0, 0)),
@@ -161,7 +161,7 @@ class _LoginNowState extends State<LoginNow> {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                   },
-          cursorColor: Theme.of(context).colorScheme.secondary,
+          cursorColor: Colors.black,
           style: TextStyle(
               fontSize: size.height * 0.018,
               color: const Color.fromARGB(255, 0, 0, 0)),
