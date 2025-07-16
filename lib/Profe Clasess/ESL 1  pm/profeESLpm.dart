@@ -326,92 +326,46 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                             'Estás seguro que quieres publicar este mensaje?'),
                                                         actions: [
                                                           TextButton(
-                                                              onPressed: () {
-                                                                DateTime date =
-                                                                    DateTime
-                                                                        .now();
-                                                                String today =
-                                                                    '${date.day}/${date.month}/${date.year}';
-                                                                String
-                                                                    timetoday =
-                                                                    '${date.hour}:${date.minute}';
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'users')
-                                                                    .doc(currentUser
-                                                                        .email)
-                                                                    .collection(
-                                                                        'postsESL_State')
-                                                                    .doc(
-                                                                        'State')
-                                                                    .set({
-                                                                  'lastpost':
-                                                                      'new'
-                                                                });
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'postsESL')
-                                                                    .doc(DateTime(
-                                                                            DateTime.now().year,
-                                                                            DateTime.now().month,
-                                                                            DateTime.now().day,
-                                                                            DateTime.now().hour,
-                                                                            DateTime.now().minute,
-                                                                            DateTime.now().second)
-                                                                        .toString())
-                                                                    .set({
-                                                                  'Name': data[
-                                                                          'name'] ??
-                                                                      "",
-                                                                  'Comment':
-                                                                      controller
-                                                                          .text,
-                                                                  'Date': today,
-                                                                  'Time':
-                                                                      timetoday,
-                                                                  'User':
-                                                                      'La Puerta',
-                                                                  'postUrl':
-                                                                      'no imagen',
-                                                                  'Image': snapshot
-                                                                      .data
-                                                                      .toString(),
-                                                                  'createdAt':
-                                                                      Timestamp
-                                                                          .now(),
-                                                                  'lastpost':
-                                                                      'new'
-                                                                });
+  onPressed: () async {
+    DateTime now = DateTime.now();
+    String today = '${now.day}/${now.month}/${now.year}';
+    String timetoday = '${now.hour}:${now.minute}';
+    String postId = now.toIso8601String(); // ID único basado en fecha
 
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'postsState')
-                                                                    .doc(
-                                                                        'ESLpm')
-                                                                    .set({
-                                                                  'lastpost':
-                                                                      'new'
-                                                                });
+    // ✅ Guarda el post en 'postsESL'
+    await FirebaseFirestore.instance
+        .collection('postsESL')
+        .doc(postId)
+        .set({
+      'Name': data['name'] ?? "",
+      'Comment': controller.text,
+      'Date': today,
+      'Time': timetoday,
+      'User': 'La Puerta',
+      'UserEmail': currentUser.email, // Para trazabilidad futura
+      'postUrl': 'no imagen',
+      'Image': snapshot.data.toString(),
+      'createdAt': Timestamp.now(),
+    });
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                                // postImage();
+    // ✅ Actualiza el estado global de la clase ESLpm
+    await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm')
+        .set({'lastpost': postId});
 
-                                                                controller
-                                                                    .clear();
-                                                              },
-                                                              child: Text(
-                                                                'Aceptar',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .secondary),
-                                                              )),
+    // ✅ Limpieza
+    Navigator.of(context).pop();
+    controller.clear();
+  },
+  child: Text(
+    'Aceptar',
+    style: TextStyle(
+      color: Theme.of(context).colorScheme.secondary,
+    ),
+  ),
+),
+
                                                           TextButton(
                                                               onPressed: () {
                                                                 Navigator.of(
