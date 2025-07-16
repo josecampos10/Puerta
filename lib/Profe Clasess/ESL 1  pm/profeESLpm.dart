@@ -330,9 +330,9 @@ class _ProfeeslpmState extends State<Profeeslpm> {
     DateTime now = DateTime.now();
     String today = '${now.day}/${now.month}/${now.year}';
     String timetoday = '${now.hour}:${now.minute}';
-    String postId = now.toIso8601String(); // ID único basado en fecha
+    String postId = now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
 
-    // ✅ Guarda el post en 'postsESL'
+    // Guarda el post en la colección 'postsESL'
     await FirebaseFirestore.instance
         .collection('postsESL')
         .doc(postId)
@@ -342,19 +342,17 @@ class _ProfeeslpmState extends State<Profeeslpm> {
       'Date': today,
       'Time': timetoday,
       'User': 'La Puerta',
-      'UserEmail': currentUser.email, // Para trazabilidad futura
       'postUrl': 'no imagen',
       'Image': snapshot.data.toString(),
       'createdAt': Timestamp.now(),
     });
 
-    // ✅ Actualiza el estado global de la clase ESLpm
+    // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
     await FirebaseFirestore.instance
         .collection('postsState')
         .doc('ESLpm')
         .set({'lastpost': postId});
 
-    // ✅ Limpieza
     Navigator.of(context).pop();
     controller.clear();
   },
@@ -365,6 +363,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
     ),
   ),
 ),
+
 
                                                           TextButton(
                                                               onPressed: () {

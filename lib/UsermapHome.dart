@@ -312,15 +312,29 @@ class _UsermapHomeState extends State<UsermapHome> {
                               onTap: () async {
   Navigator.pushNamed(context, '/studentESLpm');
 
-  // Marcar como leído en el documento global
-  await FirebaseFirestore.instance
-      .collection('postsState')
-      .doc('ESLpm')
-      .set({'lastpost': 'read'}, SetOptions(merge: true));
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm')
+        .get();
 
-  setState(() {
-    _notificationCountESLpm = 0;
-  });
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
 },
 
                               child: Container(
@@ -392,28 +406,49 @@ class _UsermapHomeState extends State<UsermapHome> {
     width: size.width * 0.0,
     child: StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('postsState')
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
           .doc('ESLpm')
           .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
-          return Container();
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
         }
 
-        final data = snapshot.data!.data() as Map<String, dynamic>;
-        if (data['lastpost'] == 'new') {
-          return Container(
-            height: size.height * 0.031,
-            child: AnimateIcon(
-              key: UniqueKey(),
-              onTap: () {},
-              iconType: IconType.continueAnimation,
-              color: Colors.white,
-              animateIcon: AnimateIcons.bell,
-            ),
-          );
-        }
-        return Container();
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
       },
     ),
   ),
@@ -1999,15 +2034,29 @@ class _UsermapHomeState extends State<UsermapHome> {
                               onTap: () async {
   Navigator.pushNamed(context, '/profeESLpm');
 
-  // Marcar como leído en el documento global
-  await FirebaseFirestore.instance
-      .collection('postsState')
-      .doc('ESLpm')
-      .set({'lastpost': 'read'}, SetOptions(merge: true));
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm')
+        .get();
 
-  setState(() {
-    _notificationCountESLpm = 0;
-  });
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
 },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -2078,28 +2127,49 @@ class _UsermapHomeState extends State<UsermapHome> {
     width: size.width * 0.0,
     child: StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('postsState')
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
           .doc('ESLpm')
           .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
-          return Container();
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
         }
 
-        final data = snapshot.data!.data() as Map<String, dynamic>;
-        if (data['lastpost'] == 'new') {
-          return Container(
-            height: size.height * 0.031,
-            child: AnimateIcon(
-              key: UniqueKey(),
-              onTap: () {},
-              iconType: IconType.continueAnimation,
-              color: Colors.white,
-              animateIcon: AnimateIcons.bell,
-            ),
-          );
-        }
-        return Container();
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
       },
     ),
   ),
@@ -3628,7 +3698,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                             ),
                             GestureDetector(
                               onTap: () async {
-  Navigator.pushNamed(context, '/profeESLpm');
+  Navigator.pushNamed(context, '/studentESLpm');
 
   try {
     final lastPostSnapshot = await FirebaseFirestore.instance
