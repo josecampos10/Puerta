@@ -97,11 +97,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    //SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      //statusBarIconBrightness: Brightness.dark,
-    ));
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark, // O light si tu fondo es oscuro
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge); // ✅ ACTUALIZADO
     FlutterNativeSplash.remove();
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
