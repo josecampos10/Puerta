@@ -486,7 +486,11 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                         'createdAt':
                                                                             Timestamp.now()
                                                                       });
-
+                                                                      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+        content: Text('Publicado', style: TextStyle(color: Colors.white),)),
+    );
                                                                       Navigator.of(
                                                                               context)
                                                                           .pop();

@@ -9,8 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -23,30 +23,91 @@ class Profeeslfilespm extends StatefulWidget {
 class _ProfeeslfilespmState extends State<Profeeslfilespm> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   CollectionReference users = FirebaseFirestore.instance.collection('postsESL');
-  late Future<ListResult> futureFiles;
+  late Future<List<Reference>> futureFiles;
   PlatformFile? pickedFile;
   List<PlatformFile>? selectedFiles;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _showFab = true;
-
   Uint8List? pickedImage;
   final currentUsera = FirebaseAuth.instance.currentUser!;
   UploadTask? uploadTask;
+  late Future<DocumentSnapshot> futureUserDoc;
 
-  Future uploadFile() async {
-    final path = 'ESLfiles/${pickedFile!.name}';
+  Future<void> uploadFile() async {
+    Size size = MediaQuery.of(context).size;
+    final folderRef = FirebaseStorage.instance.ref().child('ESLfiles');
+    final originalName = pickedFile!.name;
     final file = File(pickedFile!.path!);
+
+    String nameWithoutExtension = originalName.split('.').first;
+    String extension = originalName.split('.').last;
+    String finalName = originalName;
+    int count = 1;
+
+    // 1. Obtener lista de archivos existentes
+    final existingFiles = await folderRef.listAll();
+    final existingNames = existingFiles.items.map((e) => e.name).toList();
+
+    // 2. Buscar nombre disponible
+    while (existingNames.contains(finalName)) {
+      count++;
+      finalName = '$nameWithoutExtension ($count).$extension';
+    }
+
+    // 3. Subir archivo con el nuevo nombre
+    final path = 'ESLfiles/$finalName';
     final ref = FirebaseStorage.instance.ref().child(path);
+
     setState(() {
       uploadTask = ref.putFile(file);
     });
 
     final snapshot = await uploadTask!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
+
     print('Download Link: $urlDownload');
+
     setState(() {
       uploadTask = null;
     });
+
+    // 4. Mostrar mensaje si quieres
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Archivo subido, refresque la lista de archivos',
+          style: TextStyle(
+              fontFamily: 'Arial',
+              color: Colors.white,
+              fontSize: size.height * 0.015),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+      ),
+    );
+  }
+
+  Future<List<Reference>> obtenerArchivosOrdenados() async {
+    final result = await FirebaseStorage.instance.ref('/ESLfiles').listAll();
+    final archivos = result.items;
+
+    // Obtener los metadatos de cada archivo
+    final archivosConFecha = await Future.wait(
+      archivos.map((archivo) async {
+        final metadata = await archivo.getMetadata();
+        return {
+          'ref': archivo,
+          'fecha': metadata.timeCreated ?? DateTime(1970),
+        };
+      }),
+    );
+
+    // Ordenar por fecha descendente (más reciente primero)
+    archivosConFecha.sort(
+      (a, b) => (b['fecha'] as DateTime).compareTo(a['fecha'] as DateTime),
+    );
+
+    // Devolver solo las referencias ya ordenadas
+    return archivosConFecha.map((e) => e['ref'] as Reference).toList();
   }
 
   Future selectFile() async {
@@ -57,11 +118,19 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
     });
   }
 
+  Future<void> _refresh() async {
+    setState(() {
+      futureFiles = obtenerArchivosOrdenados();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    futureFiles = FirebaseStorage.instance.ref('/ESLfiles').listAll();
+    futureFiles = obtenerArchivosOrdenados();
     getProfilePicture();
+    futureUserDoc =
+        FirebaseFirestore.instance.collection('clases').doc('esl 1').get();
     //uploadTask = null;
     //selectFile();
   }
@@ -70,6 +139,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
   void dispose() {
     super.dispose();
     getProfilePicture();
+    futureFiles = obtenerArchivosOrdenados();
     //pickedFile = null;
   }
 
@@ -82,7 +152,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
         duration: Duration(milliseconds: 300),
         offset: _showFab ? Offset.zero : Offset(0, 2),
         child: FloatingActionButton(
-          elevation: 15,
+            elevation: 15,
             shape: CircleBorder(),
             backgroundColor: Theme.of(context).colorScheme.tertiary,
             child: Icon(
@@ -112,7 +182,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
             child: Text(
               'Mis clases',
               style: TextStyle(
-                  //fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                   fontSize: size.width * 0.055,
                   color: Colors.white,
                   fontFamily: ''),
@@ -146,7 +216,7 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                 height: size.height * 0.065,
                 width: size.height * 0.065,
                 decoration: BoxDecoration(
-                    color: Color.fromRGBO(4, 99, 128, 1),
+                    color: Theme.of(context).colorScheme.tertiary,
                     border: Border.all(
                       color: Color.fromRGBO(255, 255, 255, 0.174),
                       width: size.height * 0.003,
@@ -181,61 +251,87 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
           physics: NeverScrollableScrollPhysics(),
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: size.width,
-                  height: size.height * 0.2,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
+              FutureBuilder<DocumentSnapshot>(
+                future: futureUserDoc,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      height: size.height * 0.2,
+                      child: Center(
+                        child: SpinKitFadingCircle(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          size: size.width * 0.055,
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return Container(
+                      height: size.height * 0.2,
+                      child: Center(child: Text('No hay datos del usuario')),
+                    );
+                  }
+
+                  final data = snapshot.data!.data() as Map<String, dynamic>;
+
+                  return Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: size.width,
+                      height: size.height * 0.2,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
                           filterQuality: FilterQuality.low,
                           image: AssetImage('assets/img/ESL back.png'),
-                          fit: BoxFit.cover),
-                      //color: Color.fromARGB(155, 255, 102, 0),
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(size.width * 0.087))),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'ESL 1 pm',
-                        //textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.06,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(size.width * 0.087)),
                       ),
-                      Text(
-                        'English as Second Language',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.02,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            data['Name'] ?? 'Nombre clase',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.06,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['Subname'] ?? 'Descripción',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.02,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['Days'] ?? 'Días',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.017,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['Time'] ?? 'Horario',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.017,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Martes y Jueves',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.017,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '5:30 pm - 7:30 pm',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.017,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
               SizedBox(
                 height: size.height * 0.01,
@@ -318,7 +414,6 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                                           uploadFile();
                                           pickedFile = null;
                                           uploadTask = null;
-                                          
                                         }),
                                     SizedBox(
                                       width: size.width * 0.01,
@@ -331,222 +426,242 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                         ),
                       ],
                     )),
-
-              /*ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: pickedFile!.length,
-                    itemBuilder: (context, index) {
-                      var file = pickedFile![index];
-                      return Container(
-                        height: 60,
-                        color: Colors.grey.shade300,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.file_copy_rounded),
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 6),
-                                      child: Text(file.name),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    InkWell(
-                                      child: CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          child: Icon(
-                                            Icons.delete,
-                                            color: Colors.red,
-                                          )),
-                                      onTap: () {
-                                        setState(() {
-                                          selectedFiles!.removeAt(index);
-                                        });
-                                      },
-                                    ),
-                                    InkWell(
-                                      child: CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          child: Icon(
-                                            Icons.upload_file_rounded,
-                                            color: Colors.green,
-                                          )),
-                                      onTap: () {
-                                        
-                                        uploadFile();
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    ),*/
               SizedBox(
-                height: size.width * 0.015,
+                height: size.width * 0.0,
               ),
               SingleChildScrollView(
                 reverse: false,
                 padding: EdgeInsets.all(size.width * 0.001),
                 child: Column(
                   children: [
-                    FutureBuilder<ListResult>(
-                      future:
-                          FirebaseStorage.instance.ref('/ESLfiles').listAll(),
+                    FutureBuilder<List<Reference>>(
+                      future: futureFiles,
                       builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const Text('Something went wrong');
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Column(children: [
+                            SpinKitFadingCircle(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              size: size.width * 0.055,
+                            ),
+                          ]);
+                        }
                         if (snapshot.hasData) {
-                          final files = snapshot.data!.items;
+                          final files = snapshot.data!;
+                          if (files.isEmpty) {
+                            return SizedBox(
+                              height: size.height * 0.515,
+                              child: RefreshIndicator(
+                                elevation: 0,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                color: Theme.of(context).colorScheme.tertiary,
+                                onRefresh: _refresh,
+                                child: ListView(
+                                  physics: AlwaysScrollableScrollPhysics(),
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: Center(
+                                        child: Text(
+                                          'Sin archivos',
+                                          style: TextStyle(
+                                            fontSize: size.height * 0.018,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
                           return SizedBox(
                             width: size.width,
-                            height: size.height * 0.571,
+                            height: size.height * 0.515,
                             child: NotificationListener<UserScrollNotification>(
-                               onNotification: (notification) {
-                                      final ScrollDirection direction =
-                                          notification.direction;
-                                      setState(() {
-                                        if (direction ==
-                                            ScrollDirection.reverse) {
-                                          _showFab = false;
-                                        } else if (direction ==
-                                            ScrollDirection.forward) {
-                                          _showFab = true;
-                                        }
-                                      });
-                                      return true;
-                                    },
-                              child: ListView.builder(
-                                  itemCount: files.length,
-                                  itemBuilder: (context, index) {
-                                    final file = files[index];
-                                    return AnimationConfiguration.staggeredList(
-                                      position: index,
-                                      child: ScaleAnimation(
-                                        duration: Duration(milliseconds: 300),
-                                        child: FadeInAnimation(
-                                            child: Slidable(
-                                          endActionPane: ActionPane(
-                                              motion: StretchMotion(),
-                                              children: [
-                                                SlidableAction(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10.0),
-                                                  onPressed: (context) {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext
-                                                            context) {
-                                                          return AlertDialog(
-                                                            title: Text(
-                                                                'Eliminar archivo'),
-                                                            content: Text(
-                                                                'Estás seguro que quieres borrar este archivo?'),
-                                                            actions: [
-                                                              TextButton(
-                                                                  onPressed: () {
-                                                                    FirebaseStorage
-                                                                        .instance
-                                                                        .ref(
-                                                                            '/ESLfiles')
-                                                                        .listAll();
-                                                                    setState(() {
+                              onNotification: (notification) {
+                                final ScrollDirection direction =
+                                    notification.direction;
+                                setState(() {
+                                  if (direction == ScrollDirection.reverse) {
+                                    _showFab = false;
+                                  } else if (direction ==
+                                      ScrollDirection.forward) {
+                                    _showFab = true;
+                                  }
+                                });
+                                return true;
+                              },
+                              child: RefreshIndicator(
+                                elevation: 0,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                color: Theme.of(context).colorScheme.tertiary,
+                                onRefresh: _refresh,
+                                child: ListView.builder(
+                                    itemCount: files.length,
+                                    itemBuilder: (context, index) {
+                                      final file = files[index];
+                                      return AnimationConfiguration
+                                          .staggeredList(
+                                        position: index,
+                                        child: ScaleAnimation(
+                                          duration: Duration(milliseconds: 300),
+                                          child: FadeInAnimation(
+                                              child: Slidable(
+                                            endActionPane: ActionPane(
+                                                motion: StretchMotion(),
+                                                children: [
+                                                  SlidableAction(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    onPressed: (context) {
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title: Text(
+                                                                'Eliminar archivo',
+                                                                style: TextStyle(
+                                                                    fontFamily:
+                                                                        'Arial',
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                              ),
+                                                              content: Text(
+                                                                'Estás seguro que quieres borrar este archivo?',
+                                                                style: TextStyle(
+                                                                    fontFamily:
+                                                                        'Arial',
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                              ),
+                                                              actions: [
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
                                                                       FirebaseStorage
                                                                           .instance
-                                                                          .ref()
-                                                                          .child(
-                                                                              'ESLfiles/${file.name}')
-                                                                          .delete();
-                                                                    });
-                                                                    
-                              
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                  },
-                                                                  child: Text(
-                                                                    'Aceptar',
-                                                                    style: TextStyle(
-                                                                        color: Theme.of(
-                                                                                context)
-                                                                            .colorScheme
-                                                                            .secondary),
-                                                                  )),
-                                                              TextButton(
-                                                                  onPressed: () {
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop();
-                                                                  },
-                                                                  child: Text(
-                                                                      'Cancelar',
+                                                                          .ref(
+                                                                              '/ESLfiles')
+                                                                          .listAll();
+                                                                      setState(
+                                                                          () {
+                                                                        FirebaseStorage
+                                                                            .instance
+                                                                            .ref()
+                                                                            .child('ESLfiles/${file.name}')
+                                                                            .delete();
+                                                                      });
+                                                                      ScaffoldMessenger.of(
+                                                                              context)
+                                                                          .showSnackBar(
+                                                                        SnackBar(
+                                                                          content:
+                                                                              Text(
+                                                                            'Archivo borrado, refresque la lista de archivos',
+                                                                            style: TextStyle(
+                                                                                fontFamily: 'Arial',
+                                                                                color: Colors.white,
+                                                                                fontSize: size.height * 0.015),
+                                                                          ),
+                                                                          backgroundColor: Theme.of(context)
+                                                                              .colorScheme
+                                                                              .tertiary,
+                                                                        ),
+                                                                      );
+
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                    child: Text(
+                                                                      'Aceptar',
                                                                       style: TextStyle(
+                                                                          fontFamily:
+                                                                              'Arial',
                                                                           color: Theme.of(context)
                                                                               .colorScheme
-                                                                              .secondary)))
-                                                            ],
-                                                          );
-                                                        });
-                                                  },
-                                                  backgroundColor: Colors.red,
-                                                  icon: Icons.delete,
-                                                  label: 'borrar',
-                                                )
-                                              ]),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    bottom: BorderSide(
-                                                        width: 1.1,
-                                                        color:
-                                                            const Color.fromARGB(
-                                                                148,
-                                                                163,
-                                                                163,
-                                                                163)))),
-                                            child: ListTile(
-                                              leading: SizedBox(
-                                                  width: size.width * 0.11,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      IconButton(
-                                                          onPressed: () =>
-                                                              downloadFileIOS(
-                                                                  file),
-                                                          icon: Icon(
-                                                              Icons.download,
-                                                              size: size.height *
-                                                                  0.03)),
-                                                    ],
-                                                  )),
-                                              title: Text(file.name,
-                                                  style: TextStyle(
-                                                      fontSize:
-                                                          size.height * 0.018,
-                                                      fontFamily: 'Arial')),
+                                                                              .secondary),
+                                                                    )),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                    child: Text(
+                                                                        'Cancelar',
+                                                                        style: TextStyle(
+                                                                            fontFamily:
+                                                                                'Arial',
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary)))
+                                                              ],
+                                                            );
+                                                          });
+                                                    },
+                                                    backgroundColor: Colors.red,
+                                                    icon: Icons.delete,
+                                                    label: 'borrar',
+                                                  )
+                                                ]),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      bottom: BorderSide(
+                                                          width: 1.1,
+                                                          color: const Color
+                                                              .fromARGB(148,
+                                                              163, 163, 163)))),
+                                              child: ListTile(
+                                                leading: SizedBox(
+                                                    width: size.width * 0.11,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        IconButton(
+                                                            onPressed: () =>
+                                                                downloadFileIOS(
+                                                                    file),
+                                                            icon: Icon(
+                                                                Icons.download,
+                                                                size:
+                                                                    size.height *
+                                                                        0.03)),
+                                                      ],
+                                                    )),
+                                                title: Text(file.name,
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            size.height * 0.018,
+                                                        fontFamily: 'Arial',
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary)),
+                                              ),
                                             ),
-                                          ),
-                                        )),
-                                      ),
-                                    );
-                                  }),
+                                          )),
+                                        ),
+                                      );
+                                    }),
+                              ),
                             ),
                           );
                         } else if (snapshot.hasError) {
@@ -559,43 +674,12 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
                   ],
                 ),
               ),
-              //buildProgress(),
             ],
           ),
         ),
       ),
     );
   }
-
-  Widget buildProgress() => StreamBuilder<TaskSnapshot>(
-        stream: uploadTask?.snapshotEvents,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final data = snapshot.data!;
-            double progress = data.bytesTransferred / data.totalBytes;
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: Colors.grey,
-                  color: Colors.green,
-                ),
-                Center(
-                  child: Text(
-                    '${(100 * progress).roundToDouble()}%',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                )
-              ],
-            );
-          } else {
-            return const SizedBox(
-              height: 50,
-            );
-          }
-        },
-      );
 
   Future<void> getProfilePicture() async {
     final storageRef = FirebaseStorage.instance.ref();
@@ -611,14 +695,26 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
   }
 
   Future downloadFile(Reference ref) async {
+    Size size = MediaQuery.of(context).size;
     final Directory dir = Directory('/storage/emulated/0/Download');
     final file = File('${dir.path}/${ref.name}');
     await ref.writeToFile(file);
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('${ref.name} descargado')));
+        .showSnackBar(
+          SnackBar(
+        content: Text(
+          'Descargado',
+          style: TextStyle(
+              fontFamily: 'Arial',
+              color: Colors.white,
+              fontSize: size.height * 0.015),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+      ),);
   }
 
   Future<void> downloadFileIOS(Reference ref) async {
+    Size size = MediaQuery.of(context).size;
     final dir = await getApplicationDocumentsDirectory();
     final path = '${dir.path}/${ref.name}';
     final file = File(path);
@@ -627,7 +723,17 @@ class _ProfeeslfilespmState extends State<Profeeslfilespm> {
       await ref.writeToFile(file);
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Archivo descargado')));
+          .showSnackBar(
+             SnackBar(
+        content: Text(
+          'Descargado',
+          style: TextStyle(
+              fontFamily: 'Arial',
+              color: Colors.white,
+              fontSize: size.height * 0.015),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+      ));
 
       await OpenFile.open(path); // ← Esto abre el archivo con la app adecuada
     } catch (e) {

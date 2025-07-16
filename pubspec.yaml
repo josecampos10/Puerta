@@ -97,6 +97,7 @@ dependencies:
   fl_chart: ^1.0.0
   open_file: ^3.5.10
   share_plus: ^11.0.0
+  animated_icon: ^0.0.9
 
 
   
@@ -175,6 +176,9 @@ flutter:
     - assets/img/puntos.png
     - assets/img/puntos2.png
     - assets/img/back.png
+    - assets/img/Cosmetologiaback.png
+    - assets/img/ESLam.png
+    - assets/img/ESLchick.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

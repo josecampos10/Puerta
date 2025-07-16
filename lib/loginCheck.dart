@@ -44,13 +44,27 @@ class _LoginNowState extends State<LoginNow> {
   }
 
   Future<void> createUserWithEmailAndPassword() async {
+     // Quitamos espacios en blanco alrededor
+  final name     = _controllerName.text.trim();
+  final email    = _controllerEmail.text.trim();
+  final password = _controllerPassword.text.trim();
+  final role     = _selectedItem?.trim() ?? '';
+
+  // 1️⃣  Comprobamos si falta alguno
+  if (name.isEmpty || email.isEmpty || password.isEmpty || role.isEmpty) {
+    // Aquí puedes mostrar un SnackBar, diálogo, print, etc.
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Llene todos los campos necesarios')),
+    );
+    return; // ⬅️  Salimos sin llamar a Firebase
+  }
     try {
       await Auth().createUserWithEmailAndPassword(
-        name: _controllerName.text,
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-        rol: _selectedItem,
-      );
+      name: name,
+      email: email,
+      password: password,
+      rol: role,
+    );
 
       /*await FirebaseFirestore.instance
           .collection('users')
@@ -88,6 +102,12 @@ class _LoginNowState extends State<LoginNow> {
             color: const Color.fromARGB(255, 248, 248, 248),
             borderRadius: BorderRadius.circular(10)),
         child: TextField(
+          onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+          cursorColor: Theme.of(context).colorScheme.secondary,
           style: TextStyle(
               fontSize: size.height * 0.018,
               color: const Color.fromARGB(255, 0, 0, 0)),
@@ -136,6 +156,12 @@ class _LoginNowState extends State<LoginNow> {
                     color: const Color.fromARGB(255, 110, 110, 110), width: 1)),
             borderRadius: BorderRadius.circular(10)),
         child: TextField(
+          onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+          cursorColor: Theme.of(context).colorScheme.secondary,
           style: TextStyle(
               fontSize: size.height * 0.018,
               color: const Color.fromARGB(255, 0, 0, 0)),

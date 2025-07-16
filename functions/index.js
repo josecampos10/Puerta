@@ -1,61 +1,124 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+// 📦 Imports para API modular v2
+const { onCall } = require("firebase-functions/v2/https");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { initializeApp } = require("firebase-admin/app");
+const { getAuth } = require("firebase-admin/auth");
+const { getFirestore } = require("firebase-admin/firestore");
+const { getMessaging } = require("firebase-admin/messaging");
 
-admin.initializeApp();
+// 🚀 Inicialización de Firebase Admin
+initializeApp();
+const auth = getAuth();
+const db = getFirestore();
+const messaging = getMessaging();
 
-exports.deleteUser = functions.https.onCall(async (data, context) => {
-  console.log("✅ context.auth:", context.auth); // 👈 AGREGAR ESTO
+// ✅ deleteUser: solo admin o superadmin puede eliminar usuarios
+exports.deleteUser = onCall(async (data, context) => {
+  console.log("✅ context.auth:", context.auth);
 
   const email = data.email;
 
-  if (!(context.auth &&
-      context.auth.token &&
-      (context.auth.token.admin === true || context.auth.token.superadmin === true))) {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Only admins can delete users."
-    );
+  if (
+    !context.auth ||
+    !context.auth.token ||
+    (!context.auth.token.admin && !context.auth.token.superadmin)
+  ) {
+    throw new Error("permission-denied: Only admins can delete users.");
   }
 
   try {
-    const userRecord = await admin.auth().getUserByEmail(email);
+    const userRecord = await auth.getUserByEmail(email);
     const uid = userRecord.uid;
 
-    await admin.auth().deleteUser(uid);
-    await admin.firestore().collection("users").doc(email).delete();
+    await auth.deleteUser(uid);
+    await db.collection("users").doc(email).delete();
 
     return { message: `User ${email} deleted successfully.` };
   } catch (error) {
     console.error("Error deleting user:", error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "User deletion failed",
-      error
-    );
+    throw new Error("internal: User deletion failed");
   }
 });
 
-
-
-exports.setAdminRole = functions.https.onCall(async (data, context) => {
-  if (!(context.auth && context.auth.token && context.auth.token.superadmin === true)) {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "Only superadmins can assign admin roles."
-    );
+// ✅ setAdminRole: solo superadmin puede asignar roles
+exports.setAdminRole = onCall(async (data, context) => {
+  if (
+    !context.auth ||
+    !context.auth.token ||
+    !context.auth.token.superadmin
+  ) {
+    throw new Error("permission-denied: Only superadmins can assign roles.");
   }
 
   const uid = data.uid;
 
   try {
-    await admin.auth().setCustomUserClaims(uid, { admin: true, superadmin: true }); // ✅ AQUÍ
+    await auth.setCustomUserClaims(uid, { admin: true, superadmin: true });
     return { message: `✅ Admin role assigned to UID: ${uid}` };
   } catch (error) {
     console.error("Error assigning admin role:", error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "Failed to assign admin role",
-      error
-    );
+    throw new Error("internal: Failed to assign admin role");
   }
 });
+
+// ✅ sendPostNotification: al crear post, notifica a todos los usuarios con token
+exports.sendPostNotification = onDocumentCreated("posts/{postId}", async (event) => {
+  const post = event.data?.data();
+  if (!post) return;
+
+  const content = post.Comment ?? ""; // ✅ ahora lee 'Comment' correctamente
+  const authorName = post.User ?? "Alguien";
+
+  const usersSnap = await db.collection("users").get();
+  const tokens = usersSnap.docs
+    .map(doc => doc.data().token)
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    console.log("❌ No hay tokens disponibles para enviar la notificación.");
+    return;
+  }
+
+  const message = {
+    tokens,
+    android: {
+      priority: "high",
+      notification: {
+        title: `${authorName}`,
+        body: content.slice(0, 100) + (content.length > 100 ? "…" : ""),
+        sound: "default",
+      },
+    },
+    apns: {
+      headers: {
+        "apns-priority": "10",
+      },
+      payload: {
+        aps: {
+          alert: {
+            title: `${authorName}`,
+            body: content.slice(0, 100) + (content.length > 100 ? "…" : ""),
+          },
+          badge: 1,
+          sound: "default",
+        },
+      },
+    },
+  };
+
+  try {
+    const response = await messaging.sendEachForMulticast(message);
+    console.log(`✅ Notificaciones enviadas: ${response.successCount}/${tokens.length}`);
+    return response;
+  } catch (err) {
+    console.error("❌ Error al enviar notificaciones:", err);
+    return;
+  }
+});
+
+
+
+
+
+
+

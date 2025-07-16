@@ -179,7 +179,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
           duration: Duration(milliseconds: 300),
           opacity: _showFab ? 1 : 0,
           child: FloatingActionButton(
-            backgroundColor: const Color.fromARGB(255, 96, 146, 255),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
             shape: CircleBorder(),
             child: Icon(
               Icons.email_rounded,

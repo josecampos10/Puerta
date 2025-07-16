@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -34,6 +35,10 @@ class _NotificationsState extends State<Notifications> {
         .orderBy('createdAt', descending: true)
         .snapshots();
     feedStream = feed;
+    Future.delayed(
+      Duration(),
+      () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+    );
   }
 
   @override
@@ -65,10 +70,10 @@ class _NotificationsState extends State<Notifications> {
             child: Text(
               'Notificaciones',
               style: TextStyle(
-                  //fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                   fontSize: size.width * 0.055,
                   color: Colors.white,
-                  fontFamily: ''),
+                  fontFamily: 'Arial'),
             )),
         centerTitle: false,
         titleTextStyle: TextStyle(
@@ -139,23 +144,7 @@ class _NotificationsState extends State<Notifications> {
           reverse: false,
           child: Column(
             children: [
-              SizedBox(
-                height: size.height * 0.02,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: size.width * 0.03,
-                  ),
-                  Text(
-                    'Recientes',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: size.height * 0.021,
-                        fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
+              
               SizedBox(
                 height: size.height * 0.01,
               ),
@@ -291,7 +280,7 @@ class _NotificationsState extends State<Notifications> {
                                                                       'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w700,
+                                                                          .bold,
                                                                   color: Theme.of(
                                                                           context)
                                                                       .colorScheme
@@ -348,6 +337,7 @@ class _NotificationsState extends State<Notifications> {
                                                                       151)),
                                                             ),
                                                           ]),
+                                                          
                                                           SingleChildScrollView(
                                                             child: Container(
                                                               constraints: BoxConstraints(

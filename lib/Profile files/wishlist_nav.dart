@@ -47,6 +47,10 @@ class _WishlistState extends State<Wishlist> with TickerProviderStateMixin {
               //details page
               return Payment();
             }
+            if (settings.name == '/profile') {
+              //details page
+              return Profilehome();
+            }
             //main Page
             return Profilehome();
           }

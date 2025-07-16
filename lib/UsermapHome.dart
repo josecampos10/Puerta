@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
+import 'package:animated_icon/animated_icon.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -93,7 +95,7 @@ class _UsermapHomeState extends State<UsermapHome> {
     });
   }
 
-    void _listenForNewPostsCosmetologia() {
+  void _listenForNewPostsCosmetologia() {
     FirebaseFirestore.instance
         .collection('postsCosmetologia')
         .snapshots()
@@ -119,10 +121,9 @@ class _UsermapHomeState extends State<UsermapHome> {
     super.initState();
     getProfilePicture();
     streamfeed = FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(currentUser
-                        .email) // 👈 Your document id change accordingly
-                    .snapshots();
+        .collection('users')
+        .doc(currentUser.email) // 👈 Your document id change accordingly
+        .snapshots();
   }
 
   _init() {}
@@ -131,12 +132,10 @@ class _UsermapHomeState extends State<UsermapHome> {
   void dispose() {
     super.dispose();
     _init();
-streamfeed = FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(currentUser
-                        .email) // 👈 Your document id change accordingly
-                    .snapshots();
-    
+    streamfeed = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.email) // 👈 Your document id change accordingly
+        .snapshots();
   }
 
   @override
@@ -163,26 +162,49 @@ streamfeed = FirebaseFirestore.instance
                       fontFamily: ''),
                 ),
                 IconButton(
-                  onPressed: (){
-                    showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Clases registradas'),
-                                content: Text(
-                                    'Si no ve ninguna clase, consulte su inscripción en secretaría'),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Cerrar',style: TextStyle(color: Theme.of(context).colorScheme.secondary),)),
-                                  
-                                ],
-                              );
-                            });
-                  }, 
-                  icon: Icon(Icons.info, color: const Color.fromARGB(137, 255, 255, 255), size: size.height*0.029,))
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                'Clases registradas',
+                                style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                              content: Text(
+                                'Si no ve ninguna clase, consulte su inscripción en secretaría',
+                                style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      'Cerrar',
+                                      style: TextStyle(
+                                          fontFamily: 'Arial',
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    )),
+                              ],
+                            );
+                          });
+                    },
+                    icon: Icon(
+                      Icons.info,
+                      color: const Color.fromARGB(137, 255, 255, 255),
+                      size: size.height * 0.029,
+                    ))
               ],
             )),
         centerTitle: false,
@@ -199,7 +221,8 @@ streamfeed = FirebaseFirestore.instance
               fit: BoxFit.fill,
               colorFilter: (Theme.of(context).colorScheme.tertiary !=
                       Color.fromRGBO(4, 99, 128, 1))
-                  ? ColorFilter.mode(const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
+                  ? ColorFilter.mode(
+                      const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
                   : ColorFilter.mode(
                       const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
             ),
@@ -213,19 +236,19 @@ streamfeed = FirebaseFirestore.instance
                 height: size.height * 0.065,
                 width: size.height * 0.065,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiary,
-                  border: Border.all(
-                    color: Color.fromRGBO(255, 255, 255, 0.174),
-                    width: size.height * 0.003,
-                  ),
-                  shape: BoxShape.circle,
-                  image: pickedImage != null
-                      ? DecorationImage(
-                          fit: BoxFit.cover,
-                          image: Image.memory(
-                            pickedImage!,
-                          ).image)
-                      : null),
+                    color: Theme.of(context).colorScheme.tertiary,
+                    border: Border.all(
+                      color: Color.fromRGBO(255, 255, 255, 0.174),
+                      width: size.height * 0.003,
+                    ),
+                    shape: BoxShape.circle,
+                    image: pickedImage != null
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                            image: Image.memory(
+                              pickedImage!,
+                            ).image)
+                        : null),
               ),
               SizedBox(
                 width: size.width * 0.03,
@@ -288,6 +311,12 @@ streamfeed = FirebaseFirestore.instance
                             GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(context, '/studentESLpm');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESL_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountESLpm = 0;
                                 });
@@ -304,7 +333,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -335,15 +365,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.3,
                                             child: Text(
-                                              "ESL PM",
+                                              "ESL 1 PM",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -351,40 +385,744 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountESLpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESL_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Estudiante") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentESLpm2');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESpm2L_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationcountESLpm2 = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESpm2L_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ESLam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentESLam');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESLam_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ESLam2'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentESLam2');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESLam2_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam2_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ESLchick'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, '/studentchick');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESLchick_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLchick_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
@@ -423,6 +1161,12 @@ streamfeed = FirebaseFirestore.instance
                             GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(context, '/studentGEDpm');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsGEDpm_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountGEDpm = 0;
                                 });
@@ -439,7 +1183,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -470,15 +1215,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "GED PM",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -486,40 +1235,234 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountGEDpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsGEDpm_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['GEDam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentGEDam');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsGEDam_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountGEDpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.school,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsGEDam_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
@@ -559,6 +1502,12 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, '/studentCosturaAM');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosturaAM_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountCostura = 0;
                                 });
@@ -575,7 +1524,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -606,15 +1556,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Costura",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -622,40 +1576,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCostura >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosturaAM_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -695,6 +1673,12 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, '/studentCiudadania');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCiudadania_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountCiudadania = 0;
                                 });
@@ -711,7 +1695,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -742,15 +1727,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.3,
+                                            width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadania",
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -758,40 +1747,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCiudadania >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCiudadania_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -831,6 +1844,12 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, '/studentCosmetologia');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosmetologia_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountCiudadania = 0;
                                 });
@@ -842,15 +1861,13 @@ streamfeed = FirebaseFirestore.instance
                                   image: DecorationImage(
                                       opacity: 0.6,
                                       image: AssetImage(
-                                          'assets/img/Ciudadaniaback.png'),
-                                      colorFilter: ColorFilter.mode(
-                                          Color.fromARGB(153, 122, 77, 40),
-                                          BlendMode.color),
+                                          'assets/img/Cosmetologiaback.png'),
                                       filterQuality: FilterQuality.low,
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -865,31 +1882,35 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       padding: const EdgeInsets.all(12),
-                                      child: Icon(Icons.folder,
+                                      child: Icon(Icons.cut,
                                           size: size.height * 0.1,
                                           color: const Color.fromARGB(
-                                              153, 122, 77, 40)),
+                                              153, 213, 13, 13)),
                                     ),
                                     Container(
                                       width: size.width / 1.03 -
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       decoration: const BoxDecoration(
-                                          color:
-                                              Color.fromARGB(153, 122, 77, 40),
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
                                           borderRadius: BorderRadius.only(
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.35,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Cosmetología",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -897,40 +1918,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCiudadania >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosmetologia_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -976,6 +2021,12 @@ streamfeed = FirebaseFirestore.instance
                                 Navigator.pushNamed(context, '/profeESLpm');
                                 setState(() {
                                   _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESL_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -990,7 +2041,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1021,15 +2073,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
                                             width: size.width * 0.3,
                                             child: Text(
                                               "ESL 1 pm",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1037,40 +2093,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountESLpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESL_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -1112,7 +2192,13 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(context, '/profeESLpm2');
                                 setState(() {
-                                  _notificationcountESLpm2 = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESpm2L_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -1127,7 +2213,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1158,15 +2245,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
                                             width: size.width * 0.3,
                                             child: Text(
                                               "ESL 2 pm",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1174,40 +2265,578 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationcountESLpm2 >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESpm2L_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Profesor") {
+                      if (data['ESLam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profeESLam');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESLam_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Profesor") {
+                      if (data['ESLam2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profeESLam2');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESLam2_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam2_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Profesor") {
+                      if (data['ESLchick'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profechick');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESLchick_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLchick_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
@@ -1237,6 +2866,9 @@ streamfeed = FirebaseFirestore.instance
                   if (snapshot.hasData) {
                     if (data['rol'] == "Profesor") {
                       if (data['GEDpm'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -1246,7 +2878,13 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(context, '/profeGEDpm');
                                 setState(() {
-                                  _notificationCountGEDpm = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsGEDpm_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -1261,7 +2899,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1276,7 +2915,7 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       padding: const EdgeInsets.all(12),
-                                      child: Icon(Icons.school,
+                                      child: Icon(Icons.language,
                                           size: size.height * 0.1,
                                           color:
                                               Color.fromARGB(143, 13, 77, 252)),
@@ -1292,15 +2931,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "GED PM",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1308,40 +2951,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountGEDpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsGEDpm_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -1352,7 +3019,6 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
-
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -1372,6 +3038,9 @@ streamfeed = FirebaseFirestore.instance
                   if (snapshot.hasData) {
                     if (data['rol'] == "Profesor") {
                       if (data['costuraAM'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -1381,7 +3050,13 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(context, '/profeCosturaAM');
                                 setState(() {
-                                  _notificationCountCostura = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosturaAM_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -1396,7 +3071,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1411,7 +3087,7 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       padding: const EdgeInsets.all(12),
-                                      child: Icon(Icons.home_work,
+                                      child: Icon(Icons.shopping_bag,
                                           size: size.height * 0.1,
                                           color:
                                               Color.fromARGB(143, 52, 161, 1)),
@@ -1427,15 +3103,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Costura",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1443,40 +3123,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCostura >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosturaAM_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -1487,7 +3191,6 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
-
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -1507,6 +3210,9 @@ streamfeed = FirebaseFirestore.instance
                   if (snapshot.hasData) {
                     if (data['rol'] == "Profesor") {
                       if (data['ciudadania'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -1517,7 +3223,13 @@ streamfeed = FirebaseFirestore.instance
                                 Navigator.pushNamed(
                                     context, '/profeCiudadania');
                                 setState(() {
-                                  _notificationCountCiudadania = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCiudadania_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -1532,7 +3244,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1563,15 +3276,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.3,
+                                            width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadania",
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1579,40 +3296,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCiudadania >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCiudadania_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -1623,7 +3364,6 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
-
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -1641,8 +3381,11 @@ streamfeed = FirebaseFirestore.instance
                       snapshot.data!.data() as Map<String, dynamic>;
 
                   if (snapshot.hasData) {
-                    if (data['rol'] == 'Profesor') {
+                    if (data['rol'] == "Profesor") {
                       if (data['cosmetologia'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -1653,7 +3396,13 @@ streamfeed = FirebaseFirestore.instance
                                 Navigator.pushNamed(
                                     context, '/profeCosmetologia');
                                 setState(() {
-                                  _notificationcountCosmetologia= 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosmetologia_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -1663,15 +3412,13 @@ streamfeed = FirebaseFirestore.instance
                                   image: DecorationImage(
                                       opacity: 0.6,
                                       image: AssetImage(
-                                          'assets/img/Ciudadaniaback.png'),
-                                      colorFilter: ColorFilter.mode(
-                                          Color.fromARGB(153, 122, 77, 40),
-                                          BlendMode.color),
+                                          'assets/img/Cosmetologiaback.png'),
                                       filterQuality: FilterQuality.low,
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1689,28 +3436,32 @@ streamfeed = FirebaseFirestore.instance
                                       child: Icon(Icons.cut,
                                           size: size.height * 0.1,
                                           color: const Color.fromARGB(
-                                              153, 122, 77, 40)),
+                                              153, 213, 13, 13)),
                                     ),
                                     Container(
                                       width: size.width / 1.03 -
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       decoration: const BoxDecoration(
-                                          color:
-                                              Color.fromARGB(153, 122, 77, 40),
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
                                           borderRadius: BorderRadius.only(
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.35,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Cosmetología",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1718,40 +3469,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationcountCosmetologia >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosmetologia_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -1762,7 +3537,6 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
-
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -1792,7 +3566,7 @@ streamfeed = FirebaseFirestore.instance
                                 Navigator.pushNamed(
                                     context, '/profefeedlapuerta');
                                 setState(() {
-                                  _notificationcountCosmetologia= 0;
+                                  _notificationcountCosmetologia = 0;
                                 });
                               },
                               child: Container(
@@ -1802,7 +3576,7 @@ streamfeed = FirebaseFirestore.instance
                                   image: DecorationImage(
                                       opacity: 0.6,
                                       image: AssetImage(
-                                          'assets/img/Ciudadaniaback.png'),
+                                          'assets/img/Cosmetologiaback.png'),
                                       colorFilter: ColorFilter.mode(
                                           Color.fromRGBO(4, 99, 128, 1),
                                           BlendMode.color),
@@ -1810,7 +3584,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1834,8 +3609,7 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       decoration: const BoxDecoration(
-                                          color:
-                                              Color.fromRGBO(4, 99, 128, 1),
+                                          color: Color.fromRGBO(4, 99, 128, 1),
                                           borderRadius: BorderRadius.only(
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
@@ -1848,7 +3622,8 @@ streamfeed = FirebaseFirestore.instance
                                           SizedBox(
                                             width: size.width * 0.45,
                                             child: Text(
-                                              "La Puerta Feed", textAlign: TextAlign.center,
+                                              "La Puerta Feed",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1856,7 +3631,6 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          
                                         ],
                                       )),
                                     )
@@ -1883,7 +3657,7 @@ streamfeed = FirebaseFirestore.instance
                     return const Text('Something went wrong');
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text('');
+                    return Column(children: []);
                   }
                   Map<String, dynamic> data =
                       snapshot.data!.data() as Map<String, dynamic>;
@@ -1899,6 +3673,12 @@ streamfeed = FirebaseFirestore.instance
                             GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(context, '/studentESLpm');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESL_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountESLpm = 0;
                                 });
@@ -1915,7 +3695,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -1946,15 +3727,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.3,
                                             child: Text(
-                                              "ESL PM",
+                                              "ESL 1 PM",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -1962,40 +3747,744 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountESLpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESL_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Voluntario") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentESLpm2');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESpm2L_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationcountESLpm2 = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESpm2L_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ESLam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentESLam');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESLam_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ESLam2'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentESLam2');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESLam2_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam2_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ESLchick'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, '/studentchick');
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(currentUser.email)
+                                    .collection('postsESLchick_State')
+                                    .doc('State')
+                                    .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLchick_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2034,6 +4523,12 @@ streamfeed = FirebaseFirestore.instance
                             GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(context, '/studentGEDpm');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsGEDpm_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountGEDpm = 0;
                                 });
@@ -2050,7 +4545,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -2081,15 +4577,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "GED PM",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -2097,40 +4597,234 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountGEDpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsGEDpm_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['GEDam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/studentGEDam');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsGEDam_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                setState(() {
+                                  _notificationCountGEDpm = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.school,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsGEDam_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2170,6 +4864,12 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, '/studentCosturaAM');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosturaAM_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountCostura = 0;
                                 });
@@ -2186,7 +4886,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -2217,15 +4918,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Costura",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -2233,40 +4938,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCostura >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosturaAM_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2306,6 +5035,12 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, '/studentCiudadania');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCiudadania_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountCiudadania = 0;
                                 });
@@ -2322,7 +5057,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -2353,15 +5089,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.3,
+                                            width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadania",
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -2369,40 +5109,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCiudadania >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCiudadania_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2442,6 +5206,12 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, '/studentCosmetologia');
+                                FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosmetologia_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 setState(() {
                                   _notificationCountCiudadania = 0;
                                 });
@@ -2453,15 +5223,13 @@ streamfeed = FirebaseFirestore.instance
                                   image: DecorationImage(
                                       opacity: 0.6,
                                       image: AssetImage(
-                                          'assets/img/Ciudadaniaback.png'),
-                                      colorFilter: ColorFilter.mode(
-                                          Color.fromARGB(153, 122, 77, 40),
-                                          BlendMode.color),
+                                          'assets/img/Cosmetologiaback.png'),
                                       filterQuality: FilterQuality.low,
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -2476,31 +5244,35 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       padding: const EdgeInsets.all(12),
-                                      child: Icon(Icons.folder,
+                                      child: Icon(Icons.cut,
                                           size: size.height * 0.1,
                                           color: const Color.fromARGB(
-                                              153, 122, 77, 40)),
+                                              153, 213, 13, 13)),
                                     ),
                                     Container(
                                       width: size.width / 1.03 -
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       decoration: const BoxDecoration(
-                                          color:
-                                              Color.fromARGB(153, 122, 77, 40),
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
                                           borderRadius: BorderRadius.only(
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.35,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Cosmetología",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -2508,40 +5280,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCiudadania >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosmetologia_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2574,6 +5370,9 @@ streamfeed = FirebaseFirestore.instance
                   if (snapshot.hasData) {
                     if (data['rol'] == "Staff") {
                       if (data['ESLpm'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -2584,6 +5383,12 @@ streamfeed = FirebaseFirestore.instance
                                 Navigator.pushNamed(context, '/profeESLpm');
                                 setState(() {
                                   _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESL_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -2598,7 +5403,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -2629,15 +5435,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.3,
                                             child: Text(
-                                              "ESL PM",
+                                              "ESL 1 pm",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -2645,40 +5455,750 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountESLpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESL_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profeESLpm2');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESpm2L_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 pm",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESpm2L_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profeESLam');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESLam_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLam2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profeESLam2');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESLam2_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLam2_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLchick'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profechick');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsESLchick_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsESLchick_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2708,6 +6228,9 @@ streamfeed = FirebaseFirestore.instance
                   if (snapshot.hasData) {
                     if (data['rol'] == "Staff") {
                       if (data['GEDpm'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -2717,7 +6240,13 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(context, '/profeGEDpm');
                                 setState(() {
-                                  _notificationCountGEDpm = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsGEDpm_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -2732,7 +6261,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -2747,7 +6277,7 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       padding: const EdgeInsets.all(12),
-                                      child: Icon(Icons.school,
+                                      child: Icon(Icons.language,
                                           size: size.height * 0.1,
                                           color:
                                               Color.fromARGB(143, 13, 77, 252)),
@@ -2763,15 +6293,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "GED PM",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -2779,40 +6313,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountGEDpm >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsGEDpm_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2823,7 +6381,178 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
 
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['GEDam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/profeGEDam');
+                                setState(() {
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsGEDam_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsGEDam_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -2843,6 +6572,9 @@ streamfeed = FirebaseFirestore.instance
                   if (snapshot.hasData) {
                     if (data['rol'] == "Staff") {
                       if (data['costuraAM'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -2852,7 +6584,13 @@ streamfeed = FirebaseFirestore.instance
                               onTap: () {
                                 Navigator.pushNamed(context, '/profeCosturaAM');
                                 setState(() {
-                                  _notificationCountCostura = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosturaAM_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -2867,7 +6605,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -2882,7 +6621,7 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       padding: const EdgeInsets.all(12),
-                                      child: Icon(Icons.home_work,
+                                      child: Icon(Icons.shopping_bag,
                                           size: size.height * 0.1,
                                           color:
                                               Color.fromARGB(143, 52, 161, 1)),
@@ -2898,15 +6637,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.2,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Costura",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -2914,40 +6657,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCostura >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosturaAM_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -2958,7 +6725,6 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
-
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -2978,6 +6744,9 @@ streamfeed = FirebaseFirestore.instance
                   if (snapshot.hasData) {
                     if (data['rol'] == "Staff") {
                       if (data['ciudadania'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -2988,7 +6757,13 @@ streamfeed = FirebaseFirestore.instance
                                 Navigator.pushNamed(
                                     context, '/profeCiudadania');
                                 setState(() {
-                                  _notificationCountCiudadania = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCiudadania_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -3003,7 +6778,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -3034,15 +6810,19 @@ streamfeed = FirebaseFirestore.instance
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.3,
+                                            width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadania",
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -3050,40 +6830,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCiudadania >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCiudadania_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -3094,7 +6898,6 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
-
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -3112,8 +6915,11 @@ streamfeed = FirebaseFirestore.instance
                       snapshot.data!.data() as Map<String, dynamic>;
 
                   if (snapshot.hasData) {
-                    if (data['rol'] == 'Staff') {
+                    if (data['rol'] == "Staff") {
                       if (data['cosmetologia'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
                         return Column(
                           children: [
                             SizedBox(
@@ -3122,9 +6928,15 @@ streamfeed = FirebaseFirestore.instance
                             GestureDetector(
                               onTap: () {
                                 Navigator.pushNamed(
-                                    context, '/studentCosmetologia');
+                                    context, '/profeCosmetologia');
                                 setState(() {
-                                  _notificationCountCiudadania = 0;
+                                  _notificationCountESLpm = 0;
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .collection('postsCosmetologia_State')
+                                      .doc('State')
+                                      .set({'lastpost': 'read'});
                                 });
                               },
                               child: Container(
@@ -3134,15 +6946,13 @@ streamfeed = FirebaseFirestore.instance
                                   image: DecorationImage(
                                       opacity: 0.6,
                                       image: AssetImage(
-                                          'assets/img/Ciudadaniaback.png'),
-                                      colorFilter: ColorFilter.mode(
-                                          Color.fromARGB(153, 122, 77, 40),
-                                          BlendMode.color),
+                                          'assets/img/Cosmetologiaback.png'),
                                       filterQuality: FilterQuality.low,
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -3157,31 +6967,35 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       padding: const EdgeInsets.all(12),
-                                      child: Icon(Icons.folder,
+                                      child: Icon(Icons.cut,
                                           size: size.height * 0.1,
                                           color: const Color.fromARGB(
-                                              153, 122, 77, 40)),
+                                              153, 213, 13, 13)),
                                     ),
                                     Container(
                                       width: size.width / 1.03 -
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       decoration: const BoxDecoration(
-                                          color:
-                                              Color.fromARGB(153, 122, 77, 40),
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
                                           borderRadius: BorderRadius.only(
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
                                       padding: const EdgeInsets.all(12),
-                                      child: Center(
-                                          child: Row(
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
                                           SizedBox(
-                                            width: size.width * 0.35,
+                                            width: size.width * 0.4,
                                             child: Text(
                                               "Cosmetología",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -3189,40 +7003,64 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          if (_notificationCountCiudadania >
-                                              0) // Show badge only if there are new notifications
-                                            Container(
-                                                padding: EdgeInsets.only(),
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      255, 221, 0, 0),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                    maxHeight:
-                                                        size.width * 0.08,
-                                                    maxWidth: size.width * 0.08,
-                                                    minWidth: size.width * 0.08,
-                                                    minHeight:
-                                                        size.width * 0.08),
-                                                child: Icon(
-                                                  Icons.notification_add,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                )
-                                                /*Text(
-                                                '$_notificationCountESLpm',
-                                                style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: size.width * 0.05,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),*/
-                                                ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(currentUser.email)
+                                                      .collection(
+                                                          'postsCosmetologia_State')
+                                                      .snapshots(),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Text('');
+                                                    }
+                                                    final snap =
+                                                        snapshot.data!.docs;
+                                                    if (snapshot.hasData) {
+                                                      if (snap[0]['lastpost'] ==
+                                                          'new') {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            //height: 70,
+                                                            //width: 70,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    }
+                                                    return Container();
+                                                  }),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
                                         ],
-                                      )),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -3233,7 +7071,6 @@ streamfeed = FirebaseFirestore.instance
                       }
                     }
                   }
-
                   return Container(); // 👈 your valid data here
                 },
               ),
@@ -3263,7 +7100,7 @@ streamfeed = FirebaseFirestore.instance
                                 Navigator.pushNamed(
                                     context, '/profefeedlapuerta');
                                 setState(() {
-                                  _notificationcountCosmetologia= 0;
+                                  _notificationcountCosmetologia = 0;
                                 });
                               },
                               child: Container(
@@ -3281,7 +7118,8 @@ streamfeed = FirebaseFirestore.instance
                                       fit: BoxFit.fitWidth),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       spreadRadius: 5,
                                       blurRadius: 7,
                                       offset: Offset(0, 3),
@@ -3305,8 +7143,7 @@ streamfeed = FirebaseFirestore.instance
                                           size.width * 0.05 -
                                           size.width * 0.05,
                                       decoration: const BoxDecoration(
-                                          color:
-                                              Color.fromRGBO(4, 99, 128, 1),
+                                          color: Color.fromRGBO(4, 99, 128, 1),
                                           borderRadius: BorderRadius.only(
                                               bottomRight: Radius.circular(12),
                                               bottomLeft: Radius.circular(12))),
@@ -3319,7 +7156,8 @@ streamfeed = FirebaseFirestore.instance
                                           SizedBox(
                                             width: size.width * 0.45,
                                             child: Text(
-                                              "La Puerta Feed", textAlign: TextAlign.center,
+                                              "La Puerta Feed",
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: size.width * 0.05,
@@ -3327,7 +7165,6 @@ streamfeed = FirebaseFirestore.instance
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          
                                         ],
                                       )),
                                     )
@@ -3344,7 +7181,7 @@ streamfeed = FirebaseFirestore.instance
                   return Container(); // 👈 your valid data here
                 },
               ),
-              
+
               SizedBox(
                 height: size.height * 0.03,
               )

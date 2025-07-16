@@ -1,6 +1,3 @@
-import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -33,6 +30,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
   Uint8List? pickedImage;
   final currentUsera = FirebaseAuth.instance.currentUser!;
   late Stream<QuerySnapshot> feedStream;
+  late Future<DocumentSnapshot> futureUserDoc;
 
   @override
   void initState() {
@@ -42,6 +40,8 @@ class _ProfeeslpmState extends State<Profeeslpm> {
       () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
     );
     getProfilePicture();
+    futureUserDoc =
+        FirebaseFirestore.instance.collection('clases').doc('esl 1').get();
 
     //final streaming;
   }
@@ -140,61 +140,87 @@ class _ProfeeslpmState extends State<Profeeslpm> {
           physics: NeverScrollableScrollPhysics(),
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: size.width,
-                  height: size.height * 0.2,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
+              FutureBuilder<DocumentSnapshot>(
+                future: futureUserDoc,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      height: size.height * 0.2,
+                      child: Center(
+                        child: SpinKitFadingCircle(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          size: size.width * 0.055,
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return Container(
+                      height: size.height * 0.2,
+                      child: Center(child: Text('No hay datos del usuario')),
+                    );
+                  }
+
+                  final data = snapshot.data!.data() as Map<String, dynamic>;
+
+                  return Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: size.width,
+                      height: size.height * 0.2,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
                           filterQuality: FilterQuality.low,
                           image: AssetImage('assets/img/ESL back.png'),
-                          fit: BoxFit.cover),
-                      //color: Color.fromARGB(155, 255, 102, 0),
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(size.width * 0.087))),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'ESL 1 pm',
-                        //textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.06,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(size.width * 0.087)),
                       ),
-                      Text(
-                        'English as Second Language',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.02,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            data['Name'] ?? 'Nombre clase',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.06,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['Subname'] ?? 'Descripción',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.02,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['Days'] ?? 'Días',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.017,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['Time'] ?? 'Horario',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.017,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Martes y Jueves',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.017,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '5:30 pm - 7:30 pm',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.017,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
               SizedBox(
                 height: size.height * 0.01,
@@ -295,9 +321,9 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                         ConnectionState.done) {
                                                       return AlertDialog(
                                                         title: Text(
-                                                            'Publicar actividad'),
+                                                            'Publicar mensaje'),
                                                         content: Text(
-                                                            'Estás seguro que quieres publicar esta actividad?'),
+                                                            'Estás seguro que quieres publicar este mensaje?'),
                                                         actions: [
                                                           TextButton(
                                                               onPressed: () {
@@ -309,6 +335,20 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                 String
                                                                     timetoday =
                                                                     '${date.hour}:${date.minute}';
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'users')
+                                                                    .doc(currentUser
+                                                                        .email)
+                                                                    .collection(
+                                                                        'postsESL_State')
+                                                                    .doc(
+                                                                        'State')
+                                                                    .set({
+                                                                  'lastpost':
+                                                                      'new'
+                                                                });
                                                                 FirebaseFirestore
                                                                     .instance
                                                                     .collection(
@@ -340,7 +380,9 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                       .toString(),
                                                                   'createdAt':
                                                                       Timestamp
-                                                                          .now()
+                                                                          .now(),
+                                                                  'lastpost':
+                                                                      'new'
                                                                 });
 
                                                                 Navigator.of(
@@ -490,6 +532,9 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                         stream: streaming,
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return const Text('Something went wrong');
+                          }
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return Column(children: [
@@ -503,15 +548,52 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                             ]);
                           }
                           if (snapshot.hasData) {
+                            if (snapshot.data!.docs.isEmpty) {
+                              return RefreshIndicator(
+                                color: Theme.of(context).colorScheme.tertiary,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                elevation: 0,
+                                onRefresh:
+                                    () async {}, // o tu función de refresco
+                                child: SizedBox(
+                                  height: size.height * 0.345,
+                                  child: ListView(
+                                    physics:
+                                        AlwaysScrollableScrollPhysics(), // necesario para pull-to-refresh
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: size.height * 0.05),
+                                        child: Center(
+                                          child: Text(
+                                            'Aún no hay publicaciones',
+                                            style: TextStyle(
+                                              fontSize: size.height * 0.018,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+
                             final snap = snapshot.data!.docs;
                             return RefreshIndicator(
+                              elevation: 0,
                               color: Theme.of(context).colorScheme.tertiary,
-                              backgroundColor: Colors.white,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               displacement: 1,
                               strokeWidth: 3,
                               onRefresh: () async {},
                               child: SizedBox(
-                                height: size.height * 0.408,
+                                height: size.height * 0.345,
                                 width: double.infinity,
                                 child: Align(
                                   alignment: Alignment.topCenter,
@@ -617,7 +699,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                     size.height *
                                                                         0.013,
                                                                 fontFamily:
-                                                                    'JosefinSans',
+                                                                    'Arial',
                                                                 color: const Color
                                                                     .fromARGB(
                                                                     255,
@@ -650,6 +732,8 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                         textAlign:
                                                                             TextAlign.center,
                                                                         style: TextStyle(
+                                                                            fontFamily:
+                                                                                'Arial',
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary),
                                                                       ),
@@ -661,13 +745,15 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                             onPressed:
                                                                                 () {
                                                                               FirebaseFirestore.instance.collection('postsESL').doc(snapshot.data!.docs[index].id).delete();
-
+                                                                              FirebaseFirestore.instance.collection('users').doc(currentUser.email).collection('postsESL_State').doc('State').set({
+                                                                                'lastpost': ''
+                                                                              });
                                                                               Navigator.of(context).pop();
                                                                             },
                                                                             child:
                                                                                 Text(
                                                                               'Aceptar',
-                                                                              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                                                                              style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontFamily: 'Arial'),
                                                                             )),
                                                                         TextButton(
                                                                             onPressed:
@@ -675,7 +761,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                               Navigator.of(context).pop();
                                                                             },
                                                                             child:
-                                                                                Text('Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary)))
+                                                                                Text('Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontFamily: 'Arial')))
                                                                       ],
                                                                     );
                                                                   });
@@ -702,7 +788,7 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                       size.height *
                                                                           0.013,
                                                                   fontFamily:
-                                                                      'JosefinSans',
+                                                                      'Arial',
                                                                   color: const Color
                                                                       .fromARGB(
                                                                       255,

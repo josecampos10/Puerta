@@ -138,7 +138,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                   style: TextStyle(
                                       fontSize: size.height * 0.027,
                                       fontFamily: 'Arial',
-                                      //fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                       color: const Color.fromARGB(
                                           255, 255, 255, 255)),
                                 )
@@ -189,7 +189,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                     style: TextStyle(
                                         fontSize: size.height * 0.018,
                                         fontFamily: 'Arial',
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.bold,
                                         color: const Color.fromARGB(
                                             255, 255, 255, 255)),
                                   )
@@ -209,7 +209,7 @@ class _ProfileHomeState extends State<Profilehome> {
                               style: TextStyle(
                                   fontSize: size.height * 0.018,
                                   fontFamily: 'Arial',
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.bold,
                                   color:
                                       const Color.fromARGB(140, 255, 255, 255)))
                           : Text('')
@@ -224,19 +224,19 @@ class _ProfileHomeState extends State<Profilehome> {
                 height: size.height * 0.12,
                 width: size.height * 0.12,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiary,
-                  border: Border.all(
-                    color: Color.fromRGBO(255, 255, 255, 0.295),
-                    width: size.height * 0.005,
-                  ),
-                  shape: BoxShape.circle,
-                  image: pickedImage != null
-                      ? DecorationImage(
-                          fit: BoxFit.cover,
-                          image: Image.memory(
-                            pickedImage!,
-                          ).image)
-                      : null),
+                    color: Theme.of(context).colorScheme.tertiary,
+                    border: Border.all(
+                      color: Color.fromRGBO(255, 255, 255, 0.295),
+                      width: size.height * 0.005,
+                    ),
+                    shape: BoxShape.circle,
+                    image: pickedImage != null
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                            image: Image.memory(
+                              pickedImage!,
+                            ).image)
+                        : null),
               ),
             ),
           ]),
@@ -291,7 +291,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.025,
+                        fontSize: size.height * 0.024,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -329,14 +329,15 @@ class _ProfileHomeState extends State<Profilehome> {
                           Text(
                             '    Editar Perfil',
                             style: TextStyle(
-                                fontSize: size.height * 0.025,
+                                fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
-                              color: Color.fromRGBO(255, 255, 255, 1),
-                              Icons.arrow_forward_ios_outlined)
+                            color: Color.fromRGBO(255, 255, 255, 1),
+                            Icons.arrow_forward_ios_outlined,
+                          )
                         ],
                       ),
                     ),
@@ -355,7 +356,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: size.width - 20,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
-                      color:  Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       borderRadius: BorderRadius.circular(20.0),
                       boxShadow: [
                         BoxShadow(
@@ -375,9 +376,9 @@ class _ProfileHomeState extends State<Profilehome> {
                           Text(
                             '    Cambiar contraseña',
                             style: TextStyle(
-                                fontSize: size.height * 0.025,
+                                fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -401,7 +402,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: size.width - 20,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
-                      color:  Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       borderRadius: BorderRadius.circular(20.0),
                       boxShadow: [
                         BoxShadow(
@@ -779,9 +780,9 @@ class _ProfileHomeState extends State<Profilehome> {
                           Text(
                             '    Seguridad y Privacidad',
                             style: TextStyle(
-                                fontSize: size.height * 0.025,
+                                fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -805,7 +806,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: size.width - 20,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
-                      color:  Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       borderRadius: BorderRadius.circular(20.0),
                       boxShadow: [
                         BoxShadow(
@@ -824,9 +825,9 @@ class _ProfileHomeState extends State<Profilehome> {
                           Text(
                             '    Hacer un pago',
                             style: TextStyle(
-                                fontSize: size.height * 0.025,
+                                fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -852,7 +853,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.025,
+                        fontSize: size.height * 0.024,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -870,7 +871,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: size.width - 20,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
-                      color:  Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       borderRadius: BorderRadius.circular(20.0),
                       boxShadow: [
                         BoxShadow(
@@ -887,16 +888,36 @@ class _ProfileHomeState extends State<Profilehome> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Notificaciones'),
+                                title: Text(
+                                  'Notificaciones',
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
                                 content: Text(
-                                    'Para cambiar los ajustes de Notificaciones vaya a los ajustes de su teléfono'),
+                                  'Para cambiar los ajustes de Notificaciones vaya a los ajustes de su teléfono',
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
                                 actions: [
                                   TextButton(
                                       onPressed: () {
                                         //AppSettings.openAppSettings(type: AppSettingsType.notification);
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text('Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary),)),
+                                      child: Text(
+                                        'Cancelar',
+                                        style: TextStyle(
+                                            fontFamily: 'Arial',
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                      )),
                                   TextButton(
                                       onPressed: () =>
                                           AppSettings.openAppSettings(
@@ -904,7 +925,14 @@ class _ProfileHomeState extends State<Profilehome> {
                                                   AppSettingsType.notification),
                                       //Navigator.of(context).pop();
 
-                                      child: Text('Ir a Ajustes', style: TextStyle(color: Theme.of(context).colorScheme.secondary),)),
+                                      child: Text(
+                                        'Ir a Ajustes',
+                                        style: TextStyle(
+                                            fontFamily: 'Arial',
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                      )),
                                 ],
                               );
                             });
@@ -915,9 +943,9 @@ class _ProfileHomeState extends State<Profilehome> {
                           Text(
                             '    Ajustes',
                             style: TextStyle(
-                                fontSize: size.height * 0.025,
+                                fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -994,7 +1022,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.025,
+                        fontSize: size.height * 0.024,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -1012,7 +1040,7 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: size.width - 20,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
-                      color:  Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       borderRadius: BorderRadius.circular(20.0),
                       boxShadow: [
                         BoxShadow(
@@ -1029,21 +1057,45 @@ class _ProfileHomeState extends State<Profilehome> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Salir'),
+                                title: Text(
+                                  'Salir',
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
                                 content: Text(
-                                    'Estás seguro que deseas cerrar sesión?', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+                                    'Estás seguro que deseas cerrar sesión?',
+                                    style: TextStyle(
+                                        fontFamily: 'Arial',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary)),
                                 actions: [
                                   TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text('Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary),)),
+                                      child: Text(
+                                        'Cancelar',
+                                        style: TextStyle(
+                                            fontFamily: 'Arial',
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                      )),
                                   TextButton(
                                       onPressed: () {
                                         signOut();
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text('Aceptar', style: TextStyle(color: Theme.of(context).colorScheme.secondary))),
+                                      child: Text('Aceptar',
+                                          style: TextStyle(
+                                              fontFamily: 'Arial',
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary))),
                                 ],
                               );
                             });
@@ -1054,9 +1106,9 @@ class _ProfileHomeState extends State<Profilehome> {
                           Text(
                             '    Salir',
                             style: TextStyle(
-                                fontSize: size.height * 0.025,
+                                fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -1086,9 +1138,7 @@ class _ProfileHomeState extends State<Profilehome> {
                   )
                 ],
               ),*/
-              SizedBox(
-                height: size.height * 0.02,
-              ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -1113,15 +1163,35 @@ class _ProfileHomeState extends State<Profilehome> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Eliminar cuenta'),
+                                title: Text(
+                                  'Eliminar cuenta',
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
                                 content: Text(
-                                    'Estás seguro que deseas eliminar tu cuenta? Todos tus datos serán borrados'),
+                                  'Estás seguro que deseas eliminar tu cuenta? Todos tus datos serán borrados',
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
                                 actions: [
                                   TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text('Cancelar')),
+                                      child: Text(
+                                        'Cancelar',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            fontFamily: 'Arial'),
+                                      )),
                                   TextButton(
                                       onPressed: () async {
                                         //delete user info in the database
@@ -1146,7 +1216,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                                 builder: (context) =>
                                                     OnboardingPage()));
                                       },
-                                      child: Text('Aceptar')),
+                                      child: Text('Aceptar',style: TextStyle(fontFamily: 'Arial', color: Theme.of(context).colorScheme.secondary),)),
                                 ],
                               );
                             });
@@ -1159,7 +1229,7 @@ class _ProfileHomeState extends State<Profilehome> {
                             style: TextStyle(
                                 fontSize: size.height * 0.015,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(

@@ -31,6 +31,10 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(
+      Duration(),
+      () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+    );
 
     getProfilePicture();
     stream = FirebaseFirestore.instance
@@ -171,14 +175,14 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                     content:  Text('Seleccione', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                                     actions: [
                                       TextButton(
-                                        child: const Text('Cámara'),
+                                        child:  Text('Cámara', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                                         onPressed: () {
                                           onProfileTappedCamera();
                                           Navigator.pop(context);
                                         },
                                       ),
                                       TextButton(
-                                        child: const Text('Galería'),
+                                        child: Text('Galería', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                                         onPressed: () {
                                           onProfileTappedGallery();
                                           Navigator.pop(context);
@@ -267,6 +271,11 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextField(
+                                      onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -359,6 +368,11 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextField(
+                                      onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -449,6 +463,11 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextField(
+                                      onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -517,6 +536,23 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                         _controllerPhone.text,
                                                   });
                                                   Navigator.of(context).pop();
+                                                  ScaffoldMessenger.of(
+                                                                              context)
+                                                                          .showSnackBar(
+                                                                        SnackBar(
+                                                                          content:
+                                                                              Text(
+                                                                            'Datos de perfil actulizado',
+                                                                            style: TextStyle(
+                                                                                fontFamily: 'Arial',
+                                                                                color: Colors.white,
+                                                                                fontSize: size.height * 0.015),
+                                                                          ),
+                                                                          backgroundColor: Theme.of(context)
+                                                                              .colorScheme
+                                                                              .tertiary,
+                                                                        ),
+                                                                      );
                                                 },
                                                 child: Text('Aceptar',
                                                     style: TextStyle(

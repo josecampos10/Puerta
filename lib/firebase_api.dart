@@ -1,54 +1,126 @@
+import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lapuerta2/main.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
-class FirebaseApi {
-  //create an instance of Firebase Messaging
-  final _firebaseMessaging = FirebaseMessaging.instance;
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
+class FirebaseApi {
+  final _firebaseMessaging = FirebaseMessaging.instance;
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   Future<void> notiStatus() async {
-    await _firebaseMessaging.getNotificationSettings();
-    print(_firebaseMessaging.getNotificationSettings());
+    final settings = await _firebaseMessaging.getNotificationSettings();
+    print('🔔 iOS settings: $settings');
   }
-  //Function to initialize notifications
+
   Future<void> initNotifications() async {
-    
-    //request permission from user (will prompt user)
-    await _firebaseMessaging.requestPermission(badge: false);
+    // iOS: solicita permisos detallados
+    await _firebaseMessaging.requestPermission(
+      alert: true,
+      sound: true,
+      badge: true,
+    );
 
+    // iOS: muestra notis cuando está foreground
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      sound: true,
+      badge: true,
+    );
 
-    //fetch the FCM token for this device
-    final fCMToken = await _firebaseMessaging.getToken();
+    // Inicializa notificaciones locales (solo Android usa esto)
+    await initializeLocalNotifications();
 
-    //print the token (normally you would send this to your server)
-    print('token: $fCMToken');
-   
+    // Tokens
+    final apns = await _firebaseMessaging.getAPNSToken();
+    final fcm = await _firebaseMessaging.getToken();
 
-    //initialize further settings for push noti
-    initPushNotifications();
+    print('📲 APNs token: $apns');
+    print('📲 FCM token : $fcm');
+
+    await initPushNotifications();
   }
 
-  //function to handel received messages
-  void handleMessage(RemoteMessage? message) {
-    //if the message is null, do nothing
-    if (message == null) return;
+  Future<void> initializeLocalNotifications() async {
+  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    //navigate to new screen when messages is received and user tags notification
+  final iosSettings = DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+  );
+
+  final initSettings = InitializationSettings(
+    android: androidSettings,
+    iOS: iosSettings,
+  );
+
+  // Crear canal en Android (no afecta iOS)
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(const AndroidNotificationChannel(
+        'default_channel', // 👈 debe coincidir con el ID usado en AndroidNotificationDetails
+        'General Notifications',
+        description: 'Notificaciones generales de la app',
+        importance: Importance.high,
+      ));
+
+  await flutterLocalNotificationsPlugin.initialize(initSettings);
+}
+
+
+  void showLocalNotification(String title, String body) {
+    const androidDetails = AndroidNotificationDetails(
+      'default_channel',
+      'General Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+    );
+
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      notificationDetails,
+    );
+  }
+
+  void handleMessage(RemoteMessage? message) {
+    if (message == null) return;
     navigatorKey.currentState?.pushNamed(
       '/notifications_screen',
       arguments: message,
     );
   }
 
-  //function to initialize background settings
-  Future initPushNotifications() async {
-    //handle notification if the app was terminated and new opened
-  FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+  Future<void> initPushNotifications() async {
+    // App terminada
+    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
 
-    //attach event listeners for when a notification opens the app
-  FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+    // App background → foreground
+    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+
+    // App foreground
+    FirebaseMessaging.onMessage.listen((m) {
+      final data = m.data;
+      final title = data['title'] ?? m.notification?.title ?? 'Notificación';
+      final body = data['body'] ?? m.notification?.body ?? '';
+
+      print('🔔 foreground: $title');
+
+      if (Platform.isAndroid) {
+        showLocalNotification(title, body); // solo en Android
+      }
+      // En iOS ya se muestra automáticamente
+    });
   }
-
 }

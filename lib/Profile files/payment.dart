@@ -183,6 +183,12 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                         child: IntrinsicWidth(
                           stepWidth: 1.0,
                           child: TextField(
+                            cursorColor: Theme.of(context).colorScheme.secondary,
+                            onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                             keyboardType: TextInputType.number,
                             onChanged: (value) {},
                             controller: _controllerName,
@@ -487,6 +493,12 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                           color: const Color.fromARGB(255, 0, 0, 0)),
                       child: Center(
                         child: TextField(
+                          cursorColor: Colors.white,
+                          onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                           onChanged: (value) {},
                           controller: _controller,
                           style: TextStyle(

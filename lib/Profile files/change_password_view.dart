@@ -213,6 +213,11 @@ class _changePasswordViewState extends State<changePasswordView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextField(
+                                      onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                       readOnly: true,
                                       obscureText: _isObscure,
                                       controller: _controllerCurrent,
@@ -304,6 +309,11 @@ class _changePasswordViewState extends State<changePasswordView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextFormField(
+                                      onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                       validator: (value) {
                                         return value!.length < 8 ? 'Minimo de caracteres 8' : null;
                                       },
@@ -364,6 +374,11 @@ class _changePasswordViewState extends State<changePasswordView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextField(
+                                      onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                       controller: _controllerNameConfirm,
                                       onChanged: (value) => setState(() {
                                         _controllerNameConfirm.text =

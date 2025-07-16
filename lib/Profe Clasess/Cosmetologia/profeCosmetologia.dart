@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,16 +19,19 @@ class ProfeCosmetologia extends StatefulWidget {
 
 class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
   final currentUser = FirebaseAuth.instance.currentUser!;
-  CollectionReference users =
-      FirebaseFirestore.instance.collection('postsCosmetologia');
-  final controller = TextEditingController();
+  final usuario =
+      FirebaseFirestore.instance.collection('users').doc().snapshots();
 
+  CollectionReference users = FirebaseFirestore.instance.collection('postsCosmetologia');
+  final controller = TextEditingController();
   final streaming = FirebaseFirestore.instance
       .collection('postsCosmetologia')
       .orderBy('createdAt', descending: true)
       .snapshots();
   Uint8List? pickedImage;
   final currentUsera = FirebaseAuth.instance.currentUser!;
+  late Stream<QuerySnapshot> feedStream;
+  late Future<DocumentSnapshot> futureUserDoc;
 
   @override
   void initState() {
@@ -38,8 +40,11 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
       Duration(),
       () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
     );
-    //final streaming;
     getProfilePicture();
+    futureUserDoc =
+        FirebaseFirestore.instance.collection('clases').doc('Cosmetología').get();
+
+    //final streaming;
   }
 
   @override
@@ -78,7 +83,7 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
             fontWeight: FontWeight.bold,
             fontSize: size.height * 0.023,
             color: const Color.fromARGB(255, 255, 255, 255)),
-        backgroundColor: const Color.fromRGBO(4, 99, 128, 1),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -101,19 +106,19 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                 height: size.height * 0.065,
                 width: size.height * 0.065,
                 decoration: BoxDecoration(
-                  color: Color.fromRGBO(4, 99, 128, 1),
-                  border: Border.all(
-                    color: Color.fromRGBO(255, 255, 255, 0.174),
-                    width: size.height * 0.003,
-                  ),
-                  shape: BoxShape.circle,
-                  image: pickedImage != null
-                      ? DecorationImage(
-                          fit: BoxFit.cover,
-                          image: Image.memory(
-                            pickedImage!,
-                          ).image)
-                      : null),
+                    color: Theme.of(context).colorScheme.tertiary,
+                    border: Border.all(
+                      color: Color.fromRGBO(255, 255, 255, 0.174),
+                      width: size.height * 0.003,
+                    ),
+                    shape: BoxShape.circle,
+                    image: pickedImage != null
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                            image: Image.memory(
+                              pickedImage!,
+                            ).image)
+                        : null),
               ),
               SizedBox(
                 width: size.width * 0.03,
@@ -128,104 +133,95 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(size.width * 0.08),
-                topRight: Radius.circular(size.width * 0.08))),
+                topLeft: Radius.circular(size.width * 0.087),
+                topRight: Radius.circular(size.width * 0.087))),
         height: size.height,
         width: size.width,
         child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: size.width,
-                  height: size.height * 0.2,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
+              FutureBuilder<DocumentSnapshot>(
+                future: futureUserDoc,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      height: size.height * 0.2,
+                      child: Center(
+                        child: SpinKitFadingCircle(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          size: size.width * 0.055,
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return Container(
+                      height: size.height * 0.2,
+                      child: Center(child: Text('No hay datos del usuario')),
+                    );
+                  }
+
+                  final data = snapshot.data!.data() as Map<String, dynamic>;
+
+                  return Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: size.width,
+                      height: size.height * 0.2,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
                           filterQuality: FilterQuality.low,
-                          image: AssetImage('assets/img/Ciudadaniaback.png'),
-                          colorFilter: ColorFilter.mode(
-                              Color.fromARGB(153, 122, 77, 40),
-                              BlendMode.color),
-                          fit: BoxFit.cover),
-                      //color: Color.fromARGB(155, 255, 102, 0),
-                      borderRadius: BorderRadius.all(Radius.circular(31))),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Cosmetología',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.06,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
+                          image: AssetImage('assets/img/Cosmetologiaback.png'),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(size.width * 0.087)),
                       ),
-                      Text(
-                        'Clase de Cosmetología',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: size.height * 0.02,
-                            fontFamily: 'Arial',
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Lunes (Recurrentes)',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: size.height * 0.017,
-                                    fontFamily: 'Arial',
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '10:00 am - 12:00 pm',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: size.height * 0.017,
-                                    fontFamily: 'Arial',
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
+                          Text(
+                            data['Name'] ?? 'Nombre clase',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.06,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(
-                            width: size.width * 0.08,
+                          Text(
+                            data['Subname'] ?? 'Descripción',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.02,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
                           ),
-                          Column(
-                            children: [
-                              Text(
-                                'Martes (Nuevo Ingreso)',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: size.height * 0.017,
-                                    fontFamily: 'Arial',
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '10:00 am - 12:00 pm',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: size.height * 0.017,
-                                    fontFamily: 'Arial',
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          )
+                          Text(
+                            data['Days'] ?? 'Días',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.017,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['Time'] ?? 'Horario',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.017,
+                                fontFamily: 'Arial',
+                                fontWeight: FontWeight.bold),
+                          ),
                         ],
-                      )
-                    ],
-                  ),
-                ),
+                      ),
+                    ),
+                  );
+                },
               ),
               SizedBox(
                 height: size.height * 0.01,
@@ -268,20 +264,21 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                         Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(15)),
                                 child: TextField(
+                                  //ocusNode: FocusScope.of(context).unfocus(),
+                                  cursorColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  // specialTextSpanBuilder: MySpecialTextSpanBuilder(),
+                                  //textAlign: TextAlign.,
                                   onTapOutside: (event) {
                                     print('onTapOutside');
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                   },
-                                  cursorColor:
-                                      Theme.of(context).colorScheme.secondary,
                                   style: TextStyle(
                                       fontFamily: 'Arial',
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondary),
-                                  //textCapitalization: TextCapitalization.words,
-                                  //textAlign: TextAlign.,
                                   autofocus: false,
                                   minLines: 1,
                                   maxLines: null,
@@ -305,102 +302,126 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                       //isCollapsed: true,
                                       hintText: "mensaje...",
                                       hintStyle: TextStyle(
-                                          color: Colors.grey),
+                                          color: Colors.grey,
+                                          fontFamily: 'Arial'),
                                       suffixIcon: IconButton(
                                         onPressed: () {
                                           showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return FutureBuilder(
-                                                    future: FireStoreDataBase()
-                                                        .getData(),
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      if (snapshot.hasError) {
-                                                        return const Text(
-                                                            'Something went wrong');
-                                                      }
-                                                      if (snapshot
-                                                              .connectionState ==
-                                                          ConnectionState
-                                                              .done) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Publicar actividad'),
-                                                          content: Text(
-                                                              'Estás seguro que quieres publicar esta actividad?'),
-                                                          actions: [
-                                                            TextButton(
-                                                                onPressed: () {
-                                                                  DateTime
-                                                                      date =
-                                                                      DateTime
-                                                                          .now();
-                                                                  String today =
-                                                                      '${date.day}/${date.month}/${date.year}';
-                                                                  String
-                                                                      timetoday =
-                                                                      '${date.hour}:${date.minute}';
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'postsCosmetologia')
-                                                                      .doc(DateTime(
-                                                                              DateTime.now().year,
-                                                                              DateTime.now().month,
-                                                                              DateTime.now().day,
-                                                                              DateTime.now().hour,
-                                                                              DateTime.now().minute,
-                                                                              DateTime.now().second)
-                                                                          .toString())
-                                                                      .set({
-                                                                    'Name':
-                                                                        data['name'] ??
-                                                                            "",
-                                                                    'Comment':
-                                                                        controller
-                                                                            .text,
-                                                                    'Date':
-                                                                        today,
-                                                                    'Time':
-                                                                        timetoday,
-                                                                    'User':
-                                                                        'La Puerta',
-                                                                    'postUrl':
-                                                                        'no imagen',
-                                                                    'Image': snapshot
-                                                                        .data
-                                                                        .toString(),
-                                                                    'createdAt':
-                                                                        Timestamp
-                                                                            .now()
-                                                                  });
+                                                  future: FireStoreDataBase()
+                                                      .getData(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return const Text(
+                                                          'Something went wrong');
+                                                    }
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState.done) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                            'Publicar mensaje'),
+                                                        content: Text(
+                                                            'Estás seguro que quieres publicar este mensaje?'),
+                                                        actions: [
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                DateTime date =
+                                                                    DateTime
+                                                                        .now();
+                                                                String today =
+                                                                    '${date.day}/${date.month}/${date.year}';
+                                                                String
+                                                                    timetoday =
+                                                                    '${date.hour}:${date.minute}';
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'users')
+                                                                    .doc(currentUser
+                                                                        .email)
+                                                                    .collection(
+                                                                        'postsCosmetologia_State')
+                                                                    .doc(
+                                                                        'State')
+                                                                    .set({
+                                                                  'lastpost':
+                                                                      'new'
+                                                                });
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'postsCosmetologia')
+                                                                    .doc(DateTime(
+                                                                            DateTime.now().year,
+                                                                            DateTime.now().month,
+                                                                            DateTime.now().day,
+                                                                            DateTime.now().hour,
+                                                                            DateTime.now().minute,
+                                                                            DateTime.now().second)
+                                                                        .toString())
+                                                                    .set({
+                                                                  'Name': data[
+                                                                          'name'] ??
+                                                                      "",
+                                                                  'Comment':
+                                                                      controller
+                                                                          .text,
+                                                                  'Date': today,
+                                                                  'Time':
+                                                                      timetoday,
+                                                                  'User':
+                                                                      'La Puerta',
+                                                                  'postUrl':
+                                                                      'no imagen',
+                                                                  'Image': snapshot
+                                                                      .data
+                                                                      .toString(),
+                                                                  'createdAt':
+                                                                      Timestamp
+                                                                          .now()
+                                                                });
 
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                  // postImage();
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                                // postImage();
 
-                                                                  controller
-                                                                      .clear();
-                                                                },
-                                                                child: Text(
-                                                                    'Aceptar', style: TextStyle(color: Theme.of(context).colorScheme.secondary),)),
-                                                            TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                                child: Text(
-                                                                    'Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary),))
-                                                          ],
-                                                        );
-                                                      }
-                                                      return const Center(
-                                                          child:
-                                                              CircularProgressIndicator());
-                                                    });
+                                                                controller
+                                                                    .clear();
+                                                              },
+                                                              child: Text(
+                                                                'Aceptar',
+                                                                style: TextStyle(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                              )),
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                              child: Text(
+                                                                'Cancelar',
+                                                                style: TextStyle(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                              ))
+                                                        ],
+                                                      );
+                                                    }
+                                                    return const Center(
+                                                        child:
+                                                            CircularProgressIndicator());
+                                                  },
+                                                );
                                               });
                                         },
                                         icon: Icon(
@@ -437,8 +458,8 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                             width: 1,
                             color: const Color.fromARGB(148, 163, 163, 163)))),
                 child: TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, '/profeCosmetologia_files'),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/profeCosmetologia_files'),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -446,7 +467,7 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                           width: size.width * 0.01,
                         ),
                         Icon(
-                          Icons.folder_copy_outlined,
+                          Icons.folder,
                           color: Theme.of(context).colorScheme.secondary,
                         ),
                         SizedBox(
@@ -456,10 +477,10 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                           'Archivos',
                           textAlign: TextAlign.start,
                           style: TextStyle(
-                            fontSize: size.height * 0.02,
-                            fontFamily: 'Arial',
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
+                              fontSize: size.height * 0.018,
+                              fontFamily: 'Arial',
+                              //fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
                     )),
@@ -474,8 +495,8 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                             width: 1,
                             color: const Color.fromARGB(148, 163, 163, 163)))),
                 child: TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, '/studentCosmetologia_students'),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/studentCosmetologia_students'),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -493,10 +514,9 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                           'Estudiantes',
                           textAlign: TextAlign.start,
                           style: TextStyle(
-                            fontSize: size.height * 0.02,
-                            fontFamily: 'Arial',
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
+                              fontSize: size.height * 0.018,
+                              fontFamily: 'Arial',
+                              color: Theme.of(context).colorScheme.secondary),
                         ),
                       ],
                     )),
@@ -511,6 +531,9 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                         stream: streaming,
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return const Text('Something went wrong');
+                          }
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return Column(children: [
@@ -524,15 +547,50 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                             ]);
                           }
                           if (snapshot.hasData) {
+                            if (snapshot.data!.docs.isEmpty) {
+                              return RefreshIndicator(
+                                color: Theme.of(context).colorScheme.tertiary,
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                elevation: 0,
+                                onRefresh:
+                                    () async {}, // o tu función de refresco
+                                child: SizedBox(
+                                  height: size.height * 0.345,
+                                  child: ListView(
+                                    physics:
+                                        AlwaysScrollableScrollPhysics(), // necesario para pull-to-refresh
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: size.height * 0.05),
+                                        child: Center(
+                                          child: Text(
+                                            'Aún no hay publicaciones',
+                                            style: TextStyle(
+                                              fontSize: size.height * 0.018,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+
                             final snap = snapshot.data!.docs;
                             return RefreshIndicator(
+                              elevation: 0,
                               color: Theme.of(context).colorScheme.tertiary,
-                              backgroundColor: Colors.white,
+                              backgroundColor: Theme.of(context).colorScheme.primary,
                               displacement: 1,
                               strokeWidth: 3,
                               onRefresh: () async {},
                               child: SizedBox(
-                                height: size.height * 0.408,
+                                height: size.height * 0.345,
                                 width: double.infinity,
                                 child: Align(
                                   alignment: Alignment.topCenter,
@@ -579,21 +637,29 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                         size.width * 0.03),
                                                     child: Column(
                                                       children: [
+                                                        Stack(
+                                                          alignment: Alignment
+                                                              .topRight,
+                                                          children: [],
+                                                        ),
                                                         Row(children: [
                                                           CircleAvatar(
-                                                            backgroundImage:
-                                                                NetworkImage(snap[
-                                                                        index]
-                                                                    ['Image']),
-                                                            minRadius:
-                                                                size.height *
-                                                                    0.023,
-                                                            maxRadius:
-                                                                size.height *
-                                                                    0.023,
-                                                            backgroundColor:
-                                                                Theme.of(context).colorScheme.tertiary,
-                                                          ),
+                                                              backgroundImage:
+                                                                  NetworkImage(
+                                                                      snap[index]
+                                                                          [
+                                                                          'Image']),
+                                                              minRadius:
+                                                                  size.height *
+                                                                      0.021,
+                                                              maxRadius:
+                                                                  size.height *
+                                                                      0.021,
+                                                              backgroundColor:
+                                                                  Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .tertiary),
                                                           SizedBox(
                                                             width: size.width *
                                                                 0.02,
@@ -607,12 +673,12 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                               style: TextStyle(
                                                                   fontSize:
                                                                       size.height *
-                                                                          0.019,
+                                                                          0.018,
                                                                   fontFamily:
                                                                       'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .w500,
+                                                                          .bold,
                                                                   color: Theme.of(
                                                                           context)
                                                                       .colorScheme
@@ -620,9 +686,9 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                             ),
                                                           ),
                                                           SizedBox(
-                                                            width: size.width *
-                                                                0.01,
-                                                          ),
+                                                              width:
+                                                                  size.width *
+                                                                      0.02),
                                                           Text(
                                                             snap[index]['Time'],
                                                             style: TextStyle(
@@ -630,7 +696,7 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                                     size.height *
                                                                         0.013,
                                                                 fontFamily:
-                                                                    'JosefinSans',
+                                                                    'Arial',
                                                                 color: const Color
                                                                     .fromARGB(
                                                                     255,
@@ -663,6 +729,8 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                                         textAlign:
                                                                             TextAlign.center,
                                                                         style: TextStyle(
+                                                                            fontFamily:
+                                                                                'Arial',
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary),
                                                                       ),
@@ -674,13 +742,15 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                                             onPressed:
                                                                                 () {
                                                                               FirebaseFirestore.instance.collection('postsCosmetologia').doc(snapshot.data!.docs[index].id).delete();
-
+                                                                              FirebaseFirestore.instance.collection('users').doc(currentUser.email).collection('postsCosmetologia_State').doc('State').set({
+                                                                                'lastpost': ''
+                                                                              });
                                                                               Navigator.of(context).pop();
                                                                             },
                                                                             child:
                                                                                 Text(
                                                                               'Aceptar',
-                                                                              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                                                                              style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontFamily: 'Arial'),
                                                                             )),
                                                                         TextButton(
                                                                             onPressed:
@@ -688,7 +758,7 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                                               Navigator.of(context).pop();
                                                                             },
                                                                             child:
-                                                                                Text('Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary)))
+                                                                                Text('Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontFamily: 'Arial')))
                                                                       ],
                                                                     );
                                                                   });
@@ -715,7 +785,7 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                                       size.height *
                                                                           0.013,
                                                                   fontFamily:
-                                                                      'JosefinSans',
+                                                                      'Arial',
                                                                   color: const Color
                                                                       .fromARGB(
                                                                       255,
@@ -736,12 +806,12 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                                         .none,
                                                                 fontSize:
                                                                     size.height *
-                                                                        0.0162,
+                                                                        0.0155,
                                                                 fontFamily:
                                                                     'Arial',
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w600,
+                                                                        .normal,
                                                                 color: const Color
                                                                     .fromARGB(
                                                                     255,
@@ -750,9 +820,9 @@ class _ProfeCosmetologiaState extends State<ProfeCosmetologia> {
                                                                     255),
                                                               ),
                                                               style: TextStyle(
-                                                                  fontSize: size
-                                                                          .height *
-                                                                      0.0162,
+                                                                  fontSize:
+                                                                      size.height *
+                                                                          0.0155,
                                                                   fontFamily:
                                                                       'Arial',
                                                                   fontWeight:
