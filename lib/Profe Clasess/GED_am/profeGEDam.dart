@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -22,7 +21,8 @@ class _ProfegedamState extends State<Profegedam> {
   final usuario =
       FirebaseFirestore.instance.collection('users').doc().snapshots();
 
-  CollectionReference users = FirebaseFirestore.instance.collection('postsGEDam');
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('postsGEDam');
   final controller = TextEditingController();
   final streaming = FirebaseFirestore.instance
       .collection('postsGEDam')
@@ -327,79 +327,43 @@ class _ProfegedamState extends State<Profegedam> {
                                                             'Estás seguro que quieres publicar este mensaje?'),
                                                         actions: [
                                                           TextButton(
-                                                              onPressed: () {
-                                                                DateTime date =
-                                                                    DateTime
-                                                                        .now();
-                                                                String today =
-                                                                    '${date.day}/${date.month}/${date.year}';
-                                                                String
-                                                                    timetoday =
-                                                                    '${date.hour}:${date.minute}';
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'users')
-                                                                    .doc(currentUser
-                                                                        .email)
-                                                                    .collection(
-                                                                        'postsGEDam_State')
-                                                                    .doc(
-                                                                        'State')
-                                                                    .set({
-                                                                  'lastpost':
-                                                                      'new'
-                                                                });
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'postsGEDam')
-                                                                    .doc(DateTime(
-                                                                            DateTime.now().year,
-                                                                            DateTime.now().month,
-                                                                            DateTime.now().day,
-                                                                            DateTime.now().hour,
-                                                                            DateTime.now().minute,
-                                                                            DateTime.now().second)
-                                                                        .toString())
-                                                                    .set({
-                                                                  'Name': data[
-                                                                          'name'] ??
-                                                                      "",
-                                                                  'Comment':
-                                                                      controller
-                                                                          .text,
-                                                                  'Date': today,
-                                                                  'Time':
-                                                                      timetoday,
-                                                                  'User':
-                                                                      'La Puerta',
-                                                                  'postUrl':
-                                                                      'no imagen',
-                                                                  'Image': snapshot
-                                                                      .data
-                                                                      .toString(),
-                                                                  'createdAt':
-                                                                      Timestamp
-                                                                          .now()
-                                                                });
+  onPressed: () async {
+    DateTime now = DateTime.now();
+    String today = '${now.day}/${now.month}/${now.year}';
+    String timetoday = '${now.hour}:${now.minute}';
+    String postId = now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                                // postImage();
+    // Guarda el post en la colección 'postsESL'
+    await FirebaseFirestore.instance
+        .collection('postsGEDam')
+        .doc(postId)
+        .set({
+      'Name': data['name'] ?? "",
+      'Comment': controller.text,
+      'Date': today,
+      'Time': timetoday,
+      'User': 'La Puerta',
+      'postUrl': 'no imagen',
+      'Image': snapshot.data.toString(),
+      'createdAt': Timestamp.now(),
+    });
 
-                                                                controller
-                                                                    .clear();
-                                                              },
-                                                              child: Text(
-                                                                'Aceptar',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .secondary),
-                                                              )),
+    // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
+    await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .set({'lastpost': postId});
+
+    Navigator.of(context).pop();
+    controller.clear();
+  },
+  child: Text(
+    'Aceptar',
+    style: TextStyle(
+      color: Theme.of(context).colorScheme.secondary,
+    ),
+  ),
+),
                                                           TextButton(
                                                               onPressed: () {
                                                                 Navigator.of(
@@ -541,7 +505,6 @@ class _ProfegedamState extends State<Profegedam> {
                                 height: size.height * 0.02,
                               ),
                               SpinKitFadingCircle(
-                                
                                 color: Theme.of(context).colorScheme.tertiary,
                                 size: size.width * 0.1,
                               ),
@@ -551,7 +514,8 @@ class _ProfegedamState extends State<Profegedam> {
                             if (snapshot.data!.docs.isEmpty) {
                               return RefreshIndicator(
                                 color: Theme.of(context).colorScheme.tertiary,
-                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
                                 elevation: 0,
                                 onRefresh:
                                     () async {}, // o tu función de refresco
@@ -586,7 +550,8 @@ class _ProfegedamState extends State<Profegedam> {
                             return RefreshIndicator(
                               elevation: 0,
                               color: Theme.of(context).colorScheme.tertiary,
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               displacement: 1,
                               strokeWidth: 3,
                               onRefresh: () async {},

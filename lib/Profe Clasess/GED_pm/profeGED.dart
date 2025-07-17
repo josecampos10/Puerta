@@ -327,79 +327,43 @@ class _ProfegedpmState extends State<Profegedpm> {
                                                             'Estás seguro que quieres publicar este mensaje?'),
                                                         actions: [
                                                           TextButton(
-                                                              onPressed: () {
-                                                                DateTime date =
-                                                                    DateTime
-                                                                        .now();
-                                                                String today =
-                                                                    '${date.day}/${date.month}/${date.year}';
-                                                                String
-                                                                    timetoday =
-                                                                    '${date.hour}:${date.minute}';
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'users')
-                                                                    .doc(currentUser
-                                                                        .email)
-                                                                    .collection(
-                                                                        'postsGEDpm_State')
-                                                                    .doc(
-                                                                        'State')
-                                                                    .set({
-                                                                  'lastpost':
-                                                                      'new'
-                                                                });
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'postsGED')
-                                                                    .doc(DateTime(
-                                                                            DateTime.now().year,
-                                                                            DateTime.now().month,
-                                                                            DateTime.now().day,
-                                                                            DateTime.now().hour,
-                                                                            DateTime.now().minute,
-                                                                            DateTime.now().second)
-                                                                        .toString())
-                                                                    .set({
-                                                                  'Name': data[
-                                                                          'name'] ??
-                                                                      "",
-                                                                  'Comment':
-                                                                      controller
-                                                                          .text,
-                                                                  'Date': today,
-                                                                  'Time':
-                                                                      timetoday,
-                                                                  'User':
-                                                                      'La Puerta',
-                                                                  'postUrl':
-                                                                      'no imagen',
-                                                                  'Image': snapshot
-                                                                      .data
-                                                                      .toString(),
-                                                                  'createdAt':
-                                                                      Timestamp
-                                                                          .now()
-                                                                });
+  onPressed: () async {
+    DateTime now = DateTime.now();
+    String today = '${now.day}/${now.month}/${now.year}';
+    String timetoday = '${now.hour}:${now.minute}';
+    String postId = now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                                // postImage();
+    // Guarda el post en la colección 'postsESL'
+    await FirebaseFirestore.instance
+        .collection('postsGED')
+        .doc(postId)
+        .set({
+      'Name': data['name'] ?? "",
+      'Comment': controller.text,
+      'Date': today,
+      'Time': timetoday,
+      'User': 'La Puerta',
+      'postUrl': 'no imagen',
+      'Image': snapshot.data.toString(),
+      'createdAt': Timestamp.now(),
+    });
 
-                                                                controller
-                                                                    .clear();
-                                                              },
-                                                              child: Text(
-                                                                'Aceptar',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .secondary),
-                                                              )),
+    // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
+    await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .set({'lastpost': postId});
+
+    Navigator.of(context).pop();
+    controller.clear();
+  },
+  child: Text(
+    'Aceptar',
+    style: TextStyle(
+      color: Theme.of(context).colorScheme.secondary,
+    ),
+  ),
+),
                                                           TextButton(
                                                               onPressed: () {
                                                                 Navigator.of(

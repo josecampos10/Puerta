@@ -496,18 +496,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentESLpm2');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESpm2L_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationcountESLpm2 = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -573,60 +588,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESpm2L_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -665,18 +677,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentESLam');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESLam_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -740,61 +767,58 @@ class _UsermapHomeState extends State<UsermapHome> {
                                                   fontFamily: 'Arial'),
                                             ),
                                           ),
-                                          Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+                                         Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -834,18 +858,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentESLam2');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESLam2_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -910,60 +949,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam2_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -1003,19 +1039,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentchick');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESLchick_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentchick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -1080,60 +1130,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLchick_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -1173,18 +1220,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentGEDpm');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsGEDpm_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountGEDpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -1250,60 +1312,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsGEDpm_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -1343,18 +1402,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentGEDam');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsGEDam_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountGEDpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -1420,60 +1494,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsGEDam_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -1513,19 +1584,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentCosturaAM');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosturaAM_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountCostura = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -1591,60 +1676,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosturaAM_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -1684,19 +1766,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentCiudadania');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCiudadania_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountCiudadania = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -1762,60 +1858,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCiudadania_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -1855,19 +1948,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentCosmetologia');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosmetologia_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountCiudadania = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -1933,60 +2040,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosmetologia_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -2215,18 +2319,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeESLpm2');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESpm2L_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -2292,60 +2411,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESpm2L_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -2387,18 +2503,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeESLam');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESLam_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -2463,60 +2594,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -2558,18 +2686,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeESLam2');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESLam2_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -2634,60 +2777,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam2_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -2729,18 +2869,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profechick');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESLchick_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profechick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -2806,60 +2961,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLchick_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -2901,18 +3053,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeGEDpm');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsGEDpm_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -2978,60 +3145,241 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsGEDpm_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Profesor") {
+                      if (data['GEDam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
                                             ),
                                           ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -3073,18 +3421,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeCosturaAM');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosturaAM_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -3150,60 +3513,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosturaAM_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -3245,19 +3605,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/profeCiudadania');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCiudadania_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -3323,60 +3697,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCiudadania_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -3418,19 +3789,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/profeCosmetologia');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosmetologia_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -3496,60 +3881,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosmetologia_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -3882,18 +4264,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentESLpm2');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESpm2L_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationcountESLpm2 = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -3959,60 +4356,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESpm2L_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -4051,18 +4445,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentESLam');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESLam_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -4127,60 +4536,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -4220,18 +4626,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentESLam2');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESLam2_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -4296,60 +4717,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam2_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -4389,19 +4807,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentchick');
-                                FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc(currentUser.email)
-                                    .collection('postsESLchick_State')
-                                    .doc('State')
-                                    .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentchick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -4466,60 +4898,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLchick_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -4559,18 +4988,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentGEDpm');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsGEDpm_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountGEDpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -4636,60 +5080,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsGEDpm_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -4729,18 +5170,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/studentGEDam');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsGEDam_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountGEDpm = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -4806,60 +5262,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsGEDam_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -4899,19 +5352,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentCosturaAM');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosturaAM_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountCostura = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -4977,60 +5444,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosturaAM_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -5070,19 +5534,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentCiudadania');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCiudadania_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountCiudadania = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -5148,60 +5626,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCiudadania_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -5241,19 +5716,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/studentCosmetologia');
-                                FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosmetologia_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                setState(() {
-                                  _notificationCountCiudadania = 0;
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -5319,60 +5808,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosmetologia_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -5605,18 +6091,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeESLpm2');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESpm2L_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -5682,60 +6183,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESpm2L_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -5777,18 +6275,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeESLam');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESLam_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -5853,60 +6366,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -5948,18 +6458,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeESLam2');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESLam2_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -6024,60 +6549,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLam2_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -6119,18 +6641,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profechick');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsESLchick_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profechick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -6196,60 +6733,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsESLchick_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -6291,18 +6825,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeGEDpm');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsGEDpm_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -6368,60 +6917,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsGEDpm_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -6463,18 +7009,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeGEDam');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsGEDam_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -6540,60 +7101,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsGEDam_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -6635,18 +7193,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, '/profeCosturaAM');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosturaAM_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -6712,60 +7285,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosturaAM_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -6807,19 +7377,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/profeCiudadania');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCiudadania_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -6885,60 +7469,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCiudadania_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
@@ -6980,19 +7561,33 @@ class _UsermapHomeState extends State<UsermapHome> {
                               height: size.height * 0.03,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/profeCosmetologia');
-                                setState(() {
-                                  _notificationCountESLpm = 0;
-                                  FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(currentUser.email)
-                                      .collection('postsCosmetologia_State')
-                                      .doc('State')
-                                      .set({'lastpost': 'read'});
-                                });
-                              },
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
                               child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -7058,60 +7653,57 @@ class _UsermapHomeState extends State<UsermapHome> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: SizedBox(
-                                              width: size.width * 0.0,
-                                              child: StreamBuilder<
-                                                      QuerySnapshot>(
-                                                  stream: FirebaseFirestore
-                                                      .instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .collection(
-                                                          'postsCosmetologia_State')
-                                                      .snapshots(),
-                                                  builder:
-                                                      (BuildContext context,
-                                                          AsyncSnapshot<
-                                                                  QuerySnapshot>
-                                                              snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState
-                                                            .waiting) {
-                                                      return Text('');
-                                                    }
-                                                    final snap =
-                                                        snapshot.data!.docs;
-                                                    if (snapshot.hasData) {
-                                                      if (snap[0]['lastpost'] ==
-                                                          'new') {
-                                                        return Container(
-                                                          height: size.height *
-                                                              0.031,
-                                                          child: AnimateIcon(
-                                                            key: UniqueKey(),
-                                                            onTap: () {},
-                                                            iconType: IconType
-                                                                .continueAnimation,
-                                                            //height: 70,
-                                                            //width: 70,
-                                                            color: Colors.white,
-                                                            animateIcon:
-                                                                AnimateIcons
-                                                                    .bell,
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Container();
-                                                    }
-                                                    return Container();
-                                                  }),
-                                            ),
-                                          ),
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
                                           // Show badge only if there are new notifications
                                         ],
                                       ),
