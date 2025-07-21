@@ -332,33 +332,35 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                     color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(0)),
                 child: TextField(
-                  onTapOutside: (event) {
-                    print('onTapOutside');
-                    FocusManager.instance.primaryFocus?.unfocus();
-                  },
-                  cursorColor: Theme.of(context).colorScheme.secondary,
-                  style: TextStyle(
-                      fontFamily: 'Arial',
-                      color: Theme.of(context).colorScheme.secondary),
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  textInputAction: TextInputAction.newline,
-                  controller: controllerdes,
-                  onChanged: (value) => setState(() {
-                    controllerdes.text = value.toString();
-                  }),
-                  decoration: InputDecoration(
-                    enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(0, 0, 0, 0), width: 0.0)),
-                    labelText: 'Que desea escribir...',
-                    prefixIcon: Icon(
-                      Icons.add,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
-                  ),
-                ),
+  onTapOutside: (event) {
+    FocusManager.instance.primaryFocus?.unfocus();
+  },
+  cursorColor: Theme.of(context).colorScheme.secondary,
+  style: TextStyle(
+    fontFamily: 'Arial',
+    color: Theme.of(context).colorScheme.secondary,
+  ),
+  maxLines: null,
+  keyboardType: TextInputType.multiline,
+  textInputAction: TextInputAction.newline,
+  controller: controllerdes,
+  onChanged: (value) {
+    // Si necesitas usar el texto, hazlo aquí sin modificar controllerdes.text
+    print('Texto cambiado: $value');
+  },
+  decoration: InputDecoration(
+    enabledBorder: const OutlineInputBorder(
+      borderSide: BorderSide(color: Color.fromARGB(0, 0, 0, 0), width: 0.0),
+    ),
+    labelText: 'Que desea escribir...',
+    prefixIcon: Icon(
+      Icons.add,
+      color: Theme.of(context).colorScheme.secondary,
+    ),
+    labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
+  ),
+),
+
               ),
               Row(
                 children: [
@@ -442,9 +444,9 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                  'Publicar actividad'),
+                                                                  'Publicar'),
                                                               content: Text(
-                                                                  'Estás seguro que quieres publicar esta actividad?'),
+                                                                  'Estás seguro que quieres publicar esto en el muro principal?'),
                                                               actions: [
                                                                 TextButton(
                                                                     onPressed:

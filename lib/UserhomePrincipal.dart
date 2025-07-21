@@ -51,6 +51,8 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
   final Uri _urlfacebook = Uri.parse('https://www.facebook.com/puertawaco');
   int selectedIndex = 0;
 
+  late Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> futurePosts;
+
   Future<void> _launchUrlfacebook() async {
     if (!await launchUrl(_urlfacebook)) {
       throw Exception('Could not launch $_urlfacebook');
@@ -89,7 +91,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
     final Email email = Email(
       body: _bodyController.text,
       subject: _subjectController.text,
-      recipients: ['ppjjosejair@gmail.com'],
+      recipients: ['info@lapuertawaco.com'],
       //attachmentPaths: attachments,
       isHTML: false,
     );
@@ -113,6 +115,21 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
       ),
     );*/
   }
+
+    Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> obtenerPostsOrdenados() async {
+  final snapshot = await FirebaseFirestore.instance
+      .collection('posts')
+      .orderBy('createdAt', descending: true)
+      .get();
+
+  return snapshot.docs;
+}
+
+Future<void> _refresh() async {
+  setState(() {
+    futurePosts = obtenerPostsOrdenados(); // Cambia tu variable de estado aquí
+  });
+}
 
   @override
   void initState() {
@@ -146,7 +163,11 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
         .collection('posts')
         .doc() // 👈 Your document id change accordingly
         .snapshots();
+    futurePosts = obtenerPostsOrdenados();
   }
+
+
+
 
   @override
   void dispose() {
@@ -611,7 +632,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
 
                   //color: Colors.red,
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.all(size.width * 0.001),
+                    padding: EdgeInsets.all(size.height * 0.001),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -625,7 +646,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 1,
-                                    childAspectRatio: size.width * 0.0008),
+                                    childAspectRatio: size.height * 0.0003),
                             shrinkWrap: true,
                             primary: false,
                             itemCount: gridItems.length,
@@ -651,49 +672,35 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                 .colorScheme
                                                 .tertiary
                                             : Color.fromRGBO(238, 135, 1, 0),
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsets.all(size.width * 0.0),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    SizedBox(
-                                                      width: size.width * 0.0,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    gridItems[position],
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          size.height * 0.017,
+                                                      fontFamily: 'Arial',
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: (selectedIndex ==
+                                                              position)
+                                                          ? Color.fromARGB(255,
+                                                              255, 255, 255)
+                                                          : Color.fromRGBO(
+                                                              143, 143, 143, 1),
                                                     ),
-                                                    Text(
-                                                      gridItems[position],
-                                                      textAlign:
-                                                          TextAlign.start,
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            size.height * 0.017,
-                                                        fontFamily: 'Arial',
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: (selectedIndex ==
-                                                                position)
-                                                            ? Color.fromARGB(
-                                                                255,
-                                                                255,
-                                                                255,
-                                                                255)
-                                                            : Color.fromRGBO(
-                                                                143,
-                                                                143,
-                                                                143,
-                                                                1),
-                                                      ),
-                                                    ),
-                                                  ]),
-                                            ],
-                                          ),
+                                                  ),
+                                                ]),
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -734,7 +741,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                               ),
                               SpinKitFadingCircle(
                                 color: Color.fromRGBO(4, 99, 128, 1),
-                                size: size.width * 0.1,
+                                size: size.height * 0.04,
                               ),
                             ]);
                           }
@@ -762,7 +769,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                       child: Hero(
                                         tag: sliderImage,
                                         child: SizedBox(
-                                          width: size.width * 0.85,
+                                          width: size.width * 0.8,
                                           // height: size.height * 0.2,
                                           child: Image.network(
                                             sliderImage['Image'],
@@ -907,7 +914,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
               ),
               SingleChildScrollView(
                 reverse: false,
-                padding: EdgeInsets.all(size.width * 0.001),
+                
                 child: Column(
                   children: [
                     StreamBuilder<QuerySnapshot>(
@@ -921,7 +928,8 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                 height: size.height * 0.02,
                               ),
                               SpinKitFadingCircle(
-                                color: Color.fromRGBO(4, 99, 128, 1),
+                                
+                                color: Theme.of(context).colorScheme.tertiary,
                                 size: size.width * 0.1,
                               ),
                             ]);
@@ -930,13 +938,12 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                             final snap = snapshot.data!.docs;
 
                             return RefreshIndicator(
+                              elevation: 0,
                               color: Color.fromRGBO(3, 69, 88, 1),
                               backgroundColor: Colors.white,
                               displacement: 1,
                               strokeWidth: 3,
-                              onRefresh: () async {
-                                setState(() {});
-                              },
+                              onRefresh: _refresh,
                               child: SizedBox(
                                 height: size.height * 0.528,
                                 width: size.width,
@@ -1018,7 +1025,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                     //height: 20,
                                                     child: Padding(
                                                       padding: EdgeInsets.all(
-                                                          size.width * 0.02),
+                                                          size.height * 0.007),
                                                       child: Column(
                                                         children: [
                                                           Row(children: [

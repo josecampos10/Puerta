@@ -84,7 +84,7 @@ class Auth {
         'name': name,
         'email': email,
         'phone': 'Sin número',
-        'password': password,
+        //'password': password,
         'rol': rol,
         'ESLpm': '',
         'ESLpm2': '',
@@ -97,7 +97,9 @@ class Auth {
         'cosmetologia': '',
         'feed': '',
         'ESLchick': '',
-      
+        'ESLclifton': '',
+        'Corte1': '',
+        'Corte2': '',      
       });
       await FirebaseFirestore.instance.collection('users').doc(email).collection('postsESL_State').doc('State').set({
         'lastpost': '',
@@ -154,12 +156,26 @@ class Auth {
   }
 
   Future<void> signOut() async {
-    try {
-      await _firebaseAuth.signOut();
-    } catch (e) {
-      print('Error fetching data: $e');
+  try {
+    // Eliminar token de Firestore si el usuario está logueado
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.email)
+          .update({'token': FieldValue.delete()});
+
+      // También borra el token local
+      await FirebaseMessaging.instance.deleteToken();
     }
+
+    // Finalmente, cerrar sesión
+    await _firebaseAuth.signOut();
+  } catch (e) {
+    print('Error signing out: $e');
   }
+}
+
 }
 
 

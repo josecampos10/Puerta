@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:lapuerta2/ForgotPasswordPage.dart';
+import 'package:lapuerta2/ForgotPasswordPageUser.dart';
 import 'package:lapuerta2/Profile%20files/change_password_view.dart';
 import 'package:lapuerta2/Profile%20files/details_wishlist_view.dart';
 import 'package:lapuerta2/Profile%20files/payment.dart';
@@ -34,6 +36,10 @@ class _WishlistState extends State<Wishlist> with TickerProviderStateMixin {
             if (settings.name == '/detailsWishlist') {
               //details page
               return DetailsWishlistView();
+            }
+            if (settings.name == '/passwordreset') {
+              //details page
+              return ForgotPasswordPageUser();
             }
             if (settings.name == '/changePassword') {
               //details page

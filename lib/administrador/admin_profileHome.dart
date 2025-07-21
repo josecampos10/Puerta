@@ -32,9 +32,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> base;
   final currentUsera = FirebaseAuth.instance.currentUser!;
 
-  void requestNotificationPermissiones() async {
-    await FirebaseApi().initNotifications();
-  }
+  
 
   void requestNotificationPermission() async {
     NotificationSettings settings =
@@ -1063,15 +1061,13 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                                                 .secondary),
                                       )),
                                   TextButton(
-                                      onPressed: () {
-                                        signOut();
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Aceptar',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary))),
+  onPressed: () async {
+    await FirebaseAuth.instance.signOut();
+    if (context.mounted) Navigator.of(context).pop();
+  },
+  child: Text('Aceptar',
+      style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+),
                                 ],
                               );
                             });

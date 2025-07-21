@@ -167,7 +167,7 @@ class _StudentCosmetologiafilesState extends State<StudentCosmetologiafiles> {
               'Mis clases',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: size.width * 0.055,
+                  fontSize: size.height * 0.024,
                   color: Colors.white,
                   fontFamily: ''),
             )),

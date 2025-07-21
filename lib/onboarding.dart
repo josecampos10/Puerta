@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lapuerta2/administrador/admin_widget_tree.dart';
 
 import 'package:lapuerta2/guest/guest_mainwrapper.dart';
@@ -21,6 +22,15 @@ class _OnboardingPage extends State<OnboardingPage>
     'assets/img/foto4.jpg',
     'assets/img/foto5.jpg'
   ];
+
+   @override
+  void initState() {
+    super.initState();
+    Future.delayed(
+      Duration(),
+      () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +61,8 @@ class _OnboardingPage extends State<OnboardingPage>
               Hero(
                 tag: 'logo',
                 child: Container(
-                  width: size.height * 0.17,
-                  height: size.height * 0.17,
+                  width: size.width * 0.35,
+                  height: size.height * 0.15,
                   decoration: BoxDecoration(
                     border: Border.all(
                         width: 1,
@@ -124,24 +134,24 @@ class _OnboardingPage extends State<OnboardingPage>
                 height: size.height * 0.05,
               ),
               SizedBox(
-                  width: size.width*0.5 ,
+                  width: size.width*0.8 ,
                   height: size.height * 0.06,
                   child: ElevatedButton(
                     
                     onPressed: () =>
                         //CHANGE THIS FOR ADMIN AND USER
-                        Navigator.of(context).push(MaterialPageRoute(
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (context) => WidgetTree())),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10))),
                     child: Text(
                       'Ingresar a La Puerta',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.black,
-                        fontSize: size.width * 0.037,
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: size.height * 0.02,
                       ),
                     ),
                   )),
@@ -153,9 +163,10 @@ class _OnboardingPage extends State<OnboardingPage>
                   'Ingresar como invitado',
                   textAlign: TextAlign.center,
                   style: TextStyle(
+                      fontFamily: 'Arial',
                       color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: size.width * 0.04),
+                      fontWeight: FontWeight.bold,
+                      fontSize: size.height * 0.018),
                 ),
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const GuestMainwrapper())),

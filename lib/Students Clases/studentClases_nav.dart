@@ -20,6 +20,15 @@ import 'package:lapuerta2/Profe%20Clasess/ESL%202%20PM/profeESLpm2_students.dart
 import 'package:lapuerta2/Profe%20Clasess/ESL%20Chick%20fila/profechick.dart';
 import 'package:lapuerta2/Profe%20Clasess/ESL%20Chick%20fila/profechick_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/ESL%20Chick%20fila/profechick_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Clifton/profeESL_Clifton.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Clifton/profeESLclifton_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Clifton/profeESLclifton_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Corte%202/profeCorte2.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Corte%202/profeCorte2_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Corte%202/profeCorte2_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Corte1/profeCorte1.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Corte1/profeCorte1_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/ESL%20Corte1/profeCorte1_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/ESLam/profeESLam.dart';
 import 'package:lapuerta2/Profe%20Clasess/ESLam/profeESLam_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/ESLam/profeESLam_students.dart';
@@ -35,8 +44,14 @@ import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/feed/feedlapuerta.dart';
+import 'package:lapuerta2/Students%20Clases/Corte%202/studentCorte2.dart';
+import 'package:lapuerta2/Students%20Clases/Corte%202/studentCorte2_files.dart';
 import 'package:lapuerta2/Students%20Clases/Cosmetologia/studentCosmetologia.dart';
 import 'package:lapuerta2/Students%20Clases/Cosmetologia/studentCosmetologia_files.dart';
+import 'package:lapuerta2/Students%20Clases/ESL%20Clifton/studentESLclifton.dart';
+import 'package:lapuerta2/Students%20Clases/ESL%20Clifton/studentESLclifton_files.dart';
+import 'package:lapuerta2/Students%20Clases/Corte%201/studentCorte1.dart';
+import 'package:lapuerta2/Students%20Clases/Corte%201/studentCorte1_files.dart';
 import 'package:lapuerta2/Students%20Clases/ESL%20am%202/studentESLam2.dart';
 import 'package:lapuerta2/Students%20Clases/ESL%20am%202/studentESLam2_files.dart';
 import 'package:lapuerta2/Students%20Clases/ESL%20am/studentESLam.dart';
@@ -77,6 +92,13 @@ class _StudentclasesNavState extends State<StudentclasesNav>
             settings: settings,
             builder: (BuildContext context) {
               ////////////////////////ESTUDIANTES//////////////////////************** */
+              ///ESL CLIFTON////
+              if (settings.name == '/studentESLclifton') {
+                return Studenteslclifton();
+              }
+              if (settings.name == '/studentESLclifton_files') {
+                return Studenteslfilesclifton();
+              }
               ///ESL PM////
               if (settings.name == '/studentESLpm') {
                 return Studenteslpm();
@@ -151,6 +173,24 @@ class _StudentclasesNavState extends State<StudentclasesNav>
                 //details page
                 return StudentCosmetologiafiles();
               }
+              ///////////////CORTE Y CONFECCION///////////////////////
+               if (settings.name == '/studentCorte1') {
+                //details page
+                return StudentCorte1();
+              }
+              if (settings.name == '/studentCorte1_files') {
+                //details page
+                return Studentfilescorte1();
+              }
+              ///////////////CORTE Y CONFECCION 2///////////////////////
+               if (settings.name == '/studentCorte2') {
+                //details page
+                return StudentCorte2();
+              }
+              if (settings.name == '/studentCorte2_files') {
+                //details page
+                return Studentfilescorte2();
+              }
               
 
               //***********************************PROFESORES ***************************
@@ -183,6 +223,16 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               }
               if (settings.name == '/studentESLpm_students') {
                 return Profeeslstudentspm();
+              }
+              //ESL CLIFTON //
+              if (settings.name == '/profeESLclifton') {
+                return Profeeslclifton();
+              }
+              if (settings.name == '/profeESLclifton_files') {
+                return Profeeslfilesclifton();
+              }
+              if (settings.name == '/studentESLclifton_students') {
+                return Profeeslstudentsclifton();
               }
               //ESL AM 1 //
               if (settings.name == '/profeESLam') {
@@ -233,6 +283,26 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               }
               if (settings.name == '/profeCostura_students') {
                 return ProfeCosturastudents();
+              }
+               /////CORTE Y CONFECCION 1 ///////
+              if (settings.name == '/profeCorte1') {
+                return ProfeCorte1();
+              }
+              if (settings.name == '/profeCorte1_files') {
+                return ProfeCorte1files();
+              }
+              if (settings.name == '/profeCorte1_students') {
+                return ProfeCorte1students();
+              }
+               /////CORTE Y CONFECCION 2 ///////
+              if (settings.name == '/profeCorte2') {
+                return ProfeCorte2();
+              }
+              if (settings.name == '/profeCorte2_files') {
+                return ProfeCorte2files();
+              }
+              if (settings.name == '/profeCorte2_students') {
+                return ProfeCorte2students();
               }
               //////////////////CIUDADANIA////////////////
               if (settings.name == '/profeCiudadania') {

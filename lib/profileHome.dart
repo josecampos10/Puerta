@@ -36,9 +36,7 @@ class _ProfileHomeState extends State<Profilehome> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> base;
   final currentUsera = FirebaseAuth.instance.currentUser!;
 
-  void requestNotificationPermissiones() async {
-    await FirebaseApi().initNotifications();
-  }
+  
 
   void requestNotificationPermission() async {
     NotificationSettings settings =
@@ -69,11 +67,34 @@ class _ProfileHomeState extends State<Profilehome> {
     }
   }
 
-  signOut() async {
-    await auth.signOut();
+  Future<void> signOut() async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // 🧽 1. Eliminar token de Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.email)
+          .update({'token': FieldValue.delete()});
+
+      // 🔁 2. Borrar el token FCM del dispositivo
+      await FirebaseMessaging.instance.deleteToken();
+    }
+
+    // 🔐 3. Cerrar sesión de Firebase
+    await FirebaseAuth.instance.signOut();
+
+    // 🚪 4. Redirigir al login o WidgetTree
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => WidgetTree()));
+      context,
+      MaterialPageRoute(builder: (context) => WidgetTree()),
+    );
+  } catch (e) {
+    print('Error during sign out: $e');
   }
+}
+
 
   String push = '';
 
@@ -1124,21 +1145,7 @@ class _ProfileHomeState extends State<Profilehome> {
               SizedBox(
                 height: size.height * 0.035,
               ),
-              /*Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  
-                  Text(
-                    'Borrar datos',
-                    style: TextStyle(
-                        color: const Color.fromARGB(255, 0, 0, 0)
-                            .withOpacity(0.5),
-                        fontSize: size.height * 0.02,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Coolvetica'),
-                  )
-                ],
-              ),*/
+              
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -72,8 +72,8 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
             child: Text(
               'Mis clases',
               style: TextStyle(
-                  //fontWeight: FontWeight.w500,
-                  fontSize: size.width * 0.055,
+                 fontWeight: FontWeight.bold,
+                  fontSize: size.height * 0.024,
                   color: Colors.white,
                   fontFamily: ''),
             )),

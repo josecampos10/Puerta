@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:animated_icon/animated_icon.dart';
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -42,10 +43,16 @@ class _AdminControlState extends State<AdminControl> {
   late Stream<QuerySnapshot> imageESLstream;
   late Stream<QuerySnapshot> imageStream;
   Uint8List? pickedImage;
-  bool _isLoading = false;
-  Uint8List? _file;
   late Stream<DocumentSnapshot<Map<String, dynamic>>> imagenes;
   final currentUsera = FirebaseAuth.instance.currentUser!;
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> streamfeed;
+
+  int _notificationCountESLpm = 0;
+  int _notificationCountGEDpm = 0;
+  int _notificationCountCostura = 0;
+  int _notificationCountCiudadania = 0;
+  int _notificationcountCosmetologia = 0;
+  int _notificationcountESLpm2 = 0;
 
   @override
   void initState() {
@@ -61,82 +68,10 @@ class _AdminControlState extends State<AdminControl> {
         .collection('users')
         .doc(currentUsera.email) // 👈 Your document id change accordingly
         .snapshots();
-  }
-
-  void clearImage() {
-    setState(() {
-      _file = null;
-    });
-  }
-
-  void postImage(user, unnombre) async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      String res = await ImageStoreMethods()
-          .uploadPost(controllerdes.text, _file!, user, unnombre);
-
-      if (res == 'success') {
-        setState(() {
-          _isLoading = false;
-        });
-        showSnackbar('Posted', context);
-        clearImage();
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        showSnackbar(res, context);
-      }
-    } catch (err) {
-      showSnackbar(err.toString(), context);
-    }
-  }
-
-  _imageSelect(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text('Seleccionar'),
-            children: [
-              SimpleDialogOption(
-                padding: EdgeInsets.all(20),
-                child: Text('Usa la cámara'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(
-                    ImageSource.camera,
-                  );
-                  setState(() {
-                    _file = file;
-                  });
-                },
-              ),
-              SimpleDialogOption(
-                padding: EdgeInsets.all(20),
-                child: Text('Desde la galería'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(
-                    ImageSource.gallery,
-                  );
-                  setState(() {
-                    _file = file;
-                  });
-                },
-              ),
-              SimpleDialogOption(
-                padding: EdgeInsets.all(20),
-                child: Text('Cancelar'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+    streamfeed = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.email) // 👈 Your document id change accordingly
+        .snapshots();
   }
 
   @override
@@ -152,641 +87,7596 @@ class _AdminControlState extends State<AdminControl> {
     Size size = MediaQuery.of(context).size;
     // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
-        title: Text(
-          'Control',
-          style: TextStyle(
-              fontSize: size.width * 0.045,
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          centerTitle: true,
+          title: Text(
+            'Control',
+            style: TextStyle(
+                fontSize: size.width * 0.045,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          ),
+          toolbarHeight: size.height * 0.09,
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
         ),
-        toolbarHeight: size.height * 0.09,
+        resizeToAvoidBottomInset: true,
         backgroundColor: Theme.of(context).colorScheme.tertiary,
-      ),
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Theme.of(context).colorScheme.tertiary,
-      body: Container(
-        height: size.height * 0.93,
-        width: size.width,
+        body: Container(
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(size.width * 0.08),
                 topRight: Radius.circular(size.width * 0.08))),
+        height: size.height,
+        width: size.width,
+        //decoration: BoxDecoration(
+        //image: DecorationImage(image: AssetImage('assets/img/foto5.jpg'),
+        //colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+        // fit: BoxFit.cover
+        // ),
+        //),
+
         child: SingleChildScrollView(
-          //physics: NeverScrollableScrollPhysics(),
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          reverse: false,
-          child: Column(children: [
-            Column(
-              children: [
-                SizedBox(
-                  height: size.height * 0.01,
-                ),
-                Center(
-                  child: Container(
-                    width: size.width * 0.92,
-                    height: size.height * 0.04,
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(2, 2),
-                            blurRadius: 12,
-                            color: Color.fromRGBO(0, 0, 0, 0),
-                          )
-                        ],
-                        shape: BoxShape.rectangle,
-                        color: const Color.fromARGB(0, 255, 255, 255),
-                        border: Border(
-                            bottom: BorderSide(color: Colors.grey, width: 0.5)),
-                        borderRadius: BorderRadius.circular(size.width * 0.0)),
+          child: Column(
+            children: [
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              /*SizedBox(
+                  //padding: EdgeInsets.all(5.0),
+                  height: size.height*0.805,
+                  width: size.width * 1,
+                  child: _buildBody())*/
 
-                    //color: Colors.red,
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.all(size.width * 0.001),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            width: double.infinity,
-                            height: size.height * 0.04,
-                            child: GridView.builder(
-                              physics: ScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 1,
-                                      childAspectRatio: size.width * 0.0008),
-                              shrinkWrap: true,
-                              primary: false,
-                              itemCount: gridItems.length,
-                              cacheExtent: 1000.0,
-                              itemBuilder:
-                                  (BuildContext context, int position) {
-                                return AnimationConfiguration.staggeredGrid(
-                                  position: 1,
-                                  columnCount: 1,
-                                  child: ScaleAnimation(
-                                    duration: Duration(milliseconds: 400),
-                                    child: FadeInAnimation(
-                                      child: InkWell(
-                                        onTap: () => setState(
-                                            () => selectedIndex = position),
-                                        child: Card(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      size.width * 0.03)),
-                                          elevation: size.height * 0.9,
-                                          //shadowColor: Colors.black26,
-                                          color: (selectedIndex == position)
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .tertiary
-                                              : Color.fromRGBO(238, 135, 1, 0),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(
-                                                size.width * 0.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      SizedBox(
-                                                        width: size.width * 0.0,
-                                                      ),
-                                                      Text(
-                                                        gridItems[position],
-                                                        textAlign:
-                                                            TextAlign.start,
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              size.height *
-                                                                  0.017,
-                                                          fontFamily:
-                                                              'Arial',
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                          color:
-                                                              (selectedIndex ==
-                                                                      position)
-                                                                  ? Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          255,
-                                                                          255,
-                                                                          255)
-                                                                  : Color
-                                                                      .fromRGBO(
-                                                                          143,
-                                                                          143,
-                                                                          143,
-                                                                          1),
-                                                        ),
-                                                      ),
-                                                    ]),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
+              //PARTE DE ESTUDIANTES********************************************
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ESLpm'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: size.height * 0.01,
-                ),
-                SingleChildScrollView(
-                  reverse: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(0),
-                      //color: const Color.fromARGB(0, 0, 0, 0),
-                    ),
-                    height: size.height * 0.14,
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        StreamBuilder<QuerySnapshot>(
-                          stream: imageStream,
-                          builder: (_, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Column(children: [
-                                SizedBox(
-                                  height: size.height * 0.01,
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
                                 ),
-                                SpinKitFadingCircle(
-                                  color: Color.fromRGBO(4, 99, 128, 1),
-                                  size: size.width * 0.1,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              ]);
-                            }
-                            if (snapshot.hasData &&
-                                snapshot.data!.docs.length > 1 &&
-                                selectedIndex == 0) {
-                              return CarouselSlider.builder(
-                                  carouselController: carouselController,
-                                  itemCount: snapshot.data!.docs.length,
-                                  itemBuilder: (_, index, __) {
-                                    DocumentSnapshot sliderImage =
-                                        snapshot.data!.docs[index];
-                                    return ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ImageDetallesHomeSlider(
-                                                          sliderImage:
-                                                              sliderImage)));
-                                        },
-                                        child: Hero(
-                                          tag: sliderImage,
-                                          child: SizedBox(
-                                            width: size.width * 0.85,
-                                            // height: size.height * 0.2,
-                                            child: Image.network(
-                                              sliderImage['Image'],
-                                              filterQuality: FilterQuality.low,
-                                              fit: BoxFit.fitWidth,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  options: CarouselOptions(
-                                      aspectRatio: size.height * 0.0045,
-                                      viewportFraction: size.height * 0.00045,
-                                      autoPlayCurve: Curves.fastOutSlowIn,
-                                      autoPlayInterval: Duration(seconds: 10),
-                                      autoPlay: true,
-                                      enlargeCenterPage: true,
-                                      onPageChanged: (index, _) {
-                                        setState(() {
-                                          currentSlideIndex = index;
-                                        });
-                                      }));
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
-                        StreamBuilder<QuerySnapshot>(
-                          stream: imageESLstream,
-                          builder: (_, snapshot) {
-                            if (snapshot.hasData &&
-                                snapshot.data!.docs.length > 1 &&
-                                selectedIndex == 1) {
-                              return CarouselSlider.builder(
-                                  carouselController: carouselController,
-                                  itemCount: snapshot.data!.docs.length,
-                                  itemBuilder: (_, index, __) {
-                                    DocumentSnapshot sliderImage =
-                                        snapshot.data!.docs[index];
-                                    return ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ImageDetallesHomeSlider(
-                                                          sliderImage:
-                                                              sliderImage)));
-                                        },
-                                        child: Hero(
-                                          tag: sliderImage,
-                                          child: Stack(
-                                            children: <Widget>[
-                                              SizedBox(
-                                                width: size.width * 0.8,
-                                                child: Image.network(
-                                                  sliderImage['Image'],
-                                                  filterQuality:
-                                                      FilterQuality.low,
-                                                  fit: BoxFit.fitWidth,
-                                                ),
-                                              ),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomCenter,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    SizedBox(
-                                                        height:
-                                                            size.height * 0.05,
-                                                        child: Container(
-                                                          
-                                                          
-                                                          child: CircleAvatar(
-                                                            radius: 18,
-                                                            backgroundColor: Theme.of(context).colorScheme.primary,
-                                                              child: IconButton(
-                                                                onPressed: (){},
-                                                                icon: Icon(Icons.delete, size: size.height*0.025,color: Theme.of(context).colorScheme.secondary,)
-                                                                  )),
-                                                        )),
-                                                    SizedBox(
-                                                      width: size.width * 0.02,
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  options: CarouselOptions(
-                                      aspectRatio: size.height * 0.0045,
-                                      viewportFraction: size.height * 0.00045,
-                                      autoPlayCurve: Curves.fastOutSlowIn,
-                                      autoPlayInterval: Duration(seconds: 10),
-                                      autoPlay: true,
-                                      enlargeCenterPage: true,
-                                      onPageChanged: (index, _) {
-                                        setState(() {
-                                          currentSlideIndex = index;
-                                        });
-                                      }));
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
-                        StreamBuilder<QuerySnapshot>(
-                          stream: imageRecursoStream,
-                          builder: (_, snapshot) {
-                            if (snapshot.hasData &&
-                                snapshot.data!.docs.length > 1 &&
-                                selectedIndex == 2) {
-                              return CarouselSlider.builder(
-                                  carouselController: carouselController,
-                                  itemCount: snapshot.data!.docs.length,
-                                  itemBuilder: (_, index, __) {
-                                    DocumentSnapshot sliderImage =
-                                        snapshot.data!.docs[index];
-                                    return ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ImageDetallesHomeSlider(
-                                                          sliderImage:
-                                                              sliderImage)));
-                                        },
-                                        child: Hero(
-                                          tag: sliderImage,
-                                          child: SizedBox(
-                                            width: size.width * 0.8,
-                                            child: Image.network(
-                                              sliderImage['Image'],
-                                              filterQuality: FilterQuality.low,
-                                              fit: BoxFit.fitWidth,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  options: CarouselOptions(
-                                      aspectRatio: size.height * 0.0045,
-                                      viewportFraction: size.height * 0.00045,
-                                      autoPlayCurve: Curves.fastOutSlowIn,
-                                      autoPlayInterval: Duration(seconds: 10),
-                                      autoPlay: true,
-                                      enlargeCenterPage: true,
-                                      onPageChanged: (index, _) {
-                                        setState(() {
-                                          currentSlideIndex = index;
-                                        });
-                                      }));
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
-
-                        
-
-                      ],
-                    ),
-                  ),
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: size.width * 0.01,
-                    ),
-                    SizedBox(
-                      width: size.width * 0.10,
-                      child: IconButton(
-                          onPressed: () => _imageSelect(context),
-                          icon: Image(
-                            image: AssetImage('assets/img/iconphoto.png'),
-                          )),
-                    ),
-                    Text('Subir imagen a: ')
-                  ],
-                ),
-                SizedBox(
-                  height: size.height * 0.03,
-                ),
-                StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                    stream: imagenes,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return const Text('Something went wrong');
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Column(children: [
-                          SpinKitFadingCircle(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            size: size.width * 0.055,
-                          ),
-                        ]);
-                      }
-                      Map<String, dynamic> data =
-                          snapshot.data!.data() as Map<String, dynamic>;
-                      return _file == null
-                          ? Container()
-                          : Center(
-                              child: Column(
-                                children: [
-                                  FutureBuilder(
-                                      future: FireStoreDataBase().getData(),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasError) {
-                                          return const Text(
-                                              'Something went wrong');
-                                        }
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.done) {
-                                          return Column(children: [
-                                            Container(
-                                              height: size.height * 0.35,
-                                              width: size.height,
-                                              decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                      0, 158, 158, 158),
-                                                  border: Border.all(
-                                                    color: Color.fromRGBO(
-                                                        4, 99, 128, 0),
-                                                    width: size.height * 0.0,
-                                                  ),
-                                                  //shape: BoxShape.circle,
-                                                  image: DecorationImage(
-                                                      fit: BoxFit.cover,
-                                                      image: Image.memory(
-                                                        _file!,
-                                                      ).image)),
-                                            ),
-                                            SizedBox(
-                                              height: size.height * 0.01,
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                if (controllerdes.text == '') {
-                                                } else {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Publicar actividad'),
-                                                          content: Text(
-                                                              'Estás seguro que quieres publicar esta actividad?'),
-                                                          actions: [
-                                                            TextButton(
-                                                                onPressed: () {
-                                                                  DateTime
-                                                                      date =
-                                                                      DateTime
-                                                                          .now();
-                                                                  String today =
-                                                                      '${date.day}/${date.month}/${date.year}';
-                                                                  String
-                                                                      timetoday =
-                                                                      '${date.hour}:${date.minute}';
-                                                                  FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'posts')
-                                                                      .doc(DateTime(
-                                                                              DateTime.now().year,
-                                                                              DateTime.now().month,
-                                                                              DateTime.now().day,
-                                                                              DateTime.now().hour,
-                                                                              DateTime.now().minute,
-                                                                              DateTime.now().second)
-                                                                          .toString())
-                                                                      .update({
-                                                                    /*'Comment': controllerdes.text,
-                                          'Date': today,
-                                          'Time': timetoday,
-                                          'User': 'La Puerta',
-                                          'postUrl': 'no image',*/
-                                                                    'Image': snapshot
-                                                                        .data
-                                                                        .toString(),
-                                                                  });
-
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                  postImage(
-                                                                      snapshot
-                                                                          .data
-                                                                          .toString(),
-                                                                      data[
-                                                                          'name']);
-
-                                                                  controllerdes
-                                                                      .clear();
-                                                                },
-                                                                child: Text(
-                                                                    'Aceptar',
-                                                                    style: TextStyle(
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .secondary))),
-                                                            TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                },
-                                                                child: Text(
-                                                                    'Cancelar',
-                                                                    style: TextStyle(
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .secondary)))
-                                                          ],
-                                                        );
-                                                      });
-                                                }
-                                                if (controllerdes
-                                                    .text.isEmpty) {
-                                                  return;
-                                                }
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                  backgroundColor:
-                                                      Color.fromRGBO(
-                                                          4, 99, 128, 1),
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 25,
-                                                      vertical: 10)),
-                                              child: Text(
-                                                'Siguiente',
-                                                style: TextStyle(
-                                                    color: const Color.fromARGB(
-                                                        255, 255, 255, 255),
-                                                    fontSize:
-                                                        size.width * 0.044,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                          ]);
-                                        }
-                                        return const Center(
-                                            child: CircularProgressIndicator());
-                                      }),
-                                ],
                               ),
-                            );
-                    }),
-                StreamBuilder<QuerySnapshot>(
-                    stream: feedStream,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Column(children: [
-                          SizedBox(
-                            height: size.height * 0.02,
-                          ),
-                          SpinKitFadingCircle(
-                            color: Color.fromRGBO(4, 99, 128, 1),
-                            size: size.width * 0.1,
-                          ),
-                        ]);
-                      }
-                      if (snapshot.hasData) {
-                        final snap = snapshot.data!.docs;
-
-                        return SizedBox(
-                          height: 150,
-                          width: 150,
-                          child: PieChart(PieChartData(sections: [
-                            PieChartSectionData(
-                                value: 10,
-                                title: 'casa',
-                                color: Colors.green,
-                                radius: 70),
-                            PieChartSectionData(value: 80)
-                          ])),
+                            ),
+                          ],
                         );
-                      } else {
-                        return const SizedBox();
                       }
-                    }),
-                SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: PieChart(PieChartData(sections: [
-                    PieChartSectionData(
-                        value: 10,
-                        title: 'casa',
-                        color: Colors.green,
-                        radius: 70),
-                    PieChartSectionData(value: 80)
-                  ])),
-                )
-              ],
-            ),
-          ]),
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Estudiante") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ESLam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                         Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ESLam2'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ESLchick'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentchick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['GEDpm'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.school,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['GEDam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.school,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['costuraAM'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Costuraback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.home_work,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Costura",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['ciudadania'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Ciudadaniaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.folder,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              153, 116, 40, 122)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(153, 116, 40, 122),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Estudiante') {
+                      if (data['cosmetologia'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Cosmetologiaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.cut,
+                                          size: size.height * 0.1,
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Cosmetología",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+
+              //PARTE DE ADMIN********************************************
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['ESLpm'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.00,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 pm",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 pm",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['ESLam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['ESLam2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['ESLchick'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profechick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['GEDpm'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['GEDam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['costuraAM'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Costuraback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.shopping_bag,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Costura",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['ciudadania'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Ciudadaniaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.folder,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              153, 116, 40, 122)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(153, 116, 40, 122),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "admin") {
+                      if (data['cosmetologia'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Cosmetologiaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.cut,
+                                          size: size.height * 0.1,
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Cosmetología",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'admin') {
+                      if (data['feed'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, '/profefeedlapuerta');
+                                setState(() {
+                                  _notificationcountCosmetologia = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Cosmetologiaback.png'),
+                                      colorFilter: ColorFilter.mode(
+                                          Color.fromRGBO(4, 99, 128, 1),
+                                          BlendMode.color),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.message,
+                                          size: size.height * 0.1,
+                                          color: Color.fromRGBO(4, 99, 128, 1)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color: Color.fromRGBO(4, 99, 128, 1),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Center(
+                                          child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: size.width * 0.45,
+                                            child: Text(
+                                              "La Puerta Feed",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              //PARTE DE VOLUNTARIO********************************************
+
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ESLpm'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Voluntario") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ESLam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ESLam2'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ESLchick'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentchick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['GEDpm'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.school,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['GEDam'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.school,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['costuraAM'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Costuraback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.home_work,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Costura",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['ciudadania'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Ciudadaniaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.folder,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              153, 116, 40, 122)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(153, 116, 40, 122),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['cosmetologia'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/studentCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Cosmetologiaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.cut,
+                                          size: size.height * 0.1,
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Cosmetología",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+
+              //PARTE DE STAFF********************************************
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLpm'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.00,
+                            ),
+                            GestureDetector(
+                             onTap: () async {
+  Navigator.pushNamed(context, '/profeESLpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+
+
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 pm",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+
+
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLpm2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLpm2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLpm2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESL back.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 255, 102, 0),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 pm",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLpm2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLpm2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 1 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLam2'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeESLam2');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLam2')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage('assets/img/ESLam.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              155, 100, 13, 158)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 100, 13, 158),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "ESL 2 am",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLam2')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLam2')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ESLchick'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profechick');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('ESLchick')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/ESLchick.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 158, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "ESL Chick-fil-A",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('ESLchick')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('ESLchick')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['GEDpm'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDpm');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDpm')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED PM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDpm')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDpm')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['GEDam'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeGEDam');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('GEDam')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/GEDback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.language,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 13, 77, 252),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "GED AM",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('GEDam')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('GEDam')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['costuraAM'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosturaAM');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('CosturaAM')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Costuraback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.shopping_bag,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(143, 52, 161, 1),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Costura",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('CosturaAM')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('CosturaAM')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['ciudadania'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCiudadania');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Ciudadania')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Ciudadaniaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.folder,
+                                          size: size.height * 0.1,
+                                          color: Color.fromARGB(
+                                              153, 116, 40, 122)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(153, 116, 40, 122),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Ciudadanía",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Ciudadania')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Ciudadania')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == "Staff") {
+                      if (data['cosmetologia'] == 'inscrito') {
+                        //backgroundMessageHandler(1, 'La Puerta', 'Bienvenido');
+                        //NotiService().programarNotificacionesMartesYJueves(horaClase: TimeOfDay(hour: 14, minute: 13), titulo: 'Clase', mensaje: 'Clase pilas');
+
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+  Navigator.pushNamed(context, '/profeCosmetologia');
+
+  try {
+    final lastPostSnapshot = await FirebaseFirestore.instance
+        .collection('postsState')
+        .doc('Cosmetologia')
+        .get();
+
+    final lastPostValue = lastPostSnapshot.data()?['lastpost'];
+
+    if (lastPostValue != null) {
+      await FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .set({'lastRead': lastPostValue});
+    }
+
+    setState(() {
+      _notificationCountESLpm = 0;
+    });
+  } catch (e) {
+    print('❌ Error actualizando estado de lectura: $e');
+  }
+},
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Cosmetologiaback.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.cut,
+                                          size: size.height * 0.1,
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              153, 213, 13, 13),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.4,
+                                            child: Text(
+                                              "Cosmetología",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+  child: SizedBox(
+    width: size.width * 0.0,
+    child: StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('postsStateUser')
+          .doc(currentUser.email)
+          .collection('classes')
+          .doc('Cosmetologia')
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+          return Container(); // o muestra el ícono por defecto si quieres
+        }
+
+        final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+        final lastRead = userData['lastRead'];
+
+        return StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('postsState')
+              .doc('Cosmetologia')
+              .snapshots(),
+          builder: (context, globalSnapshot) {
+            if (!globalSnapshot.hasData || !globalSnapshot.data!.exists) {
+              return Container();
+            }
+
+            final globalData =
+                globalSnapshot.data!.data() as Map<String, dynamic>;
+            final lastPost = globalData['lastpost'];
+
+            if (lastPost != lastRead) {
+              return Container(
+                height: size.height * 0.031,
+                child: AnimateIcon(
+                  key: UniqueKey(),
+                  onTap: () {},
+                  iconType: IconType.continueAnimation,
+                  color: Colors.white,
+                  animateIcon: AnimateIcons.bell,
+                ),
+              );
+            }
+
+            return Container(); // ya fue leído
+          },
+        );
+      },
+    ),
+  ),
+),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Staff') {
+                      if (data['feed'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, '/profefeedlapuerta');
+                                setState(() {
+                                  _notificationcountCosmetologia = 0;
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image: AssetImage(
+                                          'assets/img/Ciudadaniaback.png'),
+                                      colorFilter: ColorFilter.mode(
+                                          Color.fromRGBO(4, 99, 128, 1),
+                                          BlendMode.color),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.message,
+                                          size: size.height * 0.1,
+                                          color: Color.fromRGBO(4, 99, 128, 1)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color: Color.fromRGBO(4, 99, 128, 1),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Center(
+                                          child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            width: size.width * 0.45,
+                                            child: Text(
+                                              "La Puerta Feed",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+
+              SizedBox(
+                height: size.height * 0.03,
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      ),);
   }
 }

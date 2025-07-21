@@ -115,7 +115,7 @@ class _MainWrapperState extends State<Mainwrapper> {
             showUnselectedLabels: false,
             selectedLabelStyle: TextStyle(fontSize: size.height * 0.001),
             selectedItemColor: Colors.white,
-            unselectedItemColor: Color.fromRGBO(44, 44, 44, 1),
+            unselectedItemColor: Color.fromRGBO(143, 143, 143, 0.526),
             selectedIconTheme: IconThemeData(size: size.height * 0.03),
             unselectedIconTheme: IconThemeData(size: size.height * 0.025),
             currentIndex: _selectedIndex,

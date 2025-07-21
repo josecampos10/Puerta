@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lapuerta2/ForgotPasswordPage.dart';
@@ -21,27 +22,37 @@ class _LoginNowState extends State<LoginNow> {
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool visibility = true;
   bool _isObscure = true;
 
-  Future<void> signInWithEmailAndPassword() async {
-    try {
-      await Auth().signInWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-      );
-      /*await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser?.email)
-          .update({'token': await FirebaseMessaging.instance.getToken()});*/
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-        _errorMessage();
-        if (_errorMessage() == '') {}
-      });
-    }
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) return 'Ingrese una contraseña';
+    if (value.length < 8) return 'Mínimo 8 caracteres';
+    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Debe tener una mayúscula';
+    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Debe tener una minúscula';
+    if (!RegExp(r'[0-9]').hasMatch(value)) return 'Debe tener un número';
+    if (!RegExp(r'[!@#\\$&*~]').hasMatch(value)) return 'Debe tener un símbolo';
+    return null;
   }
+
+  
+
+
+  Future<void> signInWithEmailAndPassword() async {
+  try {
+    await Auth().signInWithEmailAndPassword(
+      email: _controllerEmail.text,
+      password: _controllerPassword.text,
+    );
+
+  } on FirebaseAuthException catch (e) {
+    setState(() {
+      errorMessage = e.message;
+      _errorMessage();
+    });
+  }
+}
 
   Future<void> createUserWithEmailAndPassword() async {
      // Quitamos espacios en blanco alrededor
@@ -65,11 +76,6 @@ class _LoginNowState extends State<LoginNow> {
       password: password,
       rol: role,
     );
-
-      /*await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser?.email)
-          .update({'token': await FirebaseMessaging.instance.getToken()});*/
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -87,7 +93,7 @@ class _LoginNowState extends State<LoginNow> {
     Size size = MediaQuery.of(context).size;
     return Center(
       child: Container(
-        height: size.height * 0.06,
+        height: size.height * 0.065,
         margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         decoration: BoxDecoration(
             border: Border(
@@ -101,32 +107,35 @@ class _LoginNowState extends State<LoginNow> {
                     color: const Color.fromARGB(255, 110, 110, 110), width: 1)),
             color: const Color.fromARGB(255, 248, 248, 248),
             borderRadius: BorderRadius.circular(10)),
-        child: TextField(
-          onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-          cursorColor: Colors.black,
-          style: TextStyle(
-              fontSize: size.height * 0.018,
-              color: const Color.fromARGB(255, 0, 0, 0)),
-          cursorHeight: size.height * 0.023,
-          controller: controller,
-          decoration: InputDecoration(
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent)),
-            border: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent)),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent)),
-            labelText: title,
-            prefixIcon:
-                Icon(icon, color: const Color.fromARGB(255, 155, 155, 155)),
-            labelStyle: TextStyle(
-                fontSize: size.height * 0.02,
-                fontFamily: 'Arial',
-                color: const Color.fromARGB(255, 155, 155, 155)),
+        child: Center(
+          child: TextField(
+            
+            onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+            cursorColor: Colors.black,
+            style: TextStyle(
+                fontSize: size.height * 0.018,
+                color: const Color.fromARGB(255, 0, 0, 0)),
+            cursorHeight: size.height * 0.015,
+            controller: controller,
+            decoration: InputDecoration(
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.transparent)),
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.transparent)),
+              enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.transparent)),
+              hintText: title,
+              prefixIcon:
+                  Icon(icon, color: const Color.fromARGB(255, 155, 155, 155), size: size.height*0.02,),
+              hintStyle: TextStyle(
+                  fontSize: size.height * 0.017,
+                  fontFamily: 'Arial',
+                  color: const Color.fromARGB(255, 155, 155, 155)),
+            ),
           ),
         ),
       ),
@@ -141,67 +150,64 @@ class _LoginNowState extends State<LoginNow> {
     Size size = MediaQuery.of(context).size;
     return Center(
       child: Container(
-        height: size.height * 0.06,
+        height: size.height * 0.065,
         margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            border: Border(
-                top: BorderSide(
-                    color: const Color.fromARGB(255, 110, 110, 110), width: 1),
-                bottom: BorderSide(
-                    color: const Color.fromARGB(255, 110, 110, 110), width: 1),
-                left: BorderSide(
-                    color: const Color.fromARGB(255, 110, 110, 110), width: 1),
-                right: BorderSide(
-                    color: const Color.fromARGB(255, 110, 110, 110), width: 1)),
-            borderRadius: BorderRadius.circular(10)),
-        child: TextField(
-          onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-          cursorColor: Colors.black,
-          style: TextStyle(
+          color: const Color.fromARGB(255, 255, 255, 255),
+          border: Border.all(color: const Color.fromARGB(255, 110, 110, 110)),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: TextFormField(
+            
+            cursorHeight: size.height*0.015,
+            controller: controller,
+            obscureText: _isObscure,
+            validator: validatePassword,
+            cursorColor: Colors.black,
+            style: TextStyle(
               fontSize: size.height * 0.018,
-              color: const Color.fromARGB(255, 0, 0, 0)),
-          cursorHeight: size.height * 0.023,
-          controller: controller,
-          //keyboardType: TextInputType.visiblePassword,
-          obscureText: _isObscure,
-          decoration: InputDecoration(
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent)),
-            border: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent)),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent)),
-            labelText: title,
-            prefixIcon: Icon(
-              icon,
-              color: const Color.fromARGB(255, 155, 155, 155),
+              color: const Color.fromARGB(255, 0, 0, 0),
             ),
-            labelStyle: TextStyle(
-                fontSize: size.height * 0.02,
+            decoration: InputDecoration(
+              
+              errorBorder: UnderlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                errorStyle: TextStyle(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .error, // Color del texto del error
+                  fontSize: size.height * 0.015, // Tamaño del texto
+                  fontWeight: FontWeight.normal,
+                  fontFamily: 'Arial',
+                ),
+              border: InputBorder.none,
+              hintText: title,
+              prefixIcon: Icon(icon, color: const Color.fromARGB(255, 155, 155, 155),size: size.height*0.02,),
+              hintStyle: TextStyle(
+                fontSize: size.height * 0.017,
                 fontFamily: 'Arial',
-                color: const Color.fromARGB(255, 155, 155, 155)),
-            suffix: IconButton(
-              padding: const EdgeInsets.all(20),
-              iconSize: size.height * 0.03,
-              icon: _isObscure
-                  ? const Icon(
-                      Icons.visibility_off,
-                      color: Colors.grey,
-                    )
-                  : const Icon(
-                      Icons.visibility,
-                      color: Colors.black,
-                    ),
-              onPressed: () {
-                setState(() {
-                  _isObscure = !_isObscure;
-                });
-              },
+                color: const Color.fromARGB(255, 155, 155, 155),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _isObscure ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isObscure = !_isObscure;
+                  });
+                },
+              ),
             ),
           ),
         ),
@@ -217,30 +223,37 @@ class _LoginNowState extends State<LoginNow> {
   }
 
   Widget _submitButton() {
-    Size size = MediaQuery.of(context).size;
-    return SizedBox(
-      width: size.width * 0.9,
-      height: size.height * 0.07,
-      child: ElevatedButton(
-          onPressed: isLogin
-              ? signInWithEmailAndPassword
-              : createUserWithEmailAndPassword,
-          style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 96, 146, 255),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10))),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-            child: Text(
-              isLogin ? 'Inicar Sesión' : 'Registrarse',
-              style: TextStyle(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  fontSize: size.height * 0.021,
-                  fontWeight: FontWeight.bold),
-            ),
-          )),
-    );
-  }
+  Size size = MediaQuery.of(context).size;
+  return SizedBox(
+    width: size.width * 0.9,
+    height: size.height * 0.07,
+    child: ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState?.validate() ?? false) {
+          isLogin ? signInWithEmailAndPassword() : createUserWithEmailAndPassword();
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 96, 146, 255),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        child: Text(
+          isLogin ? 'Inicar Sesión' : 'Registrarse',
+          style: TextStyle(
+            color: const Color.fromARGB(255, 255, 255, 255),
+            fontSize: size.height * 0.021,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 
   Widget _loginOrRegisterButton() {
     Size size = MediaQuery.of(context).size;
@@ -269,6 +282,18 @@ class _LoginNowState extends State<LoginNow> {
   final GlobalKey scrollKey = GlobalKey();
   String _selectedItem = '';
 
+  bool _imagePrecached = false;
+
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+
+  if (!_imagePrecached) {
+    precacheImage(const AssetImage('assets/img/fondo_login.png'), context);
+    _imagePrecached = true;
+  }
+}
+
   @override
   void initState() {
     super.initState();
@@ -278,63 +303,68 @@ class _LoginNowState extends State<LoginNow> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
-      backgroundColor: Theme.of(context).colorScheme.tertiary,
-      body: Container(
-        alignment: Alignment.topCenter,
-        height: size.height,
-        width: size.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              filterQuality: FilterQuality.low,
-              image: AssetImage('assets/img/fondo_login.png'),
-              colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.3), BlendMode.dstATop),
-              fit: BoxFit.fill),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          reverse: true,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                height: size.height * 0.08,
-              ),
-              Hero(
-                tag: 'logo',
-                child: Container(
-                  width: size.height * 0.15,
-                  height: size.height * 0.15,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 5,
-                        color: const Color.fromARGB(255, 255, 255, 255)),
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      scale: size.height * 0.006,
-                      alignment: Alignment(0, 0),
-                      image: AssetImage('assets/img/logo.png'),
-                      //fit: BoxFit.fitWidth,
+    return Form(
+      key: _formKey,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        extendBodyBehindAppBar: true,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Container(
+          
+          alignment: Alignment.topCenter,
+          height: size.height,
+          width: size.width,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.tertiary,
+            image: DecorationImage(
+                filterQuality: FilterQuality.low,
+                image: AssetImage('assets/img/fondo_login.png'),
+                colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.3), BlendMode.dstATop),
+                fit: BoxFit.fill),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            reverse: true,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  height: size.height * 0.08,
+                ),
+                Hero(
+                  tag: 'logo',
+                  child: Container(
+                    width: size.width * 0.35,
+                    height: size.height * 0.15,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          width: 5,
+                          color: const Color.fromARGB(255, 255, 255, 255)),
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        scale: size.height * 0.0048,
+                        alignment: Alignment(0, 0),
+                        image: AssetImage('assets/img/logo.png'),
+                        //fit: BoxFit.fitWidth,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: size.height * 0.01,
-              ),
-              _loginOrRegisterButton(),
-              (isLogin) ? _boxLogin() : _boxRegister(),
-
-              //_loginOrRegisterButton(),
-
-              Padding(
-                  padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom))
-            ],
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                _loginOrRegisterButton(),
+                (isLogin) ? _boxLogin() : _boxRegister(),
+      
+                //_loginOrRegisterButton(),
+      
+                Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom))
+              ],
+            ),
           ),
         ),
       ),
@@ -399,7 +429,7 @@ class _LoginNowState extends State<LoginNow> {
             ),
             _submitButton(),
             SizedBox(
-              height: size.height * 0.01,
+              height: size.height * 0.05,
             ),
             InkWell(
               child: Text(
@@ -530,7 +560,7 @@ class _LoginNowState extends State<LoginNow> {
             ),
             _submitButton(),
             SizedBox(
-              height: size.height * 0.01,
+              height: size.height * 0.05,
             ),
             InkWell(
               child: Text(

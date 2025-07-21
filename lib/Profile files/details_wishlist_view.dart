@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,37 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPhone = TextEditingController();
   final GlobalKey scrollKey = GlobalKey();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  Future<void> reauthenticateUser(String currentPassword) async {
+    final user = FirebaseAuth.instance.currentUser!;
+    final cred = EmailAuthProvider.credential(
+      email: user.email!,
+      password: currentPassword,
+    );
+    await user.reauthenticateWithCredential(cred);
+  }
+
+  Future<void> signOut() async {
+    try {
+      // Eliminar token de Firestore si el usuario está logueado
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.email)
+            .update({'token': FieldValue.delete()});
+
+        // También borra el token local
+        await FirebaseMessaging.instance.deleteToken();
+      }
+
+      // Finalmente, cerrar sesión
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      print('Error signing out: $e');
+    }
+  }
 
   @override
   void initState() {
@@ -62,8 +94,8 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
             child: Text(
               'Editar perfil',
               style: TextStyle(
-                  //fontWeight: FontWeight.w500,
-                  fontSize: size.width * 0.055,
+                  fontWeight: FontWeight.bold,
+                  fontSize: size.height * 0.024,
                   color: Colors.white,
                   fontFamily: ''),
             )),
@@ -172,17 +204,35 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
-                                    content:  Text('Seleccione', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                    content: Text(
+                                      'Seleccione',
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    ),
                                     actions: [
                                       TextButton(
-                                        child:  Text('Cámara', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                        child: Text(
+                                          'Cámara',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
+                                        ),
                                         onPressed: () {
                                           onProfileTappedCamera();
                                           Navigator.pop(context);
                                         },
                                       ),
                                       TextButton(
-                                        child: Text('Galería', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                        child: Text(
+                                          'Galería',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
+                                        ),
                                         onPressed: () {
                                           onProfileTappedGallery();
                                           Navigator.pop(context);
@@ -230,6 +280,23 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                           SizedBox(
                             height: size.height * 0.02,
                           ),
+                          Text(
+                            data['name'],
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontSize: size.height * 0.022,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            data['email'],
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontSize: size.height * 0.015,
+                                fontWeight: FontWeight.normal),
+                          ),
+                          SizedBox(
+                            height: size.height*0.04,
+                          ),
                           Column(
                             children: [
                               SizedBox(
@@ -243,7 +310,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                               .colorScheme
                                               .secondary,
                                           fontFamily: 'Arial',
-                                          fontSize: size.height * 0.02),
+                                          fontSize: size.height * 0.018),
                                     )
                                   ],
                                 ),
@@ -271,22 +338,23 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextField(
+                                      cursorColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                       onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
+                                        print('onTapOutside');
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
+                                      },
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
                                           fontFamily: 'Arial',
                                           fontSize: size.height * 0.02,
-                                          fontWeight: FontWeight.w500),
+                                          fontWeight: FontWeight.normal),
                                       controller: _controllerName,
-                                      onChanged: (value) => setState(() {
-                                        _controllerName.text = value.toString();
-                                      }),
+                                      onChanged: (value) => setState(() {}),
                                       decoration: InputDecoration(
                                           hintText: name,
                                           hintStyle: TextStyle(
@@ -300,6 +368,8 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                   ),
                                 ),
                               ),
+                              
+                             
                               SizedBox(
                                 height: size.height * 0.02,
                               ),
@@ -308,13 +378,13 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      'Correo electrónico',
+                                      'Número de teléfono',
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
                                           fontFamily: 'Arial',
-                                          fontSize: size.height * 0.02),
+                                          fontSize: size.height * 0.018),
                                     ),
                                     IconButton(
                                         onPressed: () {
@@ -330,10 +400,11 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                       Icon(Icons.check_circle),
                                                   iconColor: Colors.green,
                                                   content: Text(
-                                                    'Asegúrese de utilizar un correo electrónico al que tenga acceso', 
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                                                    
+                                                    'Asegúrese de utilizar un número de teléfono al que tenga acceso',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary),
                                                   ),
                                                 );
                                               });
@@ -368,106 +439,14 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                   child: SizedBox(
                                     width: size.height * 0.01,
                                     child: TextField(
+                                      cursorColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                       onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          fontFamily: 'Arial',
-                                          fontSize: size.height * 0.02,
-                                          fontWeight: FontWeight.w500),
-                                      controller: _controllerEmail,
-                                      onChanged: (value) => setState(() {
-                                        _controllerEmail.text =
-                                            value.toString();
-                                      }),
-                                      decoration: InputDecoration(
-                                          hintText: email,
-                                          hintStyle: TextStyle(
-                                            color: const Color.fromARGB(
-                                                193, 167, 167, 167),
-                                          ),
-                                          contentPadding:
-                                              EdgeInsets.only(left: 20),
-                                          border: InputBorder.none),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: size.height * 0.02,
-                              ),
-                              SizedBox(
-                                width: size.width * 0.9,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Número de teléfono',
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          fontFamily: 'Arial',
-                                          fontSize: size.height * 0.02),
-                                    ),
-                                    IconButton(
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  backgroundColor:
-                                                      Theme.of(context)
-                                                          .colorScheme
-                                                          .primary,
-                                                  icon:
-                                                      Icon(Icons.check_circle),
-                                                  iconColor: Colors.green,
-                                                  content: Text(
-                                                      'Asegúrese de utilizar un número de teléfono al que tenga acceso',
-                                                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
-                                                );
-                                              });
-                                        },
-                                        icon: Icon(
-                                          Icons.info,
-                                          size: size.height * 0.022,
-                                        ))
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: size.height * 0.01,
-                              ),
-                              Center(
-                                child: Container(
-                                  width: size.width * 0.9,
-                                  height: 50.0,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.25),
-                                        spreadRadius: 0,
-                                        blurRadius: 10,
-                                        offset: Offset(-1, 1),
-                                      ),
-                                    ],
-                                  ),
-                                  child: SizedBox(
-                                    width: size.height * 0.01,
-                                    child: TextField(
-                                      onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
+                                        print('onTapOutside');
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
+                                      },
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -478,10 +457,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                       keyboardType: TextInputType.phone,
                                       autocorrect: false,
                                       controller: _controllerPhone,
-                                      onChanged: (value) => setState(() {
-                                        _controllerPhone.text =
-                                            value.toString();
-                                      }),
+                                      onChanged: (value) => setState(() {}),
                                       decoration: InputDecoration(
                                           hintText: phone,
                                           hintStyle: TextStyle(
@@ -498,7 +474,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                             ],
                           ),
                           SizedBox(
-                            height: size.height * 0.03,
+                            height: size.height * 0.05,
                           ),
                           SizedBox(
                             width: size.width * 0.9,
@@ -518,41 +494,175 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text('Editar su perfil', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                          title: Text(
+                                            'Editar su perfil',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                          ),
                                           content: Text(
-                                              '¿Está seguro que desea hacer estos cambios?', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                            '¿Está seguro que desea hacer estos cambios?',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                          ),
                                           actions: [
                                             TextButton(
-                                                onPressed: () {
-                                                  FirebaseFirestore.instance
-                                                      .collection('users')
-                                                      .doc(currentUser.email)
-                                                      .update({
-                                                    'name':
-                                                        _controllerName.text,
-                                                    'email':
-                                                        _controllerEmail.text,
-                                                    'phone':
-                                                        _controllerPhone.text,
-                                                  });
-                                                  Navigator.of(context).pop();
-                                                  ScaffoldMessenger.of(
-                                                                              context)
-                                                                          .showSnackBar(
-                                                                        SnackBar(
-                                                                          content:
-                                                                              Text(
-                                                                            'Datos de perfil actulizado',
-                                                                            style: TextStyle(
-                                                                                fontFamily: 'Arial',
-                                                                                color: Colors.white,
-                                                                                fontSize: size.height * 0.015),
-                                                                          ),
-                                                                          backgroundColor: Theme.of(context)
-                                                                              .colorScheme
-                                                                              .tertiary,
-                                                                        ),
-                                                                      );
+                                                onPressed: () async {
+                                                  final newName =
+                                                      _controllerName
+                                                              .text.isEmpty
+                                                          ? data['name']
+                                                          : _controllerName
+                                                              .text;
+                                                  final newEmail =
+                                                      _controllerEmail
+                                                              .text.isEmpty
+                                                          ? data['email']
+                                                          : _controllerEmail
+                                                              .text;
+                                                  final newPhone =
+                                                      _controllerPhone
+                                                              .text.isEmpty
+                                                          ? data['phone']
+                                                          : _controllerPhone
+                                                              .text;
+                                                  final currentUser =
+                                                      FirebaseAuth.instance
+                                                          .currentUser!;
+
+                                                  if (newEmail !=
+                                                      currentUser.email) {
+                                                    // Pide contraseña para reautenticación
+                                                    String password = '';
+                                                    await showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        final controller =
+                                                            TextEditingController();
+                                                        return AlertDialog(
+                                                          title: Text(
+                                                              'Confirma tu contraseña'),
+                                                          content: TextField(
+                                                            cursorColor:
+                                                                Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                            controller:
+                                                                controller,
+                                                            obscureText: true,
+                                                            decoration:
+                                                                InputDecoration(
+                                                                    labelText:
+                                                                        'Contraseña'),
+                                                          ),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                password =
+                                                                    controller
+                                                                        .text;
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                              child: Text(
+                                                                'Confirmar',
+                                                                style: TextStyle(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+
+                                                    try {
+                                                      // Reautenticación
+                                                      final cred =
+                                                          EmailAuthProvider
+                                                              .credential(
+                                                        email:
+                                                            currentUser.email!,
+                                                        password: password,
+                                                      );
+                                                      await currentUser
+                                                          .reauthenticateWithCredential(
+                                                              cred);
+
+                                                      // Envía verificación y actualiza email en Auth
+                                                      await currentUser
+                                                          .verifyBeforeUpdateEmail(
+                                                              newEmail);
+
+                                                      // Guarda datos en Firestore temporalmente
+                                                      await FirebaseFirestore
+                                                          .instance
+                                                          .collection(
+                                                              'pendingEmailChanges')
+                                                          .doc(currentUser.uid)
+                                                          .set({
+                                                        'newEmail': newEmail,
+                                                        'name': newName,
+                                                        'phone': newPhone,
+                                                      });
+
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          content: Text(
+                                                            'Revisa tu nuevo correo y haz clic en el enlace para completar el cambio.',
+                                                          ),
+                                                        ),
+                                                      );
+
+                                                      // Cierra sesión
+                                                      await FirebaseAuth
+                                                          .instance
+                                                          .signOut();
+                                                      Navigator.of(context)
+                                                          .pushNamedAndRemoveUntil(
+                                                              '/',
+                                                              (route) =>
+                                                                  false); // O usa WidgetTree()
+                                                    } on FirebaseAuthException catch (e) {
+                                                      print(
+                                                          '❌ Error al actualizar email: $e');
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                            content: Text(
+                                                                'No se pudo actualizar el correo: ${e.message}')),
+                                                      );
+                                                    }
+                                                  } else {
+                                                    // Solo actualiza nombre y teléfono
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection('users')
+                                                        .doc(currentUser.email)
+                                                        .update({
+                                                      'name': newName,
+                                                      'phone': newPhone,
+                                                    });
+
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              'Perfil actualizado')),
+                                                    );
+                                                    Navigator.of(context).pop();
+                                                  }
                                                 },
                                                 child: Text('Aceptar',
                                                     style: TextStyle(
@@ -581,6 +691,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                               child: Text(
                                 'Guardar cambios',
                                 style: TextStyle(
+                                    fontWeight: FontWeight.bold,
                                     fontFamily: 'Arial',
                                     color: Colors.white,
                                     fontSize: size.height * 0.02),

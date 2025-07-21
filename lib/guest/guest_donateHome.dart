@@ -72,7 +72,7 @@ class _GuestdonateHomeState extends State<GuestdonateHome> {
                           style: TextStyle(
                               fontSize: size.height * 0.027,
                               fontFamily: 'Arial',
-                              //fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.bold,
                               color: const Color.fromARGB(255, 255, 255, 255)),
                         ), // 👈 your valid data here
                       ),
@@ -134,7 +134,7 @@ class _GuestdonateHomeState extends State<GuestdonateHome> {
             children: [
               SizedBox(
                   //padding: EdgeInsets.all(5.0),
-                  height: size.height*0.789,
+                  height: size.height*0.725,
                   width: size.width * 1,
                   child: _buildBody())
             ],

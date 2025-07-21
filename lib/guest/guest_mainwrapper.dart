@@ -26,7 +26,7 @@ class _GuestMainWrapperState extends State<GuestMainwrapper> {
             showUnselectedLabels: false,
             selectedLabelStyle: TextStyle(fontSize: size.height * 0.001),
             selectedItemColor: Colors.white,
-            unselectedItemColor: Color.fromRGBO(3, 67, 87, 1),
+            unselectedItemColor: Color.fromRGBO(143, 143, 143, 0.526),
             //backgroundColor: Colors.green,
             //iconSize: size.height * 0.025,
             selectedIconTheme: IconThemeData(size: size.height*0.03),

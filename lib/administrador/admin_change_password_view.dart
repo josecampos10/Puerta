@@ -41,7 +41,7 @@ class _AdminchangePasswordViewState extends State<AdminchangePasswordView> {
           title: Container(
               padding: EdgeInsets.only(top: size.height * 0.03),
               child: Text(
-                'Perfil',
+                'Perhhfil',
               )),
           centerTitle: true,
           titleTextStyle: TextStyle(
@@ -161,17 +161,53 @@ class _AdminchangePasswordViewState extends State<AdminchangePasswordView> {
                                     content: Text(
                                         'Está seguro que desea cambiar su contraseña?'),
                                     actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc(currentUser.email)
-                                                .update({
-                                              'password': _controllerName.text
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: Text('Aceptar', style: TextStyle(color: Theme.of(context).colorScheme.secondary),)),
+                                     TextButton(
+  onPressed: () async {
+    final newPassword = _controllerName.text.trim();
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        // 1. Actualizar la contraseña en Firebase Auth
+        await user.updatePassword(newPassword);
+
+        // 2. (Opcional) Guardar la nueva contraseña en Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.email)
+            .update({'password': newPassword});
+
+        // 3. Cerrar diálogo y limpiar campos
+        Navigator.of(context).pop();
+        _controllerName.clear();
+
+        // 4. Mostrar mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '✅ Contraseña actualizada correctamente',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+          ),
+        );
+      } on FirebaseAuthException catch (e) {
+        // ⚠️ Mostrar error si falla
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error: ${e.message}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  },
+  child: Text(
+    'Aceptar',
+    style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+  ),
+),
+
                                       TextButton(
                                           onPressed: () {
                                             Navigator.of(context).pop();

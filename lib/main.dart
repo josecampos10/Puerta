@@ -1,7 +1,9 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:lapuerta2/auth.dart';
@@ -50,7 +52,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   );
 }
 
-
 Future<void> main() async {
   tz.initializeTimeZones();
 
@@ -60,6 +61,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FlutterAppBadgeControl.removeBadge();
 
   // ✅ Registrar handler en segundo plano
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -85,7 +88,7 @@ Future<void> main() async {
     badge: true,
     sound: true,
   );
-  await FirebaseApi().initNotifications();
+  //await FirebaseApi().initNotifications();
   //Stripe.publishableKey = "pk_test_51RBIWtRtC705svstNUXRchCHHCdhkTiYrhGRKaDoP7upv0XhIkoJUmY8Gb3Nj8i2bCMACY0mMnEKOw6eB5dDwFe600Z60ceaGG";
 
   runApp(const MyApp());
@@ -98,13 +101,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    systemNavigationBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark, // O light si tu fondo es oscuro
-    systemNavigationBarIconBrightness: Brightness.dark,
-  ));
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark, // O light si tu fondo es oscuro
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
 
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge); // ✅ ACTUALIZADO
+    SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.edgeToEdge); // ✅ ACTUALIZADO
     FlutterNativeSplash.remove();
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
@@ -123,8 +127,14 @@ class MyApp extends StatelessWidget {
               stream: Auth().authStateChanges,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data?.email.toString() !=
-                      'admin@lapuertawaco.com') {
+                  final email = snapshot.data?.email ?? '';
+
+                  // ✅ Llama una sola vez después del login
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    FirebaseApi().initNotifications(email);
+                  });
+
+                  if (email != 'admin@lapuertawaco.com') {
                     return const Mainwrapper();
                   }
                   return const OnboardingPage();

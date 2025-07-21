@@ -1,11 +1,14 @@
 import 'dart:io' show Platform;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:lapuerta2/main.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+int badgeCount = 0;
 
 class FirebaseApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -16,33 +19,50 @@ class FirebaseApi {
     print('🔔 iOS settings: $settings');
   }
 
-  Future<void> initNotifications() async {
-    // iOS: solicita permisos detallados
+Future<void> initNotifications(String email) async {
     await _firebaseMessaging.requestPermission(
       alert: true,
       sound: true,
       badge: true,
     );
 
-    // iOS: muestra notis cuando está foreground
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       sound: true,
       badge: true,
     );
 
-    // Inicializa notificaciones locales (solo Android usa esto)
     await initializeLocalNotifications();
-
-    // Tokens
-    final apns = await _firebaseMessaging.getAPNSToken();
-    final fcm = await _firebaseMessaging.getToken();
-
-    print('📲 APNs token: $apns');
-    print('📲 FCM token : $fcm');
-
     await initPushNotifications();
+
+    // 🔁 Leer el badge real de Firestore al iniciar
+    final doc = await FirebaseFirestore.instance.collection('users').doc(email).get();
+    final count = doc.data()?['badgeCount'] ?? 0;
+    badgeCount = count;
+    if (badgeCount > 0) {
+      await FlutterAppBadgeControl.updateBadgeCount(badgeCount);
+    }
+
+    // 📩 Cuando llega una nueva notificación en foreground
+    FirebaseMessaging.onMessage.listen((message) async {
+      final updated = await FirebaseFirestore.instance.collection('users').doc(email).get();
+      final updatedCount = updated.data()?['badgeCount'] ?? 0;
+      badgeCount = updatedCount;
+      await FlutterAppBadgeControl.updateBadgeCount(badgeCount);
+    });
+
+    // 🧹 Cuando el usuario abre la notificación
+    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+      await resetBadge(email);
+    });
+  }
+
+  Future<void> resetBadge(String email) async {
+    badgeCount = 0;
+    await FirebaseFirestore.instance.collection('users').doc(email).update({
+      'badgeCount': 0,
+    });
+    await FlutterAppBadgeControl.removeBadge();
   }
 
   Future<void> initializeLocalNotifications() async {

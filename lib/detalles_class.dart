@@ -75,8 +75,9 @@ class DetallesClassHome extends StatelessWidget {
                 Text(
                   documentSnapshot['Name'],
                   style: TextStyle(
+                    fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: size.width * 0.14,
+                      fontSize: size.height * 0.05,
                       fontFamily: 'Arial'),
                 ),
               ],
@@ -97,7 +98,7 @@ class DetallesClassHome extends StatelessWidget {
                       style: TextStyle(
                           fontFamily: 'Arial',
                           fontSize: size.width * 0.056,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
                   ],
@@ -206,8 +207,9 @@ class DetallesClassHome extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.circular(size.width * 0.035))),
                     child: Text(
-                      'Enviar Solicitud',
+                      'Más información',
                       style: TextStyle(
+                        fontWeight: FontWeight.bold,
                           fontSize: size.width * 0.045,
                           color: const Color.fromARGB(255, 255, 255, 255),
                           fontFamily: 'Arial'),

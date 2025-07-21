@@ -60,7 +60,7 @@ void initState() {
             child: Image.asset(
               'assets/img/logo.png',
               fit: BoxFit.scaleDown,
-              scale: size.height * 0.008,
+              scale: size.height * 0.004,
               color: Colors.white,
             ),
           ),
@@ -68,7 +68,7 @@ void initState() {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.03),
             child: Text(
-              'Panel de Administrador',
+              'Panel de Administrador', style: TextStyle(fontFamily: 'Arial', fontSize: size.height*0.015),
             )),
         centerTitle: true,
         titleTextStyle: TextStyle(
@@ -145,7 +145,7 @@ void initState() {
                                         child: Column(
                                           children: [
                                             Container(
-                                              height: size.height * 0.16,
+                                              height: size.height * 0.18,
                                               width: size.width / 2 -
                                                   size.width * 0.05 -
                                                   size.width * 0.05,
@@ -207,7 +207,7 @@ void initState() {
                                         child: Column(
                                           children: [
                                             Container(
-                                              height: size.height * 0.16,
+                                              height: size.height * 0.18,
                                               width: size.width / 2 -
                                                   size.width * 0.05 -
                                                   size.width * 0.05,
@@ -274,7 +274,7 @@ void initState() {
                                         child: Column(
                                           children: [
                                             Container(
-                                              height: size.height * 0.16,
+                                              height: size.height * 0.18,
                                               width: size.width / 2 -
                                                   size.width * 0.05 -
                                                   size.width * 0.05,
@@ -335,7 +335,7 @@ void initState() {
                                         child: Column(
                                           children: [
                                             Container(
-                                              height: size.height * 0.16,
+                                              height: size.height * 0.18,
                                               width: size.width / 2 -
                                                   size.width * 0.05 -
                                                   size.width * 0.05,
@@ -403,7 +403,7 @@ void initState() {
                                         child: Column(
                                           children: [
                                             Container(
-                                              height: size.height * 0.16,
+                                              height: size.height * 0.18,
                                               width: size.width / 2 -
                                                   size.width * 0.05 -
                                                   size.width * 0.05,
@@ -464,7 +464,7 @@ void initState() {
                                         child: Column(
                                           children: [
                                             Container(
-                                              height: size.height * 0.16,
+                                              height: size.height * 0.18,
                                               width: size.width / 2 -
                                                   size.width * 0.05 -
                                                   size.width * 0.05,

@@ -33,11 +33,8 @@ class _AdminclasesState extends State<Adminclases> {
         ),
         centerTitle: true,
         title: Text(
-                    'Agregar Clase',
-                    style: TextStyle(
-                        fontSize: size.width * 0.045,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                    'Editor de Clases',
+                    style: TextStyle(fontFamily: 'Arial', fontSize: size.height*0.015, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
         toolbarHeight: size.height*0.09,
         backgroundColor: Theme.of(context).colorScheme.tertiary,
@@ -90,6 +87,12 @@ class _AdminclasesState extends State<Adminclases> {
                         color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(10)),
                     child: TextField(
+                      enableInteractiveSelection: true,
+                      onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
                       cursorColor: Theme.of(context).colorScheme.secondary,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary,
@@ -118,6 +121,12 @@ class _AdminclasesState extends State<Adminclases> {
                         color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(10)),
                     child: TextField(
+                      enableInteractiveSelection: true,
+                      onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
                       cursorColor: Theme.of(context).colorScheme.secondary,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary,
@@ -146,6 +155,12 @@ class _AdminclasesState extends State<Adminclases> {
                         color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(10)),
                     child: TextField(
+                      enableInteractiveSelection: true,
+                      onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
                       cursorColor: Theme.of(context).colorScheme.secondary,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary,
@@ -181,6 +196,12 @@ class _AdminclasesState extends State<Adminclases> {
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(10)),
                         child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
                           cursorColor: Theme.of(context).colorScheme.secondary,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary,
@@ -255,6 +276,12 @@ class _AdminclasesState extends State<Adminclases> {
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(10)),
                         child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
                           cursorColor: Theme.of(context).colorScheme.secondary,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary,
@@ -334,6 +361,12 @@ class _AdminclasesState extends State<Adminclases> {
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(10)),
                         child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
                           cursorColor: Theme.of(context).colorScheme.secondary,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary,
@@ -408,6 +441,12 @@ class _AdminclasesState extends State<Adminclases> {
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(10)),
                         child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
                           cursorColor: Theme.of(context).colorScheme.secondary,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary,
@@ -550,7 +589,7 @@ class _AdminclasesState extends State<Adminclases> {
                         'Confirmar',
                         style: TextStyle(
                             color: const Color.fromARGB(255, 255, 255, 255),
-                            fontSize: size.width * 0.044,
+                            fontSize: size.height * 0.02,
                             fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -568,8 +607,8 @@ class _AdminclasesState extends State<Adminclases> {
                           final snap = snapshot.data!.docs;
                           return Container(
                             constraints: BoxConstraints(
-                                minHeight: size.height * 0.4,
-                                maxHeight: size.height * 0.5),
+                                minHeight: size.height * 0.35,
+                                maxHeight: size.height * 0.35),
                             width: size.width - 30,
                             // height: size.height * 0.27,
                             child: GridView.builder(
@@ -650,8 +689,19 @@ class _AdminclasesState extends State<Adminclases> {
                                                 });
                                           },
                                           backgroundColor: Colors.red,
-                                          icon: Icons.delete,
+                                          icon: Icons.delete, 
                                           label: 'borrar',
+                                        ),
+                                        ///////////////
+                                        SlidableAction(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          onPressed: (context) {
+                                            
+                                          },
+                                          backgroundColor: const Color.fromARGB(255, 244, 158, 54),
+                                          icon: Icons.edit,
+                                          label: 'editar',
                                         )
                                       ]),
                                   child: SizedBox(
@@ -698,7 +748,7 @@ class _AdminclasesState extends State<Adminclases> {
                                                                   0.022,
                                                           fontFamily: 'Arial',
                                                           fontWeight:
-                                                              FontWeight.normal,
+                                                              FontWeight.bold,
                                                           color:
                                                               Theme.of(context)
                                                                   .colorScheme

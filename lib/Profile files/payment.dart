@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:async';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -32,6 +33,36 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
   bool isLoading = true;
   bool applePayEnabled = false;
   bool googlePayEnabled = false;
+
+  String? clientId;
+  String? secretKey;
+
+ bool isPaypalReady = false;
+
+
+  Future<void> loadPaypalCredentials() async {
+  try {
+    final callable = FirebaseFunctions.instance.httpsCallable('getPaypalCredentials');
+    final result = await callable();
+
+    print('✅ Credenciales PayPal obtenidas: ${result.data}');
+
+    setState(() {
+      clientId = result.data['clientId'];
+      secretKey = result.data['secretKey'];
+      isPaypalReady = clientId != null && secretKey != null;
+    });
+
+    print('🟢 isPaypalReady: $isPaypalReady');
+  } catch (e) {
+    print('❌ Error al obtener credenciales PayPal: $e');
+    setState(() {
+      isPaypalReady = false;
+    });
+  }
+}
+
+
 
   Future<void> send(emailAddress) async {
     final Email email = Email(
@@ -66,6 +97,8 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controllerName.text = init;
+    loadPaypalCredentials(); // 👈 Carga las credenciales al iniciar
+    print('🔍 initState: cargando credenciales de PayPal');
   }
 
   @override
@@ -89,7 +122,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
           ),
         ),
         bottomOpacity: 0.0,
-        toolbarHeight: size.height * 0.28,
+        toolbarHeight: size.height * 0.22,
         leadingWidth: size.width * 0.17,
         leading: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -116,9 +149,9 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Container(
-                padding: EdgeInsets.only(top: size.height * 0.22),
+                padding: EdgeInsets.only(top: size.height * 0.14),
                 child: Text(
-                  'Seleccione un monto',
+                  'Seleccione un monto', style: TextStyle(fontSize: size.height*0.024),
                 )),
           ],
         ),
@@ -183,12 +216,12 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                         child: IntrinsicWidth(
                           stepWidth: 1.0,
                           child: TextField(
-                            cursorColor: Theme.of(context).colorScheme.secondary,
+                            cursorColor:
+                                Theme.of(context).colorScheme.secondary,
                             onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
+                              print('onTapOutside');
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
                             keyboardType: TextInputType.number,
                             onChanged: (value) {},
                             controller: _controllerName,
@@ -235,7 +268,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                           ),
                           Text(
                             'Pago Seguro',
-                            style: TextStyle(fontSize: size.width * 0.033),
+                            style: TextStyle(fontSize: size.height * 0.015),
                           )
                         ],
                       ),
@@ -291,7 +324,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                                       '\$10',
                                       style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: size.width * 0.06,
+                                          fontSize: size.height * 0.035,
                                           fontWeight: FontWeight.bold),
                                     )),
                                   ),
@@ -347,7 +380,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                                       '\$20',
                                       style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: size.width * 0.06,
+                                          fontSize: size.height * 0.035,
                                           fontWeight: FontWeight.bold),
                                     )),
                                   ),
@@ -408,7 +441,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                                       '\$40',
                                       style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: size.width * 0.06,
+                                          fontSize: size.height * 0.035,
                                           fontWeight: FontWeight.bold),
                                     )),
                                   ),
@@ -464,7 +497,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                                       '\$50',
                                       style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: size.width * 0.06,
+                                          fontSize: size.height * 0.035,
                                           fontWeight: FontWeight.bold),
                                     )),
                                   ),
@@ -495,10 +528,9 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                         child: TextField(
                           cursorColor: Colors.white,
                           onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
+                            print('onTapOutside');
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
                           onChanged: (value) {},
                           controller: _controller,
                           style: TextStyle(
@@ -511,7 +543,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                             hintText: 'Ingrese el motivo del pago',
                             hintStyle: TextStyle(
                                 color:
-                                    const Color.fromARGB(255, 148, 148, 148)),
+                                    const Color.fromARGB(255, 148, 148, 148), fontSize: size.height*0.018),
                             border: UnderlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.transparent)),
@@ -533,193 +565,108 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    PaypalCheckoutView(
-                                  sandboxMode: true,
-                                  clientId:
-                                      "AfOU-7U5t1161vEhSdRqkAazrJIo5XeMbpGmc7bYGPCmMeQOO19138ZqUQ4VhU4WuN0Sj_FTMdI4prm3",
-                                  secretKey:
-                                      "EMmH2q19Xdd-o_-IWjf4fgwvVnPHy1BIG8SD1jTlLNRWlynoG4yqTG91qZoR16hBJHCf8ax9MBFNYNvM",
-                                  transactions: [
-                                    {
-                                      "amount": {
-                                        "total": _controllerName.text,
-                                        "currency": "USD",
-                                        "details": {
-                                          "subtotal": _controllerName.text,
-                                          "shipping": '0',
-                                          "shipping_discount": 0
-                                        }
-                                      },
-                                      "description":
-                                          "The payment transaction description.",
-                                      // "payment_options": {
-                                      //   "allowed_payment_method":
-                                      //       "INSTANT_FUNDING_SOURCE"
-                                      // },
-                                      "item_list": {
-                                        "items": [
-                                          {
-                                            "name": _controller.text,
-                                            "quantity": '1',
-                                            "price": _controllerName.text,
-                                            "currency": "USD"
-                                          },
-                                        ],
+  onTap: isPaypalReady
+      ? () {
+          if (_controllerName.text.isEmpty || _controller.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Por favor completa todos los campos')),
+            );
+            return;
+          }
 
-                                        // Optional
-                                        //   "shipping_address": {
-                                        //     "recipient_name": "Tharwat samy",
-                                        //     "line1": "tharwat",
-                                        //     "line2": "",
-                                        //     "city": "tharwat",
-                                        //     "country_code": "EG",
-                                        //     "postal_code": "25025",
-                                        //     "phone": "+00000000",
-                                        //     "state": "ALex"
-                                        //  },
-                                      }
-                                    }
-                                  ],
-                                  note:
-                                      "Contact us for any questions on your order.",
-                                  onSuccess: (Map params) async {
-                                    log("onSuccess: $params");
-                                    Navigator.pop(context);
-                                  },
-                                  onError: (error) {
-                                    log("onError: $error");
-                                    Navigator.pop(context);
-                                  },
-                                  onCancel: () {
-                                    print('cancelled:');
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ));
-                            },
-                            child: Container(
-                              height: size.height * 0.09,
-                              width: size.width * 0.4,
-                              //color: Color.fromRGBO(4, 99, 128, 1),
-                              decoration: BoxDecoration(
-                                color: Color.fromRGBO(4, 99, 128, 1),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) => PaypalCheckoutView(
+              sandboxMode: false,
+              clientId: clientId!,
+              secretKey: secretKey!,
+              transactions: [
+                {
+                  "amount": {
+                    "total": _controllerName.text,
+                    "currency": "USD",
+                    "details": {
+                      "subtotal": _controllerName.text,
+                      "shipping": '0',
+                      "shipping_discount": 0
+                    }
+                  },
+                  "description": "The payment transaction description.",
+                  "item_list": {
+                    "items": [
+                      {
+                        "name": _controller.text,
+                        "quantity": '1',
+                        "price": _controllerName.text,
+                        "currency": "USD"
+                      },
+                    ],
+                  }
+                }
+              ],
+              note: "Contact us for any questions on your order.",
+              onSuccess: (Map params) async {
+                log("onSuccess: $params");
+                Navigator.pop(context);
+              },
+              onError: (error) {
+                log("onError: $error");
+                Navigator.pop(context);
+              },
+              onCancel: () {
+                print('cancelled:');
+                Navigator.pop(context);
+              },
+            ),
+          ));
+        }
+      : () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Esperando credenciales de PayPal...')),
+          );
+        },
+  child: Opacity(
+    opacity: isPaypalReady ? 1.0 : 0.5,
+    child: Container(
+      height: size.height * 0.09,
+      width: size.width * 0.4,
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(4, 99, 128, 1),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: size.width * 0.2,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Center(
+              child: Icon(Icons.paypal, color: Colors.white, size: size.width * 0.09),
+            ),
+          ),
+          Container(
+            width: size.width * 0.2,
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(4, 99, 128, 1),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Center(
+              child: Text(
+                'Paypal',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: size.width * 0.04),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
 
-                              child: Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Stack(children: [
-                                        Container(
-                                          height: size.height * 0.09,
-                                          width: size.width * 0.2,
-                                          //color: const Color.fromARGB(255, 52, 51, 51),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: const Color.fromARGB(
-                                                  255, 0, 0, 0)),
-                                          child: Center(
-                                              child: Icon(
-                                            Icons.paypal,
-                                            color: Colors.white,
-                                            size: size.width * 0.09,
-                                          )),
-                                        ),
-                                      ]),
-                                      Stack(children: [
-                                        Container(
-                                          height: size.height * 0.09,
-                                          width: size.width * 0.2,
-                                          //color: const Color.fromARGB(255, 52, 51, 51),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: const Color.fromRGBO(
-                                                  4, 99, 128, 1)),
-                                          child: Center(
-                                              child: Text(
-                                            'Paypal',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: size.width * 0.04),
-                                          )),
-                                        ),
-                                      ]),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          /*GestureDetector(
-                            onTap: () async {
-                              await makePayment();
-                              
-                            },
-                            child: Container(
-                              height: size.height * 0.09,
-                              width: size.width * 0.4,
-                              //color: Color.fromRGBO(4, 99, 128, 1),
-                              decoration: BoxDecoration(
-                                color: Color.fromRGBO(4, 99, 128, 1),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-
-                              child: Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Stack(children: [
-                                        Container(
-                                          height: size.height * 0.09,
-                                          width: size.width * 0.2,
-                                          //color: const Color.fromARGB(255, 52, 51, 51),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: const Color.fromARGB(
-                                                  255, 0, 0, 0)),
-                                          child: Center(
-                                              child: Icon(
-                                            Icons.wallet,
-                                            color: Colors.white,
-                                            size: size.width * 0.09,
-                                          )),
-                                        ),
-                                      ]),
-                                      Stack(children: [
-                                        Container(
-                                          height: size.height * 0.09,
-                                          width: size.width * 0.2,
-                                          //color: const Color.fromARGB(255, 52, 51, 51),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                              color: const Color.fromRGBO(
-                                                  4, 99, 128, 1)),
-                                          child: Center(
-                                              child: Text(
-                                            'Stripe',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: size.width * 0.04),
-                                          )),
-                                        ),
-                                      ]),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),*/
                         ],
                       ),
                     ),

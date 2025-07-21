@@ -1,12 +1,16 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lapuerta2/detalles_class.dart';
 import 'package:lapuerta2/detalles_image_slider.dart';
 import 'package:lapuerta2/onboarding.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 final gridItems = [
   'Noticias',
@@ -33,6 +37,95 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
   CarouselSliderController carouselController = CarouselSliderController();
   final int _current = 0;
   int selectedIndex = 0;
+  final _subjectController = TextEditingController();
+  final _bodyController = TextEditingController();
+  final Uri _urlfacebook = Uri.parse('https://www.facebook.com/puertawaco');
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  User? get currentUser => _firebaseAuth.currentUser;
+
+  Future<void> _launchUrlfacebook() async {
+    if (!await launchUrl(_urlfacebook)) {
+      throw Exception('Could not launch $_urlfacebook');
+    }
+  }
+
+  final Uri _urlinstagram =
+      Uri.parse('https://www.instagram.com/lapuertawaco/');
+
+  Future<void> _launchUrlinstagram() async {
+    if (!await launchUrl(_urlinstagram)) {
+      throw Exception('Could not launch $_urlinstagram');
+    }
+  }
+
+  final Uri _urlx = Uri.parse('https://twitter.com/lapuertawaco');
+
+  Future<void> _launchUrlx() async {
+    if (!await launchUrl(_urlx)) {
+      throw Exception('Could not launch $_urlx');
+    }
+  }
+
+  Future<void> launchPhoneDialer(String contactNumber) async {
+    final Uri phoneUri = Uri(scheme: "tel", path: contactNumber);
+    try {
+      if (await canLaunch(phoneUri.toString())) {
+        await launch(phoneUri.toString());
+      }
+    } catch (error) {
+      throw ("Cannot dial");
+    }
+  }
+
+  Future<void> send(emailAddress) async {
+    final Email email = Email(
+      body: _bodyController.text,
+      subject: _subjectController.text,
+      recipients: ['ppjjosejair@gmail.com'],
+      //attachmentPaths: attachments,
+      isHTML: false,
+    );
+
+    // ignore: unused_local_variable
+    String platformResponse;
+
+    try {
+      await FlutterEmailSender.send(email);
+      platformResponse = 'success';
+    } catch (error) {
+      print(error);
+      platformResponse = error.toString();
+    }
+
+    if (!mounted) return;
+
+    /*ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(platformResponse),
+      ),
+    );*/
+  }
+
+  Future<void> signOut() async {
+  try {
+    // Eliminar token de Firestore si el usuario está logueado
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.email)
+          .update({'token': FieldValue.delete()});
+
+      // También borra el token local
+      await FirebaseMessaging.instance.deleteToken();
+    }
+
+    // Finalmente, cerrar sesión
+    await _firebaseAuth.signOut();
+  } catch (e) {
+    print('Error signing out: $e');
+  }
+}
 
   @override
   void initState() {
@@ -56,6 +149,285 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            shape: CircleBorder(),
+            child: Icon(
+              Icons.email_rounded,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              showModalBottomSheet(
+                  isScrollControlled: true,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  builder: (context) => Padding(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: SizedBox(
+                        width: size.width,
+                        child: Column(
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.005,
+                            ),
+                            Center(
+                              child: Container(
+                                width: size.width * 0.3,
+                                height: size.height * 0.01,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color.fromARGB(
+                                        255, 195, 195, 195)),
+                              ),
+                            ),
+                            SizedBox(
+                              height: size.height * 0.014,
+                            ),
+                            Center(
+                              child: Text(
+                                'Contáctanos',
+                                style: TextStyle(
+                                    fontSize: size.height * 0.035,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Arial'),
+                              ),
+                            ),
+                            Center(
+                              child: Container(
+                                //color: Theme.of(context).colorScheme.primary,
+                                width: size.width * 0.9,
+                                height: size.height * 0.06,
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 0),
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        top: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1),
+                                        bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1),
+                                        left: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1),
+                                        right: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1)),
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: TextField(
+                                  style: TextStyle(
+                                    fontSize: size.height * 0.022,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  cursorHeight: size.height * 0.023,
+                                  controller: _subjectController,
+                                  decoration: InputDecoration(
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent)),
+                                    border: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent)),
+                                    enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent)),
+                                    labelText: 'Asunto',
+                                    prefixIcon: Icon(Icons.short_text_rounded,
+                                        color: const Color.fromARGB(
+                                            255, 155, 155, 155)),
+                                    labelStyle: TextStyle(
+                                        fontSize: size.height * 0.02,
+                                        fontFamily: 'Arial',
+                                        color: const Color.fromARGB(
+                                            255, 155, 155, 155)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: size.height * 0.01,
+                            ),
+                            Center(
+                              child: Container(
+                                width: size.width * 0.9,
+                                height: size.height * 0.2,
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 0),
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        top: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1),
+                                        bottom: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1),
+                                        left: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1),
+                                        right: BorderSide(
+                                            color: const Color.fromARGB(
+                                                255, 110, 110, 110),
+                                            width: 1)),
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: TextField(
+                                  autofocus: false,
+                                  minLines: 1,
+                                  maxLines: null,
+                                  keyboardType: TextInputType.multiline,
+                                  textInputAction: TextInputAction.newline,
+                                  style: TextStyle(
+                                    fontSize: size.height * 0.022,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                  cursorHeight: size.height * 0.023,
+                                  controller: _bodyController,
+                                  decoration: InputDecoration(
+                                    focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent)),
+                                    border: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent)),
+                                    enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.transparent)),
+                                    labelText: 'Mensaje',
+                                    prefixIcon: Icon(Icons.message,
+                                        color: const Color.fromARGB(
+                                            255, 155, 155, 155)),
+                                    labelStyle: TextStyle(
+                                        fontSize: size.height * 0.02,
+                                        fontFamily: 'Arial',
+                                        color: const Color.fromARGB(
+                                            255, 155, 155, 155)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: size.height * 0.01,
+                            ),
+                            SizedBox(
+                              width: size.width * 0.9,
+                              height: size.height * 0.07,
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    send(currentUser!.email);
+                                    Navigator.pop(context);
+                                    _bodyController.clear();
+                                    _subjectController.clear();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 96, 146, 255),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10))),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 0, vertical: 0),
+                                    child: Text(
+                                      'Enviar',
+                                      style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              255, 255, 255, 255),
+                                          fontSize: size.height * 0.021,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Arial'),
+                                    ),
+                                  )),
+                            ),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            /*Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '500 Clay Ave',
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: size.height * 0.015,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),*/
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.call,
+                                  size: size.height * 0.02,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.008,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    launchPhoneDialer('2547543503');
+                                  },
+                                  child: Text('(254) 754-3503',
+                                      style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              239, 38, 130, 236),
+                                          fontSize: size.height * 0.017,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Arial')),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: size.height * 0.01,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                    onTap: () => _launchUrlfacebook(),
+                                    child: Icon(FontAwesomeIcons.facebook)),
+                                SizedBox(
+                                  width: size.width * 0.02,
+                                ),
+                                GestureDetector(
+                                    onTap: () => _launchUrlinstagram(),
+                                    child: Icon(FontAwesomeIcons.instagram)),
+                                SizedBox(
+                                  width: size.width * 0.02,
+                                ),
+                                GestureDetector(
+                                    onTap: () => _launchUrlx(),
+                                    child: Icon(FontAwesomeIcons.twitter))
+                              ],
+                            ),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            )
+                          ],
+                        ),
+                      )),
+                  context: context);
+            },
+          ),
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       appBar: AppBar(
         bottomOpacity: 0.0,
@@ -74,6 +446,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                         'Hola,',
                         textAlign: TextAlign.left,
                         style: TextStyle(
+                          fontWeight: FontWeight.bold,
                             color: Colors.white, fontSize: size.height * 0.018),
                       ),
                     ],
@@ -84,11 +457,11 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                       Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          'Bienvenido',
+                          'Bienvenidos',
                           style: TextStyle(
                               fontSize: size.height * 0.027,
                               fontFamily: 'Arial',
-                              //fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.bold,
                               color: const Color.fromARGB(255, 255, 255, 255)),
                         ), // 👈 your valid data here
                       ),
@@ -121,6 +494,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
             onPressed: () {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => OnboardingPage()));
+              
             },
           ),
         ],
@@ -133,7 +507,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                 topLeft: Radius.circular(size.width * 0.08),
                 topRight: Radius.circular(size.width * 0.08))),
 
-        height: size.height * 0.79,
+        height: size.height,
         width: size.width,
         //color: Color.fromRGBO(255, 255, 255, 1),
         child: SingleChildScrollView(
@@ -162,7 +536,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
 
                   //color: Colors.red,
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.all(size.width * 0.001),
+                    padding: EdgeInsets.all(size.height * 0.001),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -176,7 +550,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 1,
-                                    childAspectRatio: size.width * 0.0008),
+                                    childAspectRatio: size.height * 0.0003),
                             shrinkWrap: true,
                             primary: false,
                             itemCount: gridItems.length,
@@ -227,7 +601,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                                         fontFamily:
                                                             'Arial',
                                                         fontWeight:
-                                                            FontWeight.normal,
+                                                            FontWeight.bold,
                                                         color: (selectedIndex ==
                                                                 position)
                                                             ? Color.fromARGB(
@@ -270,7 +644,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                     borderRadius: BorderRadius.circular(30),
                     //color: const Color.fromARGB(0, 0, 0, 0),
                   ),
-                  height: size.height * 0.283,
+                  height: size.height * 0.263,
                   width: double.infinity,
                   child: Column(
                     children: [
@@ -326,7 +700,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.width*0.0044,
+                                    aspectRatio: size.height*0.002,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -386,7 +760,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.width*0.0044,
+                                    aspectRatio: size.height*0.002,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -446,7 +820,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.width*0.0044,
+                                    aspectRatio: size.height*0.002,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -466,167 +840,66 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                 ),
               ),
               
-              /*Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  '   Recursos',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontSize: size.height * 0.023,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 0, 0)),
-                ),
-              ),
-              SingleChildScrollView(
-                padding: EdgeInsets.all(size.width * 0.001),
-                child: Column(
-                  children: [
-                    StreamBuilder<QuerySnapshot>(
-                        stream: recursos,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Column(children: [
-                              SizedBox(
-                                height: size.height * 0.02,
-                              ),
-                              SpinKitFadingCircle(
-                                color: Color.fromRGBO(4, 99, 128, 1),
-                                size: size.width * 0.1,
-                              ),
-                            ]);
-                          }
-                          if (snapshot.hasData) {
-                            final snap = snapshot.data!.docs;
-                            return Container(
-                              width: double.infinity,
-                              height: size.height * 0.07777,
-                              child: GridView.builder(
-                                physics: ScrollPhysics(),
-                                scrollDirection: Axis.horizontal,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 1,
-                                        childAspectRatio: 0.3),
-                                shrinkWrap: true,
-                                primary: false,
-                                itemCount: snap.length,
-                                cacheExtent: 1000.0,
-                                itemBuilder: (context, index) {
-                                  final DocumentSnapshot documentSnapshot =
-                                      snapshot.data!.docs[index];
-                                  return Container(
-                                    //width: 200,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetallesHome(
-                                                        documentSnapshot:
-                                                            documentSnapshot)));
-                                      },
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                size.width * 0.04)),
-                                        elevation: size.height * 0.5,
-                                        shadowColor: Colors.black26,
-                                        color: Color.fromRGBO(125, 111, 165, 1),
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsets.all(size.width * 0.01),
-                                          child: Align(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.01,
-                                                      ),
-                                                      Text(
-                                                        snap[index]['Name'],
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              size.height *
-                                                                  0.022,
-                                                          fontFamily: '',
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Color.fromRGBO(
-                                                              255, 255, 255, 1),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.01,
-                                                      ),
-                                                      if (snap[index]['Name'] ==
-                                                          'Consejeria')
-                                                        InkWell(
-                                                          child: Icon(Icons
-                                                              .family_restroom),
-                                                        ),
-                                                      if (snap[index]['Name'] ==
-                                                          'Comida')
-                                                        InkWell(
-                                                          child: Icon(
-                                                              Icons.food_bank),
-                                                        ),
-                                                      if (snap[index]['Name'] ==
-                                                          'Salud')
-                                                        InkWell(
-                                                          child: Icon(Icons
-                                                              .local_hospital),
-                                                        ),
-                                                      if (snap[index]['Name'] ==
-                                                          'Abogacia')
-                                                        InkWell(
-                                                          child:
-                                                              Icon(Icons.work),
-                                                        ),
-                                                    ]),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        })
-                  ],
-                ),
-              ),*/
 
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  '   Clases disponibles',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontFamily: 'Arial',
-                      fontSize: size.height * 0.025,
-                      fontWeight: FontWeight.normal,
-                      color: const Color.fromARGB(255, 148, 148, 148)),
-                ),
+              Row(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      '   Clases disponibles',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontFamily: 'Arial',
+                          fontSize: size.height * 0.022,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 148, 148, 148)),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(
+                                'Registro',
+                                style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                              content: Text(
+                                'Para registrarse a una clase por favor acérquese a las oficinas o contáctenos vía teléfono',
+                                style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text(
+                                      'Cerrar',
+                                      style: TextStyle(
+                                          fontFamily: 'Arial',
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    )),
+                              ],
+                            );
+                          });
+                    },
+                    icon: Icon(
+                      Icons.info,
+                      color: const Color.fromARGB(137, 255, 255, 255),
+                      size: size.height * 0.026,
+                    ))
+                ],
               ),
               SizedBox(height: size.height*0.006,),
               SingleChildScrollView(
@@ -652,7 +925,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                           if (snapshot.hasData) {
                             final snap = snapshot.data!.docs;
                             return SizedBox(
-                              height: size.height * 0.414,
+                              height: size.height * 0.356,
                               width: size.width * 0.95,
                               child: GridView.builder(
                                 physics: ScrollPhysics(),
@@ -669,59 +942,56 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                 itemBuilder: (context, index) {
                                   final DocumentSnapshot documentSnapshot =
                                       snapshot.data!.docs[index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetallesClassHome(
-                                                      documentSnapshot:
-                                                          documentSnapshot)));
-                                    },
-                                    child: Card(
-                                      
-                                      borderOnForeground: false,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              size.width * 0.04)),
-                                      elevation: size.height * 0.5,
-                                      shadowColor: Colors.black,
-                                      color: Color.fromRGBO(4, 99, 128, 1),
-                                      child: Container(
-                                    
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(size.width*0.04),
-                                            image: DecorationImage(
-                                          image:
-                                              AssetImage('assets/img/back.png'),
-                                          fit: BoxFit.cover,
-                                          filterQuality: FilterQuality.low,
-                                          opacity: 0.4
-                                        )),
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsets.all(size.width * 0.01),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                snap[index]['Name'],
-                                                style: TextStyle(
-                                                  fontSize: size.height * 0.025,
-                                                  fontFamily: 'Arial',
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Color.fromRGBO(
-                                                      255, 255, 255, 1),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
+                                  if (snap[index]['Name'] == 'ESL Chick-fil-A') {
+  return const SizedBox.shrink(); // Oculta este item
+}
+
+return GestureDetector(
+  onTap: () {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                DetallesClassHome(documentSnapshot: documentSnapshot)));
+  },
+  child: Card(
+    borderOnForeground: false,
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(size.width * 0.04)),
+    elevation: size.height * 0.5,
+    shadowColor: Colors.black,
+    color: const Color.fromRGBO(4, 99, 128, 1),
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(size.width * 0.04),
+        image: const DecorationImage(
+          image: AssetImage('assets/img/back.png'),
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.low,
+          opacity: 0.4,
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(size.width * 0.01),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              snap[index]['Name'],
+              style: TextStyle(
+                fontSize: size.height * 0.025,
+                fontFamily: 'Arial',
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+);
+
                                 },
                               ),
                             );

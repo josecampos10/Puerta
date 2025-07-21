@@ -7,6 +7,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:lapuerta2/firebase_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AdminPosts extends StatefulWidget {
@@ -30,6 +31,10 @@ class _AdminclasesState extends State<AdminPosts> {
   void initState() {
     super.initState();
     imageUrl = '';
+     final email = FirebaseAuth.instance.currentUser?.email;
+  if (email != null) {
+    FirebaseApi().resetBadge(email);
+  }
   }
 
   @override

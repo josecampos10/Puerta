@@ -17,7 +17,7 @@ class _AdminMainWrapperState extends State<AdminMainwrapper> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       bottomNavigationBar: NavigationBar(
-          height: size.width * 0.15,
+          height: size.height* 0.07,
           backgroundColor: Theme.of(context).colorScheme.tertiary,
           indicatorColor: Colors.transparent,
           shadowColor: Colors.transparent,

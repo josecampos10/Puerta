@@ -5,10 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lapuerta2/UserhomePrincipal.dart';
+import 'package:lapuerta2/firebase_api.dart';
 import 'package:lapuerta2/mainwrapper.dart';
 
 // ignore: must_be_immutable
@@ -24,6 +26,13 @@ class _NotificationsState extends State<Notifications> {
   Uint8List? pickedImage;
   final currentUsera = FirebaseAuth.instance.currentUser!;
   late Stream<QuerySnapshot> feedStream;
+  int badgeCount = 0;
+
+
+  void resetBadge() {
+  badgeCount = 0;
+  FlutterAppBadgeControl.removeBadge();
+}
 
   @override
   void initState() {
@@ -39,6 +48,10 @@ class _NotificationsState extends State<Notifications> {
       Duration(),
       () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
     );
+    final email = FirebaseAuth.instance.currentUser?.email;
+  if (email != null) {
+    FirebaseApi().resetBadge(email);
+  }
   }
 
   @override
@@ -71,7 +84,7 @@ class _NotificationsState extends State<Notifications> {
               'Notificaciones',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: size.width * 0.055,
+                  fontSize: size.height * 0.024,
                   color: Colors.white,
                   fontFamily: 'Arial'),
             )),

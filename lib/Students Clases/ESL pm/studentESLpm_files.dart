@@ -166,8 +166,8 @@ class _StudenteslfilespmState extends State<Studenteslfilespm> {
             child: Text(
               'Mis clases',
               style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: size.width * 0.055,
+                 fontWeight: FontWeight.bold,
+                  fontSize: size.height * 0.024,
                   color: Colors.white,
                   fontFamily: ''),
             )),

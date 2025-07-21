@@ -34,82 +34,80 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
   final user = FirebaseAuth.instance.customAuthDomain;
   int selectedIndex = 0;
 
-Future<void> deleteUserByEmail(String email) async {
-  try {
-    final user = FirebaseAuth.instance.currentUser;
+  Future<void> deleteUserByEmail(String email) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
 
-    if (user == null) {
-      print('❌ Usuario no autenticado');
-      return;
-    }
+      if (user == null) {
+        print('❌ Usuario no autenticado');
+        return;
+      }
 
-    // 🔁 Refrescar token
-    await user.getIdToken(true);
+      // 🔁 Refrescar token
+      await user.getIdToken(true);
 
-    final callable = FirebaseFunctions.instance.httpsCallable('deleteUser');
-    print('✅ Llamando deleteUser como: ${user.email}');
+      final callable = FirebaseFunctions.instance.httpsCallable('deleteUser');
+      print('✅ Llamando deleteUser como: ${user.email}');
 
-    final result = await callable.call({'email': email});
+      final result = await callable.call({'email': email});
 
-    if (result.data != null && result.data['message'] != null) {
-      print(result.data['message']);
+      if (result.data != null && result.data['message'] != null) {
+        print(result.data['message']);
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+          SnackBar(content: Text(result.data['message'])),
+        );
+      }
+    } on FirebaseFunctionsException catch (e) {
+      print('🔥 FirebaseFunctionsException: ${e.code} - ${e.message}');
       ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(result.data['message'])),
+        SnackBar(content: Text('❌ ${e.message}')),
       );
-    }
-  } on FirebaseFunctionsException catch (e) {
-    print('🔥 FirebaseFunctionsException: ${e.code} - ${e.message}');
-    ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-      SnackBar(content: Text('❌ ${e.message}')),
-    );
-  } catch (e) {
-    print('❌ Error inesperado: $e');
-  }
-}
-
-
-
-
-Future<void> checkIfUserIsAdmin() async {
-  User? user = FirebaseAuth.instance.currentUser;
-
-  if (user != null) {
-    final idTokenResult = await user.getIdTokenResult();
-    final claims = idTokenResult.claims;
-
-    if (claims != null && claims['admin'] == true) {
-      print('✅ El usuario es admin.');
-    } else {
-      print('❌ El usuario NO es admin.');
+    } catch (e) {
+      print('❌ Error inesperado: $e');
     }
   }
-}
 
-
-
-Future<void> checkUserRoles() async {
+  Future<void> checkIfUserIsAdmin() async {
   final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    final idTokenResult = await user.getIdTokenResult(); // sin .getIdToken(true)
-    final claims = idTokenResult.claims;
+  if (user == null) return;
 
-    print('👉 Claims: $claims');
-    if (claims?['superadmin'] == true) {
-      print('✅ Usuario con rol: SUPERADMIN');
-    } else if (claims?['admin'] == true) {
-      print('✅ Usuario con rol: ADMIN');
-    } else {
-      print('⚠️ Usuario sin roles asignados');
-    }
+  final idTokenResult = await user.getIdTokenResult(true);
+  final claims = idTokenResult.claims ?? {};
+
+  if (claims['superadmin'] == true) {
+    print('✅ El usuario es SUPERADMIN.');
+  } else if (claims['admin'] == true) {
+    print('✅ El usuario es ADMIN.');
+  } else {
+    print('❌ El usuario NO es admin.');
   }
 }
 
 
-@override
-void initState() {
-  super.initState();
-  checkUserRoles(); // ✅ ya no necesitas usar setState aquí
-}
+  Future<void> checkUserRoles() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final idTokenResult =
+          await user.getIdTokenResult(); // sin .getIdToken(true)
+      final claims = idTokenResult.claims;
+
+      print('👉 Claims: $claims');
+      if (claims?['superadmin'] == true) {
+        print('✅ Usuario con rol: SUPERADMIN');
+      } else if (claims?['admin'] == true) {
+        print('✅ Usuario con rol: ADMIN');
+      } else {
+        print('⚠️ Usuario sin roles asignados');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkUserRoles(); // ✅ ya no necesitas usar setState aquí
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +120,7 @@ void initState() {
         title: Text(
           'Usuarios',
           style: TextStyle(
-              fontSize: size.width * 0.045,
+              fontSize: size.height * 0.015,
               fontWeight: FontWeight.bold,
               color: Colors.white),
         ),
@@ -162,13 +160,13 @@ void initState() {
                 children: [
                   SizedBox(
                     width: double.infinity,
-                    height: size.height * 0.045,
+                    height: size.height * 0.055,
                     child: GridView.builder(
                       physics: ScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
-                          childAspectRatio: size.width * 0.00079),
+                          childAspectRatio: size.height * 0.0003),
                       shrinkWrap: true,
                       primary: false,
                       itemCount: gridItems.length,
@@ -213,7 +211,7 @@ void initState() {
                                                 style: TextStyle(
                                                   fontSize: size.height * 0.017,
                                                   fontFamily: 'Arial',
-                                                  fontWeight: FontWeight.normal,
+                                                  fontWeight: FontWeight.bold,
                                                   color: (selectedIndex ==
                                                           position)
                                                       ? Color.fromRGBO(
@@ -268,7 +266,7 @@ void initState() {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.787,
+                          height: size.height * 0.72,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -422,7 +420,7 @@ void initState() {
                                                                     'Arial',
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .normal,
+                                                                        .bold,
                                                                 color: Theme.of(
                                                                         context)
                                                                     .colorScheme
@@ -458,7 +456,7 @@ void initState() {
                                                                       'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .normal,
+                                                                          .bold,
                                                                   color: const Color
                                                                       .fromARGB(
                                                                       255,
@@ -498,7 +496,7 @@ void initState() {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.787,
+                          height: size.height * 0.72,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -641,7 +639,7 @@ void initState() {
                                                                     'Arial',
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .normal,
+                                                                        .bold,
                                                                 color: Theme.of(
                                                                         context)
                                                                     .colorScheme
@@ -717,7 +715,7 @@ void initState() {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.787,
+                          height: size.height * 0.72,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -936,7 +934,7 @@ void initState() {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.787,
+                          height: size.height * 0.72,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -1154,7 +1152,7 @@ void initState() {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.787,
+                          height: size.height * 0.72,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -1200,62 +1198,73 @@ void initState() {
                                                               'Estás seguro que quieres eliminar este usuario?'),
                                                           actions: [
                                                             TextButton(
-                                                                onPressed: () async {
-                                                                  //delete user info in the database
-                                                                  /*FirebaseFirestore
-                                                                      .instance
-                                                                      .collection(
-                                                                          'users')
-                                                                      .doc(snap[
-                                                                              index]
-                                                                          [
-                                                                          'email'])
-                                                                      .delete();*/
+  onPressed: () async {
+    // 1. Obtener usuario actual (el admin)
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
 
-                                                                  //delete user
-                                                                  //deleteUserByEmail(snap[index]['email'].toString());
-                                                                  //currentUser.delete();
-                                                                  /*FirebaseAuth
-                                                                      .instance
-                                                                      .signOut();*/
-                                                                  //(FirebaseStorage.instance.ref().child(currentUser.email.toString()).g)
-                                                                 FirebaseStorage
-                                                                      .instance
-                                                                      .ref()
-                                                                      .child(snap[index]['email'])
-                                                                      .delete();
-                                                                  Navigator.of(context).pop();
+    // 2. Refrescar token para tener claims actualizados
+    await currentUser.getIdToken(true);
+    await Future.delayed(Duration(seconds: 1));
 
-  // 🔁 Refrescar token y esperar propagación
-  final user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    await user.getIdToken(true);
-    await Future.delayed(Duration(seconds: 1)); // <- DALE TIEMPO
-  }
+    // 3. Verificar e imprimir claims
+    final tokenResult = await currentUser.getIdTokenResult(true);
+    final claims = tokenResult.claims ?? {};
+    print("🔐 Claims actualizados: $claims");
 
-  await checkUserRoles(); // Esto solo imprime, pero asegura que el token ya está propagado
+    if (!(claims['admin'] == true || claims['superadmin'] == true)) {
+      print("❌ El usuario NO es admin.");
+      return;
+    }
 
-  await deleteUserByEmail(snap[index]['email']);
-                                                                },
-                                                                child: Text(
-                                                                    'Aceptar',
-                                                                    style: TextStyle(
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .secondary))),
+    // 4. Obtener email del usuario a eliminar
+    final emailToDelete = snap[index]['email'];
+    print("📧 Eliminando: $emailToDelete");
+
+    // 5. Eliminar imagen del usuario (si tiene)
+    try {
+      await FirebaseStorage.instance.ref(emailToDelete).delete();
+    } catch (_) {
+      print("⚠️ Sin imagen para eliminar");
+    }
+
+    // 6. Llamar función Cloud para eliminar la cuenta y datos
+    try {
+      final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('deleteUser');
+      final result = await callable.call({'email': emailToDelete});
+
+      if (result.data['message'] != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result.data['message'])),
+        );
+      }
+    } on FirebaseFunctionsException catch (e) {
+      print('🔥 FirebaseFunctionsException: ${e.code} - ${e.message}');
+    } catch (e) {
+      print('❌ Error inesperado: $e');
+    }
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
+  },
+  child: Text('Aceptar', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
+),
                                                             TextButton(
                                                                 onPressed: () {
                                                                   Navigator.of(
                                                                           context)
                                                                       .pop();
-                                                                      checkIfUserIsAdmin();
+                                                                  checkIfUserIsAdmin();
                                                                 },
                                                                 child: Text(
                                                                     'Cancelar',
                                                                     style: TextStyle(
                                                                         color: Theme.of(context)
                                                                             .colorScheme
-                                                                            .secondary)))
+                                                                            .secondary))
+                                                                            )
                                                           ],
                                                         );
                                                       });
@@ -1318,11 +1327,10 @@ void initState() {
                                                           style: TextStyle(
                                                             fontSize:
                                                                 size.height *
-                                                                    0.018,
-                                                            fontFamily:
-                                                                'Arial',
+                                                                    0.016,
+                                                            fontFamily: 'Arial',
                                                             fontWeight:
-                                                                FontWeight.normal,
+                                                                FontWeight.bold,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
@@ -1392,5 +1400,3 @@ void initState() {
     );
   }
 }
-
-

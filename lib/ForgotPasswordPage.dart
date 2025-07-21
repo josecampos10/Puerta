@@ -66,7 +66,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           builder: (context) {
             return AlertDialog(
               content: Text(
-                'Se ha enviado el enlace al correo ingresado',
+                'Se ha enviado el enlace al correo ingresado. Si no encuentras el correo revisa tu carpeta de spam',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).colorScheme.secondary),
               ),
@@ -91,9 +91,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
-      backgroundColor: const Color.fromARGB(132, 4, 99, 128),
+      backgroundColor: Theme.of(context).colorScheme.tertiary,
       body: Container(
         alignment: Alignment.topCenter,
         height: size.height,
@@ -104,7 +105,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               image: AssetImage('assets/img/fondo_login.png'),
               colorFilter: ColorFilter.mode(
                   Colors.black.withOpacity(0.3), BlendMode.dstATop),
-              fit: BoxFit.contain),
+              fit: BoxFit.fill),
         ),
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
