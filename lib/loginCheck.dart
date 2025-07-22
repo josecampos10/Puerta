@@ -76,6 +76,8 @@ class _LoginNowState extends State<LoginNow> {
       password: password,
       rol: role,
     );
+    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;

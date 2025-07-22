@@ -38,6 +38,8 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
   late Stream<QuerySnapshot> feedStream;
   final TextEditingController controllerdes = TextEditingController();
   late Stream<DocumentSnapshot<Map<String, dynamic>>> imagenes;
+  String photoID = '';
+  final time = DateTime.now().millisecondsSinceEpoch.toString();
 
   bool _isLoading = false;
   Uint8List? _file;
@@ -222,270 +224,267 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
       resizeToAvoidBottomInset: false,
       //backgroundColor: Color.fromRGBO(255, 255, 255, 1),
       body: Container(
+        height: size.height * 0.93,
+        width: size.width,
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(size.width * 0.087),
-                topRight: Radius.circular(size.width * 0.087))),
-        height: size.height,
-        width: size.width,
+                topLeft: Radius.circular(size.width * 0.08),
+                topRight: Radius.circular(size.width * 0.08))),
         child: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              SizedBox(
-                height: size.height * 0.01,
-              ),
-              SizedBox(
-                height: size.height * 0.03,
-              ),
-              StreamBuilder<DocumentSnapshot>(
-                  stream: imagenes,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const Text('Something went wrong');
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Column(
-                        children: [
-                          SpinKitFadingCircle(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            size: size.width * 0.055,
-                          )
-                        ],
-                      );
-                    }
-                    Map<String, dynamic> data =
-                        snapshot.data!.data() as Map<String, dynamic>;
-                    return Row(
+          //physics: NeverScrollableScrollPhysics(),
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          reverse: false,
+          child: Column(children: [
+            SizedBox(
+              height: size.height * 0.03,
+            ),
+            StreamBuilder<DocumentSnapshot>(
+                stream: imagenes,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(
                       children: [
-                        SizedBox(
-                          width: size.width * 0.03,
-                        ),
-                        Container(
-                          height: size.height * 0.065,
-                          width: size.height * 0.065,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              border: Border.all(
-                                color: Color.fromRGBO(255, 255, 255, 0.174),
-                                width: size.height * 0.003,
-                              ),
-                              shape: BoxShape.circle,
-                              image: pickedImage != null
-                                  ? DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: Image.memory(
-                                        pickedImage!,
-                                        key: UniqueKey(),
-                                      ).image)
-                                  : null),
-                        ),
-                        SizedBox(
-                          width: size.width * 0.03,
-                        ),
-                        Text(
-                          data['name'],
-                          style: TextStyle(
-                              fontSize: size.width * 0.045,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary),
-                        ),
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(
-                                          'Publicar en la ventana principal'),
-                                      content: Text(
-                                          'Esta publicación se mostrará en el ventana principal de La Puerta App. Si desea eliminar una publicación realizada anteriormente póngase en contacto con la oficina de La Puerta'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text(
-                                              'Cerrar',
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary),
-                                            )),
-                                      ],
-                                    );
-                                  });
-                            },
-                            icon: Icon(
-                              Icons.info,
-                              color: Theme.of(context).colorScheme.tertiary,
-                              size: size.height * 0.029,
-                            ))
-                      ],
-                    );
-                  }),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
-                decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(0)),
-                child: TextField(
-  onTapOutside: (event) {
-    FocusManager.instance.primaryFocus?.unfocus();
-  },
-  cursorColor: Theme.of(context).colorScheme.secondary,
-  style: TextStyle(
-    fontFamily: 'Arial',
-    color: Theme.of(context).colorScheme.secondary,
-  ),
-  maxLines: null,
-  keyboardType: TextInputType.multiline,
-  textInputAction: TextInputAction.newline,
-  controller: controllerdes,
-  onChanged: (value) {
-    // Si necesitas usar el texto, hazlo aquí sin modificar controllerdes.text
-    print('Texto cambiado: $value');
-  },
-  decoration: InputDecoration(
-    enabledBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Color.fromARGB(0, 0, 0, 0), width: 0.0),
-    ),
-    labelText: 'Que desea escribir...',
-    prefixIcon: Icon(
-      Icons.add,
-      color: Theme.of(context).colorScheme.secondary,
-    ),
-    labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
-  ),
-),
-
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: size.width * 0.01,
-                  ),
-                  SizedBox(
-                    width: size.width * 0.10,
-                    child: IconButton(
-                        onPressed: () => _imageSelect(context),
-                        icon: Image(
-                          image: AssetImage('assets/img/iconphoto.png'),
-                        )),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: size.height * 0.03,
-              ),
-              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                  stream: imagenes,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const Text('Something went wrong');
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Column(children: [
                         SpinKitFadingCircle(
                           color: Theme.of(context).colorScheme.tertiary,
                           size: size.width * 0.055,
-                        ),
-                      ]);
-                    }
-                    Map<String, dynamic> data =
-                        snapshot.data!.data() as Map<String, dynamic>;
-                    return _file == null
-                        ? StreamBuilder<QuerySnapshot>(
-                            stream: feedStream,
-                            builder: (BuildContext context,
-                                AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Column(
+                        )
+                      ],
+                    );
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Container(
+                        height: size.height * 0.065,
+                        width: size.height * 0.065,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            border: Border.all(
+                              color: Color.fromRGBO(255, 255, 255, 0.174),
+                              width: size.height * 0.003,
+                            ),
+                            shape: BoxShape.circle,
+                            image: pickedImage != null
+                                ? DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: Image.memory(
+                                      pickedImage!,
+                                      key: UniqueKey(),
+                                    ).image)
+                                : null),
+                      ),
+                      SizedBox(
+                        width: size.width * 0.03,
+                      ),
+                      Text(
+                        data['name'],
+                        style: TextStyle(
+                            fontSize: size.width * 0.045,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                        'Publicar en la ventana principal'),
+                                    content: Text(
+                                        'Esta publicación se mostrará en el ventana principal de La Puerta App. Si desea eliminar una publicación realizada anteriormente póngase en contacto con la oficina de La Puerta'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                            'Cerrar',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                          )),
+                                    ],
+                                  );
+                                });
+                          },
+                          icon: Icon(
+                            Icons.info,
+                            color: Theme.of(context).colorScheme.tertiary,
+                            size: size.height * 0.029,
+                          ))
+                    ],
+                  );
+                }),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(0)),
+              child: TextField(
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.newline,
+                controller: controllerdes,
+                onChanged: (value) => setState(() {
+                  controllerdes.text = value.toString();
+                }),
+                decoration: InputDecoration(
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Color.fromARGB(0, 0, 0, 0), width: 0.0)),
+                  labelText: 'Que desea escribir...',
+                  prefixIcon: Icon(
+                    Icons.add,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: size.width * 0.01,
+                ),
+                SizedBox(
+                  width: size.width * 0.10,
+                  child: IconButton(
+                      onPressed: () => _imageSelect(context),
+                      icon: Image(
+                        image: AssetImage('assets/img/iconphoto.png'),
+                      )),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: size.height * 0.03,
+            ),
+            StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: imagenes,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: [
+                      SpinKitFadingCircle(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        size: size.width * 0.055,
+                      ),
+                    ]);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  return _file == null
+                      ? StreamBuilder<QuerySnapshot>(
+                          stream: feedStream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Column(
+                                children: [
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+                                  SpinKitFadingCircle(
+                                    color: Color.fromRGBO(4, 99, 128, 1),
+                                    size: size.width * 0.1,
+                                  )
+                                ],
+                              );
+                            }
+                            if (snapshot.hasData) {
+                              final sanp = snapshot.data!.docs;
+                              return Center(
+                                child: Column(
                                   children: [
-                                    SizedBox(
-                                      height: size.height * 0.02,
-                                    ),
-                                    SpinKitFadingCircle(
-                                      color: Color.fromRGBO(4, 99, 128, 1),
-                                      size: size.width * 0.1,
-                                    )
-                                  ],
-                                );
-                              }
-                              if (snapshot.hasData) {
-                                final sanp = snapshot.data!.docs;
-                                return Center(
-                                  child: Column(
-                                    children: [
-                                      FutureBuilder(
-                                          future: FireStoreDataBase().getData(),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.hasError) {
-                                              return const Text(
-                                                  'Something went wrong');
-                                            }
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.done) {
-                                              return SizedBox(
-                                                height: size.height * 0.06,
-                                                width: size.width * 0.5,
-                                                child: ElevatedButton(
-                                                  onPressed: () {
-                                                    if (controllerdes.text ==
-                                                        '') {
-                                                    } else {
-                                                      showDialog(
-                                                          context: context,
-                                                          builder: (BuildContext
-                                                              context) {
-                                                            return AlertDialog(
-                                                              title: Text(
-                                                                  'Publicar'),
-                                                              content: Text(
-                                                                  'Estás seguro que quieres publicar esto en el muro principal?'),
-                                                              actions: [
-                                                                TextButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      DateTime
-                                                                          date =
-                                                                          DateTime
-                                                                              .now();
-                                                                      String
-                                                                          today =
-                                                                          '${date.day}/${date.month}/${date.year}';
-                                                                      String
-                                                                          timetoday =
-                                                                          '${date.hour}:${date.minute}';
-                                                                      FirebaseFirestore
-                                                                          .instance
-                                                                          .collection(
-                                                                              'posts')
-                                                                          .doc(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute, DateTime.now().second)
-                                                                              .toString())
-                                                                          .set({
-                                                                        'Comment':
-                                                                            controllerdes.text,
-                                                                        'Date':
-                                                                            today,
-                                                                        'Time':
-                                                                            timetoday,
-                                                                        'User':
-                                                                            data['name'],
-                                                                        'postUrl':
-                                                                            'no imagen',
-                                                                        'Image': snapshot
-                                                                            .data
-                                                                            .toString(),
-                                                                        'createdAt':
-                                                                            Timestamp.now(),
+                                    FutureBuilder(
+                                        future: FireStoreDataBase().getData(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasError) {
+                                            return const Text(
+                                                'Something went wrong');
+                                          }
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
+                                            return SizedBox(
+                                              height: size.height * 0.06,
+                                              width: size.width * 0.5,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  if (controllerdes.text ==
+                                                      '') {
+                                                  } else {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            title: Text(
+                                                                'Publicar actividad'),
+                                                            content: Text(
+                                                                'Estás seguro que quieres publicar esta actividad?'),
+                                                            actions: [
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    DateTime
+                                                                        date =
+                                                                        DateTime
+                                                                            .now();
+                                                                    String
+                                                                        today =
+                                                                        '${date.day}/${date.month}/${date.year}';
+                                                                    String
+                                                                        timetoday =
+                                                                        '${date.hour}:${date.minute}';
+                                                                    FirebaseFirestore
+                                                                        .instance
+                                                                        .collection(
+                                                                            'posts')
+                                                                        .doc(DateTime(
+                                                                                DateTime.now().year,
+                                                                                DateTime.now().month,
+                                                                                DateTime.now().day,
+                                                                                DateTime.now().hour,
+                                                                                DateTime.now().minute,
+                                                                                DateTime.now().second)
+                                                                            .toString())
+                                                                        .set({
+                                                                      'Comment':
+                                                                          controllerdes
+                                                                              .text,
+                                                                      'Date':
+                                                                          today,
+                                                                      'Time':
+                                                                          timetoday,
+                                                                      'User': data[
+                                                                          'name'],
+                                                                      'postUrl':
+                                                                          'no imagen',
+                                                                      'Image': snapshot
+                                                                          .data
+                                                                          .toString(),
+                                                                      'createdAt':
+                                                                          Timestamp
+                                                                              .now(),
                                                                       'UserEmail': currentUser?.email ?? '',
-                                                                      });
-                                                                      ScaffoldMessenger.of(
+                                                                    });
+                                                                    ScaffoldMessenger.of(
                                                                               context)
                                                                           .showSnackBar(
                                                                         SnackBar(
@@ -496,244 +495,257 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                               style: TextStyle(color: Colors.white),
                                                                             )),
                                                                       );
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                      // postImage();
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    // postImage();
 
-                                                                      controllerdes
-                                                                          .clear();
-                                                                    },
-                                                                    child: Text(
-                                                                      'Aceptar',
+                                                                    controllerdes
+                                                                        .clear();
+                                                                  },
+                                                                  child: Text(
+                                                                    'Aceptar',
+                                                                    style: TextStyle(
+                                                                        color: Theme.of(context)
+                                                                            .colorScheme
+                                                                            .secondary),
+                                                                  )),
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                  child: Text(
+                                                                      'Cancelar',
                                                                       style: TextStyle(
                                                                           color: Theme.of(context)
                                                                               .colorScheme
-                                                                              .secondary),
-                                                                    )),
-                                                                TextButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      Navigator.of(
-                                                                              context)
-                                                                          .pop();
-                                                                    },
-                                                                    child: Text(
-                                                                        'Cancelar',
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Theme.of(context).colorScheme.secondary)))
-                                                              ],
-                                                            );
-                                                          });
-                                                    }
-                                                    if (controllerdes
-                                                        .text.isEmpty) {
-                                                      return;
-                                                    }
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                          ),
-                                                          backgroundColor:
-                                                              Color
-                                                                  .fromRGBO(
-                                                                      4,
-                                                                      99,
-                                                                      128,
-                                                                      1),
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      25,
-                                                                  vertical:
-                                                                      10)),
-                                                  child: Text(
-                                                    'Siguiente',
-                                                    style: TextStyle(
-                                                        color: const Color
-                                                            .fromARGB(
-                                                            255, 255, 255, 255),
-                                                        fontSize:
-                                                            size.width * 0.044,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
+                                                                              .secondary)))
+                                                            ],
+                                                          );
+                                                        });
+                                                  }
+                                                  if (controllerdes
+                                                      .text.isEmpty) {
+                                                    return;
+                                                  }
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    backgroundColor:
+                                                        Color.fromRGBO(
+                                                            4, 99, 128, 1),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 25,
+                                                            vertical: 10)),
+                                                child: Text(
+                                                  'Siguiente',
+                                                  style: TextStyle(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              255,
+                                                              255,
+                                                              255),
+                                                      fontSize:
+                                                          size.width * 0.044,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                              );
-                                            }
-                                            return const Center(
-                                                child:
-                                                    CircularProgressIndicator());
-                                          }),
-                                    ],
-                                  ),
-                                );
-                              } else {
-                                return const SizedBox();
-                              }
-                            })
-                        : Center(
-                            child: Column(
-                              children: [
-                                FutureBuilder(
-                                    future: FireStoreDataBase().getData(),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasError) {
-                                        return const Text(
-                                            'Something went wrong');
-                                      }
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.done) {
-                                        return Column(children: [
-                                          Container(
-                                            height: size.height * 0.35,
-                                            width: size.height,
-                                            decoration: BoxDecoration(
-                                                color: const Color.fromARGB(
-                                                    0, 158, 158, 158),
-                                                border: Border.all(
-                                                  color: Color.fromRGBO(
-                                                      4, 99, 128, 0),
-                                                  width: size.height * 0.0,
-                                                ),
-                                                //shape: BoxShape.circle,
-                                                image: DecorationImage(
-                                                    fit: BoxFit.cover,
-                                                    image: Image.memory(
-                                                      _file!,
-                                                    ).image)),
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.01,
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              if (controllerdes.text == '') {
-                                              } else {
-                                                showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                            'Publicar actividad'),
-                                                        content: Text(
-                                                            'Estás seguro que quieres publicar esta actividad?'),
-                                                        actions: [
-                                                          TextButton(
-                                                              onPressed: () {
-                                                                DateTime date =
-                                                                    DateTime
-                                                                        .now();
-                                                                String today =
-                                                                    '${date.day}/${date.month}/${date.year}';
-                                                                String
-                                                                    timetoday =
-                                                                    '${date.hour}:${date.minute}';
-                                                                FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        'posts')
-                                                                    .doc(DateTime(
-                                                                            DateTime.now().year,
-                                                                            DateTime.now().month,
-                                                                            DateTime.now().day,
-                                                                            DateTime.now().hour,
-                                                                            DateTime.now().minute,
-                                                                            DateTime.now().second)
-                                                                        .toString())
-                                                                    .update({
-                                                                  /*'Comment': controllerdes.text,
+                                              ),
+                                            );
+                                          }
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        }),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          })
+                      : Center(
+                          child: Column(
+                            children: [
+                              FutureBuilder(
+                                  future: FireStoreDataBase().getData(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return const Text('Something went wrong');
+                                    }
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      return Column(children: [
+                                        Container(
+                                          height: size.height * 0.35,
+                                          width: size.height,
+                                          decoration: BoxDecoration(
+                                              color: const Color.fromARGB(
+                                                  0, 158, 158, 158),
+                                              border: Border.all(
+                                                color: Color.fromRGBO(
+                                                    4, 99, 128, 0),
+                                                width: size.height * 0.0,
+                                              ),
+                                              //shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: Image.memory(
+                                                    _file!,
+                                                  ).image)),
+                                        ),
+                                        SizedBox(
+                                          height: size.height * 0.01,
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            if (controllerdes.text == '') {
+                                            } else {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: Text(
+                                                          'Publicar actividad'),
+                                                      content: Text(
+                                                          'Estás seguro que quieres publicar esta actividad?'),
+                                                      actions: [
+                                                        TextButton(
+                                                            onPressed: () {
+                                                              DateTime date =
+                                                                  DateTime
+                                                                      .now();
+                                                              String today =
+                                                                  '${date.day}/${date.month}/${date.year}';
+                                                              String timetoday =
+                                                                  '${date.hour}:${date.minute}';
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'posts')
+                                                                  .doc(DateTime(
+                                                                          DateTime.now()
+                                                                              .year,
+                                                                          DateTime.now()
+                                                                              .month,
+                                                                          DateTime.now()
+                                                                              .day,
+                                                                          DateTime.now()
+                                                                              .hour,
+                                                                          DateTime.now()
+                                                                              .minute,
+                                                                          DateTime.now()
+                                                                              .second)
+                                                                      .toString())
+                                                                  .update({
+                                                                /*'Comment': controllerdes.text,
                                           'Date': today,
                                           'Time': timetoday,
                                           'User': 'La Puerta',
                                           'postUrl': 'no image',*/
-                                                                  'Image': snapshot
-                                                                      .data
+                                                                'Image': snapshot
+                                                                    .data
+                                                                    .toString(),
+                                                              });
+
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                              postImage(
+                                                                  snapshot.data
                                                                       .toString(),
-                                                                });
+                                                                  data['name']);
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                                postImage(
-                                                                    snapshot
-                                                                        .data
-                                                                        .toString(),
-                                                                    data[
-                                                                        'name']);
-
-                                                                controllerdes
-                                                                    .clear();
-                                                              },
-                                                              child: Text(
-                                                                  'Aceptar',
-                                                                  style: TextStyle(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .colorScheme
-                                                                          .secondary))),
-                                                          TextButton(
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child: Text(
-                                                                  'Cancelar',
-                                                                  style: TextStyle(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .colorScheme
-                                                                          .secondary)))
-                                                        ],
-                                                      );
-                                                    });
-                                              }
-                                              if (controllerdes.text.isEmpty) {
-                                                return;
-                                              }
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                backgroundColor: Color.fromRGBO(
-                                                    4, 99, 128, 1),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 25,
-                                                    vertical: 10)),
-                                            child: Text(
-                                              'Siguiente',
-                                              style: TextStyle(
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                  fontSize: size.width * 0.044,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
+                                                              controllerdes
+                                                                  .clear();
+                                                            },
+                                                            child: Text(
+                                                                'Aceptar',
+                                                                style: TextStyle(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary))),
+                                                        TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: Text(
+                                                                'Cancelar',
+                                                                style: TextStyle(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary)))
+                                                      ],
+                                                    );
+                                                  });
+                                            }
+                                            if (controllerdes.text.isEmpty) {
+                                              return;
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              backgroundColor:
+                                                  Color.fromRGBO(4, 99, 128, 1),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 25,
+                                                  vertical: 10)),
+                                          child: Text(
+                                            'Siguiente',
+                                            style: TextStyle(
+                                                color: const Color.fromARGB(
+                                                    255, 255, 255, 255),
+                                                fontSize: size.width * 0.044,
+                                                fontWeight: FontWeight.bold),
                                           ),
-                                        ]);
-                                      }
-                                      return const Center(
-                                          child: CircularProgressIndicator());
-                                    }),
-                              ],
-                            ),
-                          );
-                  }),
-            ],
-          ),
+                                        ),
+                                      ]);
+                                    }
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  }),
+                            ],
+                          ),
+                        );
+                }),
+          ]),
         ),
       ),
     );
+  }
+
+  Future<void> onProfileTapped() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+
+    final storageRef = FirebaseStorage.instance.ref('images/$time.png');
+    final imageRef = storageRef.child(currentUser.email.toString());
+    final imageBytes = await image.readAsBytes();
+    await imageRef.putData(imageBytes);
+
+    setState(() {
+      pickedImage = imageBytes;
+      photoID = time;
+    });
   }
 
   Future<void> getProfilePicture() async {
