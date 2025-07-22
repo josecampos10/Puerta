@@ -273,6 +273,11 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(0)),
               child: TextField(
+                onTapOutside: (event) {
+                                    print('onTapOutside');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 textInputAction: TextInputAction.newline,
