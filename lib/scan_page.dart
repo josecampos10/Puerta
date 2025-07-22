@@ -12,6 +12,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:lapuerta2/UserhomePrincipal.dart';
 import 'package:lapuerta2/firebase_api.dart';
 import 'package:lapuerta2/mainwrapper.dart';
+import 'package:lapuerta2/onboarding.dart';
 
 // ignore: must_be_immutable
 class Notifications extends StatefulWidget {
@@ -34,10 +35,54 @@ class _NotificationsState extends State<Notifications> {
   FlutterAppBadgeControl.removeBadge();
 }
 
+Future<void> _checkUserValidity() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      if (refreshedUser == null) {
+        // Usuario eliminado de Authentication
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final firestore = FirebaseFirestore.instance;
+
+      // 1️⃣ Verificar si existe el documento en la colección 'users'
+      final userDoc =
+          await firestore.collection('users').doc(refreshedUser.email).get();
+
+      if (!userDoc.exists) {
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+    } catch (e) {
+      print('❌ Error validando usuario o posts: $e');
+      await FirebaseAuth.instance.signOut();
+      _navigateToLogin();
+    }
+  }
+
+  void _navigateToLogin() {
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const OnboardingPage()),
+        (route) => false,
+      );
+    }
+  }
+
   @override
   void initState() {
     users;
     super.initState();
+    _checkUserValidity();
     getProfilePicture();
     var feed = FirebaseFirestore.instance
         .collection('posts')

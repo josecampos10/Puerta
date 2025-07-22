@@ -1199,56 +1199,62 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                           actions: [
                                                             TextButton(
   onPressed: () async {
-    // 1. Obtener usuario actual (el admin)
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) return;
+  final userEmailToDelete = snap[index]['email'];
 
-    // 2. Refrescar token para tener claims actualizados
-    await currentUser.getIdToken(true);
-    await Future.delayed(Duration(seconds: 1));
+  // 1️⃣ Eliminar los posts del usuario
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('UserEmail', isEqualTo: userEmailToDelete)
+        .get();
 
-    // 3. Verificar e imprimir claims
-    final tokenResult = await currentUser.getIdTokenResult(true);
-    final claims = tokenResult.claims ?? {};
-    print("🔐 Claims actualizados: $claims");
-
-    if (!(claims['admin'] == true || claims['superadmin'] == true)) {
-      print("❌ El usuario NO es admin.");
-      return;
-    }
-
-    // 4. Obtener email del usuario a eliminar
-    final emailToDelete = snap[index]['email'];
-    print("📧 Eliminando: $emailToDelete");
-
-    // 5. Eliminar imagen del usuario (si tiene)
-    try {
-      await FirebaseStorage.instance.ref(emailToDelete).delete();
-    } catch (_) {
-      print("⚠️ Sin imagen para eliminar");
-    }
-
-    // 6. Llamar función Cloud para eliminar la cuenta y datos
-    try {
-      final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
-          .httpsCallable('deleteUser');
-      final result = await callable.call({'email': emailToDelete});
-
-      if (result.data['message'] != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result.data['message'])),
-        );
+    if (querySnapshot.docs.isNotEmpty) {
+      for (final doc in querySnapshot.docs) {
+        await doc.reference.delete();
       }
-    } on FirebaseFunctionsException catch (e) {
-      print('🔥 FirebaseFunctionsException: ${e.code} - ${e.message}');
-    } catch (e) {
-      print('❌ Error inesperado: $e');
+      print('✅ Posts eliminados.');
+    } else {
+      print('ℹ️ No se encontraron posts.');
     }
+  } catch (e) {
+    print('❌ Error al eliminar posts: $e');
+  }
 
-    if (context.mounted) {
-      Navigator.of(context).pop();
+  // 2️⃣ Eliminar imagen de perfil
+  try {
+    await FirebaseStorage.instance.ref(userEmailToDelete).delete();
+    print('✅ Imagen de perfil eliminada.');
+  } catch (e) {
+    print('⚠️ No se encontró imagen de perfil o error al eliminar: $e');
+  }
+
+  // 3️⃣ Eliminar documento del usuario en 'users'
+  try {
+  final userDocRef = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userEmailToDelete);
+
+  final userDoc = await userDocRef.get();
+
+  if (userDoc.exists) {
+    await userDocRef.delete();
+
+    // 🔁 Verificamos que se haya eliminado correctamente
+    final checkDoc = await userDocRef.get();
+    if (!checkDoc.exists) {
+      print('✅ Documento del usuario eliminado exitosamente.');
+    } else {
+      print('⚠️ Falló la eliminación del documento.');
     }
-  },
+  } else {
+    print('ℹ️ El documento del usuario no existe.');
+  }
+} catch (e) {
+  print('❌ Error al eliminar documento del usuario: $e');
+}
+
+  Navigator.of(context).pop();
+},
   child: Text('Aceptar', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
 ),
                                                             TextButton(

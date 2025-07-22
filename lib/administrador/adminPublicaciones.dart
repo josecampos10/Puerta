@@ -272,29 +272,77 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
               decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(0)),
-              child: TextField(
-                onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                textInputAction: TextInputAction.newline,
-                controller: controllerdes,
-                onChanged: (value) => setState(() {
-                  controllerdes.text = value.toString();
-                }),
-                decoration: InputDecoration(
-                  enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Color.fromARGB(0, 0, 0, 0), width: 0.0)),
-                  labelText: 'Que desea escribir...',
-                  prefixIcon: Icon(
-                    Icons.add,
-                    color: Theme.of(context).colorScheme.secondary,
+              child: Theme(
+                data: Theme.of(context).copyWith(
+    textSelectionTheme: TextSelectionThemeData(
+      selectionColor: Colors.blue.withOpacity(0.4), // visible highlight
+      selectionHandleColor: Theme.of(context).colorScheme.secondary,
+      cursorColor: Theme.of(context).colorScheme.secondary,
+    ),
+  ),
+                child: TextField(
+                  contextMenuBuilder: (BuildContext context,
+                                          EditableTextState editableTextState) {
+                                        return AdaptiveTextSelectionToolbar
+                                            .buttonItems(
+                                          anchors:
+                                              editableTextState.contextMenuAnchors,
+                                          buttonItems: [
+                                            ContextMenuButtonItem(
+                                              onPressed: () {
+                                                editableTextState.copySelection(
+                                                    SelectionChangedCause.toolbar);
+                                              },
+                                              type: ContextMenuButtonType.copy,
+                                            ),
+                                            ContextMenuButtonItem(
+                                              onPressed: () {
+                                                editableTextState.cutSelection(
+                                                    SelectionChangedCause.toolbar);
+                                              },
+                                              type: ContextMenuButtonType.cut,
+                                            ),
+                                            ContextMenuButtonItem(
+                                              onPressed: () {
+                                                editableTextState.pasteText(
+                                                    SelectionChangedCause.toolbar);
+                                              },
+                                              type: ContextMenuButtonType.paste,
+                                            ),
+                                            ContextMenuButtonItem(
+                                              onPressed: () {
+                                                editableTextState.selectAll(
+                                                    SelectionChangedCause.toolbar);
+                                              },
+                                              type: ContextMenuButtonType.selectAll,
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                      enableInteractiveSelection: true,
+                  onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  controller: controllerdes,
+                  onChanged: (value) => setState(() {
+                    //controllerdes.text = value.toString();
+                  }),
+                  decoration: InputDecoration(
+                    enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Color.fromARGB(0, 0, 0, 0), width: 0.0)),
+                    labelText: 'Que desea escribir...',
+                    prefixIcon: Icon(
+                      Icons.add,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
                   ),
-                  labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
                 ),
               ),
             ),

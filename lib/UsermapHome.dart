@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:lapuerta2/onboarding.dart';
 
 class UsermapHome extends StatefulWidget {
   const UsermapHome({super.key});
@@ -25,10 +26,53 @@ class _UsermapHomeState extends State<UsermapHome> {
   final currentUsera = FirebaseAuth.instance.currentUser!;
   late Stream<DocumentSnapshot<Map<String, dynamic>>> streamfeed;
 
+  Future<void> _checkUserValidity() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      if (refreshedUser == null) {
+        // Usuario eliminado de Authentication
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final firestore = FirebaseFirestore.instance;
+
+      // 1️⃣ Verificar si existe el documento en la colección 'users'
+      final userDoc =
+          await firestore.collection('users').doc(refreshedUser.email).get();
+
+      if (!userDoc.exists) {
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+    } catch (e) {
+      print('❌ Error validando usuario o posts: $e');
+      await FirebaseAuth.instance.signOut();
+      _navigateToLogin();
+    }
+  }
+
+  void _navigateToLogin() {
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const OnboardingPage()),
+        (route) => false,
+      );
+    }
+  }
+
   @override
   void initState() {
     _init();
-   
+   _checkUserValidity();
     super.initState();
     getProfilePicture();
     streamfeed = FirebaseFirestore.instance
@@ -1788,7 +1832,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura",
+                                              "Costura Básica",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -4566,7 +4610,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura",
+                                              "Costura Básica",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -7441,7 +7485,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura",
+                                              "Costura Básica",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -10220,7 +10264,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura",
+                                              "Costura Básica",
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,

@@ -36,8 +36,6 @@ class _ProfileHomeState extends State<Profilehome> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> base;
   final currentUsera = FirebaseAuth.instance.currentUser!;
 
-  
-
   void requestNotificationPermission() async {
     NotificationSettings settings =
         await FirebaseMessaging.instance.requestPermission(
@@ -68,43 +66,165 @@ class _ProfileHomeState extends State<Profilehome> {
   }
 
   Future<void> signOut() async {
-  try {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // 🧽 1. Eliminar token de Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.email)
+            .update({'token': FieldValue.delete()});
+
+        // 🔁 2. Borrar el token FCM del dispositivo
+        await FirebaseMessaging.instance.deleteToken();
+      }
+
+      // 🔐 3. Cerrar sesión de Firebase
+      await FirebaseAuth.instance.signOut();
+
+      // 🚪 4. Redirigir al login o WidgetTree
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => WidgetTree()),
+      );
+    } catch (e) {
+      print('Error during sign out: $e');
+    }
+  }
+
+  Future<void> resendEmailVerification() async {
     final user = FirebaseAuth.instance.currentUser;
 
-    if (user != null) {
-      // 🧽 1. Eliminar token de Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.email)
-          .update({'token': FieldValue.delete()});
+    if (user == null) return;
 
-      // 🔁 2. Borrar el token FCM del dispositivo
-      await FirebaseMessaging.instance.deleteToken();
+    await user.reload(); // 🔄 Recarga datos del usuario desde Firebase
+    final refreshedUser = FirebaseAuth.instance.currentUser;
+
+    if (refreshedUser!.emailVerified) {
+      setState(() {}); // 🔁 Actualiza la UI si es necesario
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ Tu correo ya está verificado'),
+          backgroundColor: Colors.blue,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
     }
 
-    // 🔐 3. Cerrar sesión de Firebase
-    await FirebaseAuth.instance.signOut();
+    try {
+      await refreshedUser.sendEmailVerification();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              '📨 Correo de verificación enviado a ${refreshedUser.email}'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message;
 
-    // 🚪 4. Redirigir al login o WidgetTree
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => WidgetTree()),
-    );
-  } catch (e) {
-    print('Error during sign out: $e');
+      if (e.code == 'too-many-requests') {
+        message =
+            'Has solicitado verificación demasiadas veces. Intenta más tarde.';
+      } else if (e.code == 'network-request-failed') {
+        message =
+            'No hay conexión a internet. Revisa tu red e intenta de nuevo.';
+      } else {
+        message = 'Ocurrió un error al enviar el correo. Intenta de nuevo.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('⚠️ $message'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('⚠️ Error inesperado: ${e.toString()}'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
   }
-}
 
+  Widget emailVerificationBadge() {
+    Size size = MediaQuery.of(context).size;
+    final user = FirebaseAuth.instance.currentUser;
+    final isVerified = user?.emailVerified ?? false;
 
+    return Container(
+      width: size.height*0.02,
+      height: size.height*0.02,
+      decoration: BoxDecoration(
+        color: isVerified ? Colors.green : Colors.grey,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.check,
+        size: size.height*0.016,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Future<void> _checkUserValidity() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      if (refreshedUser == null) {
+        // Usuario eliminado de Authentication
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final firestore = FirebaseFirestore.instance;
+
+      // 1️⃣ Verificar si existe el documento en la colección 'users'
+      final userDoc =
+          await firestore.collection('users').doc(refreshedUser.email).get();
+
+      if (!userDoc.exists) {
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+    } catch (e) {
+      print('❌ Error validando usuario o posts: $e');
+      await FirebaseAuth.instance.signOut();
+      _navigateToLogin();
+    }
+  }
+
+  void _navigateToLogin() {
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const OnboardingPage()),
+        (route) => false,
+      );
+    }
+  }
+  
   String push = '';
-
   Uint8List? pickedImage;
-
   NotificationServices notificationServices = NotificationServices();
 
   @override
   void initState() {
     super.initState();
+    _checkUserValidity();
     getProfilePicture();
     base = FirebaseFirestore.instance
         .collection('users')
@@ -234,9 +354,44 @@ class _ProfileHomeState extends State<Profilehome> {
                                   fontWeight: FontWeight.bold,
                                   color:
                                       const Color.fromARGB(140, 255, 255, 255)))
-                          : Text('')
+                          : Text(''),
+                      SizedBox(
+                        width: size.width * 0.01,
+                      ),
+                      emailVerificationBadge(),
                     ],
-                  )
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  if (!(FirebaseAuth.instance.currentUser?.emailVerified ??
+                      false))
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: size.height * 0.03,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: resendEmailVerification,
+                              borderRadius: BorderRadius.circular(4),
+                              splashColor:
+                                  const Color.fromARGB(36, 255, 255, 255),
+                              highlightColor: Colors.transparent,
+                              child: Text(
+                                'Verificar correo',
+                                style: TextStyle(
+                                  color:
+                                      const Color.fromARGB(255, 49, 183, 255),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
                 ],
               ),
             ),
@@ -1145,8 +1300,6 @@ class _ProfileHomeState extends State<Profilehome> {
               SizedBox(
                 height: size.height * 0.035,
               ),
-              
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -1201,85 +1354,72 @@ class _ProfileHomeState extends State<Profilehome> {
                                             fontFamily: 'Arial'),
                                       )),
                                   TextButton(
-                                    onPressed: () async {
-                                      final currentUser =
-                                          FirebaseAuth.instance.currentUser;
-                                      final userEmail = currentUser?.email;
+  onPressed: () async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final userEmail = currentUser?.email;
 
-                                      // 1. Cierra sesión y navega primero (evita errores visuales por datos en uso)
-                                     
+    // 1. Cerrar sesión visualmente y navegar al onboarding
+    await Future.delayed(const Duration(milliseconds: 300));
 
-                                      // 2. Espera brevemente para asegurar salida del árbol de widgets
-                                      await Future.delayed(
-                                          const Duration(milliseconds: 300));
+    if (navigatorKey.currentState?.mounted ?? false) {
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const OnboardingPage()),
+        (route) => false,
+      );
+    }
 
-                                          
+    // 2. Esperar navegación
+    await Future.delayed(const Duration(milliseconds: 300));
 
-                                      // 3. Navegar a pantalla de inicio
-                                      if (navigatorKey.currentState?.mounted ??
-                                          false) {
-                                        navigatorKey.currentState
-                                            ?.pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  const OnboardingPage()),
-                                          (route) => false,
-                                        );
-                                      }
-                                      await FirebaseFirestore.instance
-                                              .collection('users')
-                                              .doc(userEmail)
-                                              .delete();
+    try {
+      if (userEmail != null) {
+        // 3. Eliminar posts del usuario
+        final postsSnapshot = await FirebaseFirestore.instance
+            .collection('posts')
+            .where('UserEmail', isEqualTo: userEmail)
+            .get();
 
-                                      // 4. Espera a que la navegación se complete antes de continuar
-                                      await Future.delayed(
-                                          const Duration(milliseconds: 300));
+        for (final doc in postsSnapshot.docs) {
+          await doc.reference.delete();
+        }
 
-                                      try {
-                                        // 5. Eliminar posts del usuario
-                                        if (userEmail != null) {
-                                          final postsSnapshot =
-                                              await FirebaseFirestore.instance
-                                                  .collection('posts')
-                                                  .where('UserEmail',
-                                                      isEqualTo: userEmail)
-                                                  .get();
+        // 4. Eliminar imagen de perfil
+        try {
+          await FirebaseStorage.instance.ref(userEmail).delete();
+        } catch (_) {
+          print('⚠️ No hay imagen de perfil para eliminar.');
+        }
 
-                                          for (final doc
-                                              in postsSnapshot.docs) {
-                                            await doc.reference.delete();
-                                          }
+        // 5. Eliminar cuenta de Firebase Auth
+        await currentUser?.delete();
 
-                                          // 6. Eliminar imagen de perfil
-                                          try {
-                                            await FirebaseStorage.instance
-                                                .ref(userEmail)
-                                                .delete();
-                                          } catch (_) {}
+        // 6. Esperar cierre de sesión
+        await FirebaseAuth.instance.signOut();
 
-                                          // 7. Eliminar documento del usuario
-                                          
-                                        }
+        // 7. Eliminar documento del usuario
+        final docRef = FirebaseFirestore.instance.collection('users').doc(userEmail);
+        final docSnapshot = await docRef.get();
 
-                                        // 8. Finalmente eliminar la cuenta (si no se hizo ya por alguna política)
-                                        await currentUser?.delete();
+        if (docSnapshot.exists) {
+          await docRef.delete();
+          print('✅ Documento del usuario eliminado');
+        } else {
+          print('⚠️ Documento ya no existe');
+        }
+      }
+    } catch (e) {
+      print('❌ Error al eliminar cuenta o documento: $e');
+    }
+  },
+  child: Text(
+    'Aceptar',
+    style: TextStyle(
+      fontFamily: 'Arial',
+      color: Theme.of(context).colorScheme.secondary,
+    ),
+  ),
+),
 
-                                         await FirebaseAuth.instance.signOut();
-                                      } catch (e) {
-                                        print(
-                                            "❌ Error eliminando usuario después del cierre: $e");
-                                      }
-                                    },
-                                    child: Text(
-                                      'Aceptar',
-                                      style: TextStyle(
-                                        fontFamily: 'Arial',
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ),
-                                    ),
-                                  ),
                                 ],
                               );
                             });

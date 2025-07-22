@@ -262,141 +262,233 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                     color:
                                         Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(15)),
-                                child: TextField(
-                                  //ocusNode: FocusScope.of(context).unfocus(),
-                                  cursorColor:
-                                      Theme.of(context).colorScheme.secondary,
-                                  // specialTextSpanBuilder: MySpecialTextSpanBuilder(),
-                                  //textAlign: TextAlign.,
-                                  onTapOutside: (event) {
-                                    print('onTapOutside');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                                  style: TextStyle(
-                                      fontFamily: 'Arial',
-                                      color: Theme.of(context)
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    textSelectionTheme: TextSelectionThemeData(
+                                      selectionColor: Colors.blue.withOpacity(
+                                          0.4), // visible highlight
+                                      selectionHandleColor: Theme.of(context)
                                           .colorScheme
-                                          .secondary),
-                                  autofocus: false,
-                                  minLines: 1,
-                                  maxLines: null,
-                                  keyboardType: TextInputType.multiline,
-                                  textInputAction: TextInputAction.newline,
-                                  controller: controller,
-                                  onChanged: (value) => setState(() {
-                                    controller.text = value.toString();
-                                  }),
-                                  decoration: InputDecoration(
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: const Color.fromARGB(
-                                                0, 0, 187, 212)),
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: const Color.fromARGB(
-                                                0, 0, 187, 212)),
-                                      ),
-                                      //isCollapsed: true,
-                                      hintText: "mensaje...",
-                                      hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                          fontFamily: 'Arial'),
-                                      suffixIcon: IconButton(
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return FutureBuilder(
-                                                  future: FireStoreDataBase()
-                                                      .getData(),
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.hasError) {
-                                                      return const Text(
-                                                          'Something went wrong');
-                                                    }
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState.done) {
-                                                      return AlertDialog(
-                                                        title: Text(
-                                                            'Publicar mensaje'),
-                                                        content: Text(
-                                                            'Estás seguro que quieres publicar este mensaje?'),
-                                                        actions: [
-                                                          TextButton(
-  onPressed: () async {
-    DateTime now = DateTime.now();
-    String today = '${now.day}/${now.month}/${now.year}';
-    String timetoday = '${now.hour}:${now.minute}';
-    String postId = now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
+                                          .secondary,
+                                      cursorColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ),
+                                  child: TextField(
+                                    contextMenuBuilder: (BuildContext context,
+                                        EditableTextState editableTextState) {
+                                      return AdaptiveTextSelectionToolbar
+                                          .buttonItems(
+                                        anchors: editableTextState
+                                            .contextMenuAnchors,
+                                        buttonItems: [
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.copySelection(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type: ContextMenuButtonType.copy,
+                                          ),
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.cutSelection(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type: ContextMenuButtonType.cut,
+                                          ),
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.pasteText(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type: ContextMenuButtonType.paste,
+                                          ),
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.selectAll(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type:
+                                                ContextMenuButtonType.selectAll,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                    enableInteractiveSelection: true,
+                                    //ocusNode: FocusScope.of(context).unfocus(),
+                                    cursorColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    // specialTextSpanBuilder: MySpecialTextSpanBuilder(),
+                                    //textAlign: TextAlign.,
+                                    onTapOutside: (event) {
+                                      print('onTapOutside');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    style: TextStyle(
+                                        fontFamily: 'Arial',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
+                                    autofocus: false,
+                                    minLines: 1,
+                                    maxLines: null,
+                                    keyboardType: TextInputType.multiline,
+                                    textInputAction: TextInputAction.newline,
+                                    controller: controller,
+                                    onChanged: (value) => setState(() {
+                                      //controller.text = value.toString();
+                                    }),
+                                    decoration: InputDecoration(
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: const Color.fromARGB(
+                                                  0, 0, 187, 212)),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: const Color.fromARGB(
+                                                  0, 0, 187, 212)),
+                                        ),
+                                        //isCollapsed: true,
+                                        hintText: "mensaje...",
+                                        hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                            fontFamily: 'Arial'),
+                                        suffixIcon: IconButton(
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return FutureBuilder(
+                                                    future: FireStoreDataBase()
+                                                        .getData(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot.hasError) {
+                                                        return const Text(
+                                                            'Something went wrong');
+                                                      }
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .done) {
+                                                        return AlertDialog(
+                                                          title: Text(
+                                                              'Publicar mensaje'),
+                                                          content: Text(
+                                                              'Estás seguro que quieres publicar este mensaje?'),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                DateTime now =
+                                                                    DateTime
+                                                                        .now();
+                                                                String today =
+                                                                    '${now.day}/${now.month}/${now.year}';
+                                                                String
+                                                                    timetoday =
+                                                                    '${now.hour}:${now.minute}';
+                                                                String postId =
+                                                                    now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
 
-    // Guarda el post en la colección 'postsESL'
-    await FirebaseFirestore.instance
-        .collection('postsESL')
-        .doc(postId)
-        .set({
-      'Name': data['name'] ?? "",
-      'Comment': controller.text,
-      'Date': today,
-      'Time': timetoday,
-      'User': 'La Puerta',
-      'postUrl': 'no imagen',
-      'Image': snapshot.data.toString(),
-      'createdAt': Timestamp.now(),
-    });
+                                                                // Guarda el post en la colección 'postsESL'
+                                                                await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'postsESL')
+                                                                    .doc(postId)
+                                                                    .set({
+                                                                  'Name': data[
+                                                                          'name'] ??
+                                                                      "",
+                                                                  'Comment':
+                                                                      controller
+                                                                          .text,
+                                                                  'Date': today,
+                                                                  'Time':
+                                                                      timetoday,
+                                                                  'User':
+                                                                      'La Puerta',
+                                                                  'postUrl':
+                                                                      'no imagen',
+                                                                  'Image': snapshot
+                                                                      .data
+                                                                      .toString(),
+                                                                  'createdAt':
+                                                                      Timestamp
+                                                                          .now(),
+                                                                });
 
-    // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
-    await FirebaseFirestore.instance
-        .collection('postsState')
-        .doc('ESLpm')
-        .set({'lastpost': postId});
+                                                                // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
+                                                                await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'postsState')
+                                                                    .doc(
+                                                                        'ESLpm')
+                                                                    .set({
+                                                                  'lastpost':
+                                                                      postId
+                                                                });
 
-    Navigator.of(context).pop();
-    controller.clear();
-  },
-  child: Text(
-    'Aceptar',
-    style: TextStyle(
-      color: Theme.of(context).colorScheme.secondary,
-    ),
-  ),
-),
-
-
-                                                          TextButton(
-                                                              onPressed: () {
                                                                 Navigator.of(
                                                                         context)
                                                                     .pop();
+                                                                controller
+                                                                    .clear();
                                                               },
                                                               child: Text(
-                                                                'Cancelar',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .secondary),
-                                                              ))
-                                                        ],
-                                                      );
-                                                    }
-                                                    return const Center(
-                                                        child:
-                                                            CircularProgressIndicator());
-                                                  },
-                                                );
-                                              });
-                                        },
-                                        icon: Icon(
-                                          Icons.send,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          size: size.height * 0.035,
-                                        ),
-                                      )),
+                                                                'Aceptar',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child: Text(
+                                                                  'Cancelar',
+                                                                  style: TextStyle(
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .secondary),
+                                                                ))
+                                                          ],
+                                                        );
+                                                      }
+                                                      return const Center(
+                                                          child:
+                                                              CircularProgressIndicator());
+                                                    },
+                                                  );
+                                                });
+                                          },
+                                          icon: Icon(
+                                            Icons.send,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            size: size.height * 0.035,
+                                          ),
+                                        )),
+                                  ),
                                 ),
                               ),
                             ),

@@ -21,27 +21,79 @@ class _WidgetTreeState extends State<WidgetTree> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.tertiary, // Evita pantalla negra
-            body: Center(child: CircularProgressIndicator()),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            body: const Center(child: CircularProgressIndicator()),
           );
         }
 
         final user = snapshot.data;
 
-        if (user != null) {
-          return FutureBuilder<DocumentSnapshot>(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(user.email)
-                .get(),
-            builder: (context, snapshotDoc) {
-              if (snapshotDoc.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              }
+        // Si no está autenticado, ir al login
+        if (user == null) {
+          return const LoginNow();
+        }
 
-              if (snapshotDoc.hasData && snapshotDoc.data!.exists) {
+        // ⚠️ Aquí hacemos la doble validación:
+        return FutureBuilder(
+          future: _verifyUser(user),
+          builder: (context, snapshotVerify) {
+            if (snapshotVerify.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (snapshotVerify.hasError || snapshotVerify.data == false) {
+              return const LoginNow();
+            }
+
+            // ✅ Usuario válido y con documento
+            return user.email != 'admin@lapuertawaco.com'
+                ? const Mainwrapper()
+                : const LoginNow(); // o reemplaza por otro widget admin
+          },
+        );
+      },
+    );
+  }
+
+  /// ✅ Verifica que el usuario siga existiendo en Auth y Firestore
+  Future<bool> _verifyUser(User user) async {
+    try {
+      await user.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      // 🔒 Si ya no existe en Auth (fue borrado por admin)
+      if (refreshedUser == null) {
+        await FirebaseAuth.instance.signOut();
+        return false;
+      }
+
+      // 🔍 Ahora verificamos Firestore
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(refreshedUser.email)
+          .get();
+
+      if (!doc.exists) {
+        await FirebaseAuth.instance.signOut();
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print("❌ Error verificando usuario: $e");
+      await FirebaseAuth.instance.signOut();
+      return false;
+    }
+  }
+}
+
+
+
+
+
+/*if (snapshotDoc.hasData && snapshotDoc.data!.exists) {
                 // Usuario válido
                 if (user.email != 'admin@lapuertawaco.com') {
                   return const Mainwrapper();
@@ -52,16 +104,7 @@ class _WidgetTreeState extends State<WidgetTree> {
                 // 🔐 Usuario sin documento en Firestore: cerrar sesión
                 FirebaseAuth.instance.signOut();
                 return const LoginNow();
-              }
-            },
-          );
-        } else {
-          return const LoginNow(); // No autenticado
-        }
-      },
-    );
-  }
-}
+              }*/
 
 
 

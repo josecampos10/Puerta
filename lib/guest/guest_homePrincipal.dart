@@ -81,7 +81,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
     final Email email = Email(
       body: _bodyController.text,
       subject: _subjectController.text,
-      recipients: ['ppjjosejair@gmail.com'],
+      recipients: ['info@lapuertawaco.com'],
       //attachmentPaths: attachments,
       isHTML: false,
     );

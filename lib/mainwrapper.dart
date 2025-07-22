@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lapuerta2/Profile%20files/wishlist_nav.dart';
 import 'package:lapuerta2/UserhomePrincipal.dart';
+import 'package:lapuerta2/onboarding.dart';
 
 import 'package:lapuerta2/scan_page.dart';
 import 'package:lapuerta2/Students%20Clases/studentClases_nav.dart';
@@ -26,10 +27,11 @@ class _MainWrapperState extends State<Mainwrapper> {
 
   Key _screenKey = UniqueKey();
 
+  
+
   @override
   void initState() {
     super.initState();
-
     _listenForNewPosts();
     FirebaseFirestore.instance
         .collection('users')

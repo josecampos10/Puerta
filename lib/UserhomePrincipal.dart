@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:lapuerta2/detalles_image.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:lapuerta2/detalles_image_slider.dart';
+import 'package:lapuerta2/onboarding.dart';
 import 'package:lapuerta2/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -116,20 +117,65 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
     );*/
   }
 
-    Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> obtenerPostsOrdenados() async {
-  final snapshot = await FirebaseFirestore.instance
-      .collection('posts')
-      .orderBy('createdAt', descending: true)
-      .get();
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      obtenerPostsOrdenados() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('posts')
+        .orderBy('createdAt', descending: true)
+        .get();
 
-  return snapshot.docs;
-}
+    return snapshot.docs;
+  }
 
-Future<void> _refresh() async {
-  setState(() {
-    futurePosts = obtenerPostsOrdenados(); // Cambia tu variable de estado aquí
-  });
-}
+  Future<void> _refresh() async {
+    setState(() {
+      futurePosts =
+          obtenerPostsOrdenados(); // Cambia tu variable de estado aquí
+    });
+  }
+
+  Future<void> _checkUserValidity() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      if (refreshedUser == null) {
+        // Usuario eliminado de Authentication
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final firestore = FirebaseFirestore.instance;
+
+      // 1️⃣ Verificar si existe el documento en la colección 'users'
+      final userDoc =
+          await firestore.collection('users').doc(refreshedUser.email).get();
+
+      if (!userDoc.exists) {
+        await FirebaseAuth.instance.signOut();
+        _navigateToLogin();
+        return;
+      }
+    } catch (e) {
+      print('❌ Error validando usuario o posts: $e');
+      await FirebaseAuth.instance.signOut();
+      _navigateToLogin();
+    }
+  }
+
+  void _navigateToLogin() {
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const OnboardingPage()),
+        (route) => false,
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -138,6 +184,7 @@ Future<void> _refresh() async {
       Duration(),
       () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
     );
+    _checkUserValidity();
     setState(() {
       imageCache.clear();
       imageCache.clearLiveImages();
@@ -165,9 +212,6 @@ Future<void> _refresh() async {
         .snapshots();
     futurePosts = obtenerPostsOrdenados();
   }
-
-
-
 
   @override
   void dispose() {
@@ -914,7 +958,6 @@ Future<void> _refresh() async {
               ),
               SingleChildScrollView(
                 reverse: false,
-                
                 child: Column(
                   children: [
                     StreamBuilder<QuerySnapshot>(
@@ -928,7 +971,6 @@ Future<void> _refresh() async {
                                 height: size.height * 0.02,
                               ),
                               SpinKitFadingCircle(
-                                
                                 color: Theme.of(context).colorScheme.tertiary,
                                 size: size.width * 0.1,
                               ),
