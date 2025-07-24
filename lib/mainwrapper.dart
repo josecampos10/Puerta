@@ -27,16 +27,23 @@ class _MainWrapperState extends State<Mainwrapper> {
 
   Key _screenKey = UniqueKey();
 
+  void _saveTokenToFirestore() async {
+  final token = await FirebaseMessaging.instance.getToken(); // ✅ Espera el token
+  final email = currentUser?.email;
+  if (email != null && token != null) {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(email)
+        .update({'token': token});
+  }
+}
   
 
   @override
   void initState() {
     super.initState();
     _listenForNewPosts();
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser?.email)
-        .update({'token': FirebaseMessaging.instance.getToken()});
+    _saveTokenToFirestore();
     setState(() {
       imageCache.clear();
       imageCache.clearLiveImages();
@@ -204,149 +211,10 @@ class _MainWrapperState extends State<Mainwrapper> {
             ]),
       ),
 
-      /*NavigationBar(
-        labelPadding: EdgeInsets.only(bottom: 0),
-          height: size.height*0.08,
-          backgroundColor: const Color.fromARGB(255, 4, 99, 128),
-          indicatorColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          selectedIndex: _selectedIndex,
-          surfaceTintColor: Colors.transparent,
-          onDestinationSelected: _onItemTapped,
-          destinations: <NavigationDestination>[
-            NavigationDestination(
-                selectedIcon: Icon(
-                  Icons.home,
-                  color: Colors.white,
-                  size: size.width * 0.06,
-                ),
-                icon: Icon(
-                  Icons.home_outlined,
-                  color: Colors.white30,
-                  size: size.width * 0.06,
-                ),
-                label: ''),
-            NavigationDestination(
-                selectedIcon: Icon(
-                  Icons.chat,
-                  color: Colors.white,
-                  size: size.width * 0.06,
-                ),
-                icon: Icon(
-                  Icons.chat_outlined,
-                  color: Colors.white30,
-                  size: size.width * 0.06,
-                ),
-                label: ''),
-            NavigationDestination(
-                selectedIcon: Icon(
-                  Icons.class_,
-                  color: Colors.white,
-                  size: size.width * 0.06,
-                ),
-                icon: Icon(
-                  Icons.class_outlined,
-                  color: Colors.white30,
-                  size: size.width * 0.06,
-                ),
-                label: ''),
-            NavigationDestination(
-                selectedIcon: Icon(Icons.notifications,
-                    color: Colors.white, size: size.width * 0.06),
-                icon: Stack(
-                  children: [
-                    Icon(Icons.notifications_outlined,
-                        color: Colors.white30, size: size.width * 0.06),
-                    if (_notificationCount >
-                        0) // Show badge only if there are new notifications
-                      Positioned(
-                        right: size.width*0.02,
-                        top: 0,
-                        bottom: 0,
-                        child: Container(
-                          padding: EdgeInsets.only(),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: BoxConstraints(
-                            maxHeight: size.width*0.01,
-                            maxWidth: size.width*0.005,
-                             minWidth: size.width*0.005,
-                            minHeight: size.width*0.005
-                          ),
-                          child: Text(
-                            '$_notificationCount',
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                              fontSize: size.width*0.03,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                label: ''),
-            NavigationDestination(
-                selectedIcon: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: size.width * 0.06,
-                ),
-                icon: Icon(
-                  Icons.person_outline,
-                  color: Colors.white30,
-                  size: size.width * 0.06,
-                ),
-                label: '')
-          ]),*/
 
       body: Scaffold(
         //top: false,
         body: _getScreen(_selectedIndex),
-
-        /*IndexedStack(
-          index: _selectedIndex,
-          children: <Widget>[
-            Navigator(
-              onGenerateRoute: (route) => MaterialPageRoute(
-                settings: route,
-                builder: (context) => UserhomePrincipal(),
-              ),
-            ),
-            Navigator(
-              onGenerateRoute: (route) => MaterialPageRoute(
-                settings: route,
-                builder: (context) => StudentclasesNav(),
-              ),
-            ),
-            Navigator(
-              onGenerateRoute: (route) => MaterialPageRoute(
-                settings: route,
-                builder: (context) => Notifications(),
-              ),
-            ),
-            Navigator(
-              onGenerateRoute: (route) => MaterialPageRoute(
-                settings: route,
-                builder: (context) => Wishlist(),
-              ),
-            ),
-          ],
-        ),*/
-
-        /*IndexedStack(
-            index: _selectedIndex,
-            children: [
-              UserhomePrincipal(),
-              //UserchatHome(),
-              StudentclasesNav(),
-              Notifications(),
-              Wishlist(),
-            ],
-          )*/
       ),
     );
   }

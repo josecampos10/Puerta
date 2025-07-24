@@ -19,7 +19,7 @@ class _AdminWidgetTreeState extends State<AdminWidgetTree> {
       stream: AdminAuth().authStateChanges, 
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          if(snapshot.data?.email.toString() == 'admin@lapuertawaco.com'){
+          if(snapshot.data?.email.toString() == 'info@lapuertawaco.com'){
             return AdminMainwrapper();
           }
           return AdminLoginNow();

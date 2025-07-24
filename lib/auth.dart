@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class Auth {
 
   } on FirebaseAuthException catch (e) {
     Fluttertoast.showToast(
-      msg: 'Correo o contraseña incorrectos',
+      msg: 'Correo o contraseña incorrectos'.tr(),
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.TOP,
       backgroundColor: Colors.black54,
@@ -99,7 +100,8 @@ class Auth {
         'ESLchick': '',
         'ESLclifton': '',
         'Corte1': '',
-        'Corte2': '',      
+        'Corte2': '',   
+        'Volunteer': ''   
       });
       await FirebaseFirestore.instance.collection('users').doc(email).collection('postsESL_State').doc('State').set({
         'lastpost': '',
@@ -142,7 +144,7 @@ class Auth {
           .update({'token': await FirebaseMessaging.instance.getToken()});
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(
-        msg: 'Correo o contraseña incorrectos',
+        msg: 'Correo o contraseña incorrectos'.tr(),
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
         backgroundColor: Colors.black54,

@@ -13,6 +13,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
+import 'package:easy_localization/easy_localization.dart';
 
 class ProfeCiudadaniafiles extends StatefulWidget {
   const ProfeCiudadaniafiles({super.key});
@@ -180,7 +182,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Mis clases',
+              ez.tr('Mis clases'),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,
@@ -364,7 +366,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                       padding:
                                           EdgeInsets.symmetric(horizontal: 6),
                                       child: Text(
-                                        'Archivo seleccionado',
+                                        'Archivo seleccionado'.tr(),
                                         style: TextStyle(
                                             fontFamily: 'Arial',
                                             fontSize: size.height * 0.02,
@@ -467,7 +469,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: Center(
                                         child: Text(
-                                          'Sin archivos',
+                                          ez.tr('Sin archivos'),
                                           style: TextStyle(
                                             fontSize: size.height * 0.018,
                                             color: Theme.of(context)
@@ -530,7 +532,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                'Eliminar archivo',
+                                                                'Eliminar archivo'.tr(),
                                                                 style: TextStyle(
                                                                     fontFamily:
                                                                         'Arial',
@@ -540,7 +542,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                                                         .secondary),
                                                               ),
                                                               content: Text(
-                                                                'Estás seguro que quieres borrar este archivo?',
+                                                                'Estás seguro que quieres borrar este archivo?'.tr(),
                                                                 style: TextStyle(
                                                                     fontFamily:
                                                                         'Arial',
@@ -572,7 +574,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                                                         SnackBar(
                                                                           content:
                                                                               Text(
-                                                                            'Archivo borrado, refresque la lista de archivos',
+                                                                            'Archivo borrado, refresque la lista de archivos'.tr(),
                                                                             style: TextStyle(
                                                                                 fontFamily: 'Arial',
                                                                                 color: Colors.white,
@@ -589,7 +591,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                      'Aceptar',
+                                                                      ez.tr('Aceptar'),
                                                                       style: TextStyle(
                                                                           fontFamily:
                                                                               'Arial',
@@ -605,7 +607,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar',
+                                                                        ez.tr('Cancelar'),
                                                                         style: TextStyle(
                                                                             fontFamily:
                                                                                 'Arial',
@@ -617,7 +619,7 @@ class _ProfeCiudadaniafilesState extends State<ProfeCiudadaniafiles> {
                                                     },
                                                     backgroundColor: Colors.red,
                                                     icon: Icons.delete,
-                                                    label: 'borrar',
+                                                    label: 'borrar'.tr(),
                                                   )
                                                 ]),
                                             child: Container(

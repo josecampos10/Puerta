@@ -15,6 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lapuerta2/administrador/image_storage_methods.dart';
 import 'package:lapuerta2/administrador/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class feedLaPuerta extends StatefulWidget {
   const feedLaPuerta({super.key});
@@ -56,7 +57,7 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
         setState(() {
           _isLoading = false;
         });
-        showSnackbar('Publicado', context);
+        showSnackbar('Publicado'.tr(), context);
         clearImage();
         Navigator.of(context).pop();
       } else {
@@ -81,11 +82,15 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
         context: context,
         builder: (context) {
           return SimpleDialog(
-            title: Text('Seleccionar'),
+            title: Text('Seleccionar'.tr(),
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary)),
             children: [
               SimpleDialogOption(
                 padding: EdgeInsets.all(20),
-                child: Text('Usa la cámara'),
+                child: Text('Usa la cámara'.tr(),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary)),
                 onPressed: () async {
                   Navigator.of(context).pop();
                   Uint8List file = await pickImage(
@@ -98,7 +103,9 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
               ),
               SimpleDialogOption(
                 padding: EdgeInsets.all(20),
-                child: Text('Desde la galería'),
+                child: Text('Desde la galería'.tr(),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary)),
                 onPressed: () async {
                   Navigator.of(context).pop();
                   Uint8List file = await pickImage(
@@ -111,7 +118,11 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
               ),
               SimpleDialogOption(
                 padding: EdgeInsets.all(20),
-                child: Text('Cancelar'),
+                child: Text(
+                  'Cancelar'.tr(),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -164,7 +175,7 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Mis clases',
+              ez.tr('Mis clases'),
               style: TextStyle(
                   //fontWeight: FontWeight.w500,
                   fontSize: size.width * 0.055,
@@ -300,16 +311,27 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: Text(
-                                        'Publicar en la ventana principal'),
+                                      'Publicar mensaje'.tr(),
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    ),
                                     content: Text(
-                                        'Esta publicación se mostrará en el ventana principal de La Puerta App. Si desea eliminar una publicación realizada anteriormente póngase en contacto con la oficina de La Puerta'),
+                                      'Estás seguro que quieres publicar este mensaje?'
+                                          .tr(),
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    ),
                                     actions: [
                                       TextButton(
                                           onPressed: () {
                                             Navigator.of(context).pop();
                                           },
                                           child: Text(
-                                            'Cerrar',
+                                            'Cerrar'.tr(),
                                             style: TextStyle(
                                                 color: Theme.of(context)
                                                     .colorScheme
@@ -334,62 +356,56 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                   borderRadius: BorderRadius.circular(0)),
               child: Theme(
                 data: Theme.of(context).copyWith(
-    textSelectionTheme: TextSelectionThemeData(
-      selectionColor: Colors.blue.withOpacity(0.4), // visible highlight
-      selectionHandleColor: Theme.of(context).colorScheme.secondary,
-      cursorColor: Theme.of(context).colorScheme.secondary,
-    ),
-  ),
+                  textSelectionTheme: TextSelectionThemeData(
+                    selectionColor:
+                        Colors.blue.withOpacity(0.4), // visible highlight
+                    selectionHandleColor:
+                        Theme.of(context).colorScheme.secondary,
+                    cursorColor: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
                 child: TextField(
                   contextMenuBuilder: (BuildContext context,
-                                          EditableTextState editableTextState) {
-                                        return AdaptiveTextSelectionToolbar
-                                            .buttonItems(
-                                          anchors: editableTextState
-                                              .contextMenuAnchors,
-                                          buttonItems: [
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.copySelection(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type: ContextMenuButtonType.copy,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.cutSelection(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type: ContextMenuButtonType.cut,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.pasteText(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type: ContextMenuButtonType.paste,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.selectAll(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type:
-                                                  ContextMenuButtonType.selectAll,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                      enableInteractiveSelection: true,
+                      EditableTextState editableTextState) {
+                    return AdaptiveTextSelectionToolbar.buttonItems(
+                      anchors: editableTextState.contextMenuAnchors,
+                      buttonItems: [
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .copySelection(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.copy,
+                        ),
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .cutSelection(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.cut,
+                        ),
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .pasteText(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.paste,
+                        ),
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .selectAll(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.selectAll,
+                        ),
+                      ],
+                    );
+                  },
+                  enableInteractiveSelection: true,
                   onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
+                    print('onTapOutside');
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   textInputAction: TextInputAction.newline,
@@ -493,9 +509,9 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                             context) {
                                                           return AlertDialog(
                                                             title: Text(
-                                                                'Publicar actividad'),
-                                                            content: Text(
-                                                                'Estás seguro que quieres publicar esta actividad?'),
+                                                              'Publicar mensaje'.tr(),style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                                          content: Text(
+                                                              'Estás seguro que quieres publicar este mensaje?'.tr(), style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                                                             actions: [
                                                               TextButton(
                                                                   onPressed:
@@ -540,19 +556,24 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                       'createdAt':
                                                                           Timestamp
                                                                               .now(),
-                                                                      'UserEmail': currentUser?.email ?? '',
+                                                                      'UserEmail':
+                                                                          currentUser?.email ??
+                                                                              '',
                                                                     });
                                                                     ScaffoldMessenger.of(
-                                                                              context)
-                                                                          .showSnackBar(
-                                                                        SnackBar(
-                                                                            backgroundColor:
-                                                                                Theme.of(context).colorScheme.tertiary,
-                                                                            content: Text(
-                                                                              'Publicado',
-                                                                              style: TextStyle(color: Colors.white),
-                                                                            )),
-                                                                      );
+                                                                            context)
+                                                                        .showSnackBar(
+                                                                      SnackBar(
+                                                                          backgroundColor: Theme.of(context)
+                                                                              .colorScheme
+                                                                              .tertiary,
+                                                                          content:
+                                                                              Text(
+                                                                            'Publicado',
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          )),
+                                                                    );
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
@@ -562,7 +583,8 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                         .clear();
                                                                   },
                                                                   child: Text(
-                                                                    'Aceptar',
+                                                                    'Aceptar'
+                                                                        .tr(),
                                                                     style: TextStyle(
                                                                         color: Theme.of(context)
                                                                             .colorScheme
@@ -576,7 +598,8 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                         .pop();
                                                                   },
                                                                   child: Text(
-                                                                      'Cancelar',
+                                                                      'Cancelar'
+                                                                          .tr(),
                                                                       style: TextStyle(
                                                                           color: Theme.of(context)
                                                                               .colorScheme
@@ -674,10 +697,10 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                   builder:
                                                       (BuildContext context) {
                                                     return AlertDialog(
-                                                      title: Text(
-                                                          'Publicar actividad'),
-                                                      content: Text(
-                                                          'Estás seguro que quieres publicar esta actividad?'),
+                                                     title: Text(
+                                                              'Publicar mensaje'.tr(),style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                                          content: Text(
+                                                              'Estás seguro que quieres publicar este mensaje?'.tr(), style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                                                       actions: [
                                                         TextButton(
                                                             onPressed: () {
@@ -729,7 +752,7 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                   .clear();
                                                             },
                                                             child: Text(
-                                                                'Aceptar',
+                                                                'Aceptar'.tr(),
                                                                 style: TextStyle(
                                                                     color: Theme.of(
                                                                             context)
@@ -742,7 +765,7 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                   .pop();
                                                             },
                                                             child: Text(
-                                                                'Cancelar',
+                                                                'Cancelar'.tr(),
                                                                 style: TextStyle(
                                                                     color: Theme.of(
                                                                             context)

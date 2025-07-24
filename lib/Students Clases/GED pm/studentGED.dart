@@ -10,6 +10,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class Studentgedpm extends StatefulWidget {
   const Studentgedpm({super.key});
@@ -70,7 +71,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Mis clases',
+              ez.tr('Mis clases'),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,
@@ -253,7 +254,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
                           width: size.width * 0.01,
                         ),
                         Text(
-                          'Archivos',
+                          'Archivos'.tr(),
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.018,
@@ -309,7 +310,7 @@ class _StudentgedpmState extends State<Studentgedpm> {
                                             top: size.height * 0.05),
                                         child: Center(
                                           child: Text(
-                                            'Aún no hay publicaciones',
+                                            'Aún no hay publicaciones'.tr(),
                                             style: TextStyle(
                                               fontSize: size.height * 0.018,
                                               color: Theme.of(context)

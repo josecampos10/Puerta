@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class ProfeCorte2students extends StatefulWidget {
   const ProfeCorte2students({super.key});
@@ -99,7 +100,7 @@ class _ProfeCorte2studentsState extends State<ProfeCorte2students> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Mis clases',
+              ez.tr('Mis clases'),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,

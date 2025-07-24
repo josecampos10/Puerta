@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -70,10 +71,89 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
   }
 
   String push = '';
-
   Uint8List? pickedImage;
-
   NotificationServices notificationServices = NotificationServices();
+
+  Future<void> resendEmailVerification() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    await user.reload(); // 🔄 Recarga datos del usuario desde Firebase
+    final refreshedUser = FirebaseAuth.instance.currentUser;
+
+    if (refreshedUser!.emailVerified) {
+      setState(() {}); // 🔁 Actualiza la UI si es necesario
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ Tu correo ya está verificado'),
+          backgroundColor: Colors.blue,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await refreshedUser.sendEmailVerification();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              '📨 Correo de verificación enviado a ${refreshedUser.email}'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      String message;
+
+      if (e.code == 'too-many-requests') {
+        message =
+            'Has solicitado verificación demasiadas veces. Intenta más tarde.';
+      } else if (e.code == 'network-request-failed') {
+        message =
+            'No hay conexión a internet. Revisa tu red e intenta de nuevo.';
+      } else {
+        message = 'Ocurrió un error al enviar el correo. Intenta de nuevo.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('⚠️ $message'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('⚠️ Error inesperado: ${e.toString()}'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  Widget emailVerificationBadge() {
+    Size size = MediaQuery.of(context).size;
+    final user = FirebaseAuth.instance.currentUser;
+    final isVerified = user?.emailVerified ?? false;
+
+    return Container(
+      width: size.height*0.02,
+      height: size.height*0.02,
+      decoration: BoxDecoration(
+        color: isVerified ? Colors.green : Colors.grey,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.check,
+        size: size.height*0.016,
+        color: Colors.white,
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -91,26 +171,186 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
     return Scaffold(
       appBar: AppBar(
         bottomOpacity: 0.0,
-        toolbarHeight: size.width * 0.17,
+        toolbarHeight: size.height * 0.19,
         leadingWidth: size.width * 0.17,
-        leading: Container(
-          padding: EdgeInsets.all(6),
-          width: size.width * 0.2,
-          child: CircleAvatar(
-            backgroundColor: const Color.fromARGB(0, 240, 195, 195),
-            child: Image.asset(
-              'assets/img/logo.png',
-              fit: BoxFit.scaleDown,
-              scale: size.height * 0.008,
-              color: Colors.white,
+        //leading:
+        title: Column(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            SizedBox(
+              width: size.width * 0.64,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: size.height * 0.0,
+                      ),
+
+                      StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: base,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return const Text('Something went wrong');
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Column(children: [
+                              SizedBox(
+                                height: size.height * 0.01,
+                              ),
+                              SpinKitFadingCircle(
+                                color: Color.fromRGBO(255, 255, 255, 1),
+                                size: size.width * 0.03,
+                              ),
+                            ]);
+                          }
+                          Map<String, dynamic> data =
+                              snapshot.data!.data() as Map<String, dynamic>;
+                          return (data['name']) != null
+                              ? Text(
+                                  data['name'],
+                                  style: TextStyle(
+                                      fontSize: size.height * 0.027,
+                                      fontFamily: 'Arial',
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255)),
+                                )
+                              : Text(''); // 👈 your valid data here
+                        },
+                      ),
+
+                      //SizedBox(
+                      //    height: 24,
+                      //    child: Image.asset("assets/images/verified.png")),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: size.width * 0.0,
+                      ),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: StreamBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: base,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return const Text('Something went wrong');
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Column(children: [
+                                SizedBox(
+                                  height: size.height * 0.01,
+                                ),
+                                SpinKitFadingCircle(
+                                  color: Color.fromRGBO(255, 255, 255, 1),
+                                  size: size.width * 0.03,
+                                ),
+                              ]);
+                            }
+                            Map<String, dynamic> data =
+                                snapshot.data!.data() as Map<String, dynamic>;
+                            return (data['rol']) != null
+                                ? Text(
+                                    data['rol'],
+                                    style: TextStyle(
+                                        fontSize: size.height * 0.018,
+                                        fontFamily: 'Arial',
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255)),
+                                  )
+                                : Text(''); // 👈 your valid data here
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.005,
+                  ),
+                  Row(
+                    children: [
+                      (currentUser.email) != null
+                          ? Text(currentUser.email.toString(),
+                              style: TextStyle(
+                                  fontSize: size.height * 0.018,
+                                  fontFamily: 'Arial',
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      const Color.fromARGB(140, 255, 255, 255)))
+                          : Text(''),
+                      SizedBox(
+                        width: size.width * 0.01,
+                      ),
+                      emailVerificationBadge(),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  if (!(FirebaseAuth.instance.currentUser?.emailVerified ??
+                      false))
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: size.height * 0.03,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: resendEmailVerification,
+                              borderRadius: BorderRadius.circular(4),
+                              splashColor:
+                                  const Color.fromARGB(36, 255, 255, 255),
+                              highlightColor: Colors.transparent,
+                              child: Text(
+                                'Verificar correo'.tr(),
+                                style: TextStyle(
+                                  color:
+                                      const Color.fromARGB(255, 49, 183, 255),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                ],
+              ),
             ),
-          ),
-        ),
-        title: Container(
-            padding: EdgeInsets.only(top: size.height * 0.03),
-            child: Text(
-              'Perfil',
-            )),
+            Hero(
+              tag: 'perfil',
+              child: Container(
+                height: size.height * 0.12,
+                width: size.height * 0.12,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    border: Border.all(
+                      color: Color.fromRGBO(255, 255, 255, 0.295),
+                      width: size.height * 0.005,
+                    ),
+                    shape: BoxShape.circle,
+                    image: pickedImage != null
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                            image: Image.memory(
+                              pickedImage!,
+                            ).image)
+                        : null),
+              ),
+            ),
+          ]),
+        ]),
         centerTitle: true,
         titleTextStyle: TextStyle(
             fontFamily: '',
@@ -118,6 +358,20 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
             fontSize: size.height * 0.023,
             color: const Color.fromARGB(255, 255, 255, 255)),
         backgroundColor: Theme.of(context).colorScheme.tertiary,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/img/puntos2.png'),
+              fit: BoxFit.fill,
+              colorFilter: (Theme.of(context).colorScheme.tertiary !=
+                      Color.fromRGBO(4, 99, 128, 1))
+                  ? ColorFilter.mode(
+                      const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
+                  : ColorFilter.mode(
+                      const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
+            ),
+          ),
+        ),
         actions: [],
       ),
       resizeToAvoidBottomInset: false,
@@ -134,152 +388,9 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
           child: Column(
             children: [
               SizedBox(
-                height: size.height * 0.01,
+                height: size.height * 0.04,
               ),
-              Column(children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start, 
-                  children: [
-                  SizedBox(
-                    width: size.width * 0.64,
-                    child: Column(
-                      children: [
-
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: size.height * 0.02,
-                            ),
-
-                            StreamBuilder<
-                                DocumentSnapshot<Map<String, dynamic>>>(
-                              stream: base,
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                if (snapshot.hasError) {
-                                  return const Text('Something went wrong');
-                                }
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return Column(children: [
-                                    SizedBox(
-                                      height: size.height * 0.01,
-                                    ),
-                                    SpinKitFadingCircle(
-                                      color: Color.fromRGBO(255, 255, 255, 1),
-                                      size: size.width * 0.03,
-                                    ),
-                                  ]);
-                                }
-                                Map<String, dynamic> data = snapshot.data!
-                                    .data() as Map<String, dynamic>;
-                                return (data['name']) != null
-                                    ? Text(
-                                        data['name'],
-                                        style: TextStyle(
-                                            fontSize: size.height * 0.027,
-                                            fontFamily: 'Arial',
-                                            //fontWeight: FontWeight.bold,
-                                            color: Theme.of(context).colorScheme.secondary),
-                                      )
-                                    : Text(''); // 👈 your valid data here
-                              },
-                            ),
-
-                            //SizedBox(
-                            //    height: 24,
-                            //    child: Image.asset("assets/images/verified.png")),
-                          ],
-                        ),
-                        SizedBox(
-                          height: size.height * 0.0,
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: size.width * 0.035,
-                            ),
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: StreamBuilder<
-                                  DocumentSnapshot<Map<String, dynamic>>>(
-                                stream: base,
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                  if (snapshot.hasError) {
-                                    return const Text('Something went wrong');
-                                  }
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Column(children: [
-                                      SizedBox(
-                                        height: size.height * 0.01,
-                                      ),
-                                      SpinKitFadingCircle(
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        size: size.width * 0.03,
-                                      ),
-                                    ]);
-                                  }
-                                  Map<String, dynamic> data = snapshot.data!
-                                      .data() as Map<String, dynamic>;
-                                  return (data['rol']) != null
-                                      ? Text(
-                                          data['rol'],
-                                          style: TextStyle(
-                                              fontSize: size.height * 0.018,
-                                              fontFamily: 'Arial',
-                                              fontWeight: FontWeight.w500,
-                                              color: const Color.fromARGB(255, 154, 154, 154)),
-                                        )
-                                      : Text(''); // 👈 your valid data here
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: size.width * 0.035,
-                            ),
-                            (currentUser.email) != null
-                                ? Text(currentUser.email.toString(),
-                                    style: TextStyle(
-                                        fontSize: size.height * 0.018,
-                                        fontFamily: 'Arial',
-                                        fontWeight: FontWeight.w500,
-                                        color: const Color.fromARGB(255, 154, 154, 154)))
-                                : Text('')
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Hero(
-                    tag: 'perfil',
-                    child: Container(
-                      height: size.height * 0.12,
-                      width: size.height * 0.12,
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          border: Border.all(
-                            color: Color.fromRGBO(255, 255, 255, 0.295),
-                            width: size.height * 0.005,
-                          ),
-                          shape: BoxShape.circle,
-                          image: pickedImage != null
-                              ? DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: Image.memory(
-                                    pickedImage!,
-                                  ).image)
-                              : null),
-                    ),
-                  ),
-                ]),
-              ]),
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -291,7 +402,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.025,
+                        fontSize: size.height * 0.02,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -331,7 +442,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                             style: TextStyle(
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -377,7 +488,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                             style: TextStyle(
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -781,7 +892,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                             style: TextStyle(
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -826,7 +937,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                             style: TextStyle(
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(
@@ -852,7 +963,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.025,
+                        fontSize: size.height * 0.02,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -929,7 +1040,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                             style: TextStyle(
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -1006,7 +1117,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.025,
+                        fontSize: size.height * 0.02,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -1080,7 +1191,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                             style: TextStyle(
                                 fontSize: size.height * 0.025,
                                 color: const Color.fromARGB(255, 255, 255, 255),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Arial'),
                           ),
                           Icon(

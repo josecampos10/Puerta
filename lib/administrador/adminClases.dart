@@ -28,17 +28,50 @@ class _AdminclasesState extends State<Adminclases> {
     // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
-        title: Text(
-                    'Editor de Clases',
-                    style: TextStyle(fontFamily: 'Arial', fontSize: size.height*0.015, color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-        toolbarHeight: size.height*0.09,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Editor de Clases',
+              style: TextStyle(
+                  fontFamily: 'Arial',
+                  fontSize: size.height * 0.015,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  backgroundColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                  icon:
+                                                      Icon(Icons.info),
+                                                  iconColor: const Color.fromARGB(255, 188, 109, 13),
+                                                  content: Text(
+                                                    'Tenga en cuenta que editar, agregar o eliminar una clase afecta directamente la base da datos de los usuarios y sus registros. Al crear una clase por favor comuníquese con el administrador para agregar la clase al código fuente de la aplicación',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary),
+                                                  ),
+                                                );
+                                              });
+                                        },
+                                        icon: Icon(
+                                          Icons.info,
+                                          size: size.height * 0.022,
+                                        ))
+          ],
+        ),
+        toolbarHeight: size.height * 0.09,
         backgroundColor: Theme.of(context).colorScheme.tertiary,
-        
       ),
       resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).colorScheme.tertiary,
@@ -59,543 +92,26 @@ class _AdminclasesState extends State<Adminclases> {
           ),
         ),*/
         child: SingleChildScrollView(
-          
           //physics: NeverScrollableScrollPhysics(),
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           reverse: false,
           child: Column(children: [
             SizedBox(
-              height: size.height*0.0,
+              height: size.height * 0.0,
             ),
             Container(
               decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(size.width * 0.08),
-                topRight: Radius.circular(size.width * 0.08))),
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(size.width * 0.08),
+                      topRight: Radius.circular(size.width * 0.08))),
               child: Column(
                 children: [
                  
-                  SizedBox(
-                    height: size.height * 0.03,
-                  ),
-                  Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextField(
-                      enableInteractiveSelection: true,
-                      onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                      cursorColor: Theme.of(context).colorScheme.secondary,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      controller: controller,
-                      onChanged: (value) => setState(() {
-                        controller.text = value.toString();
-                      }),
-                      decoration: InputDecoration(
-                        labelText: 'Título de la clase',
-                        prefixIcon: Icon(Icons.add),
-                        labelStyle: TextStyle(
-                            fontSize: size.height * 0.018,
-                            fontFamily: 'Arial',
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextField(
-                      enableInteractiveSelection: true,
-                      onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                      cursorColor: Theme.of(context).colorScheme.secondary,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      controller: controllersubtitulo,
-                      onChanged: (value) => setState(() {
-                        controllersubtitulo.text = value.toString();
-                      }),
-                      decoration: InputDecoration(
-                        labelText: 'Subtítulo de la clase - Opcional',
-                        prefixIcon: Icon(Icons.add),
-                        labelStyle: TextStyle(
-                            fontSize: size.height * 0.018,
-                            fontFamily: 'Arial',
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextField(
-                      enableInteractiveSelection: true,
-                      onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                      cursorColor: Theme.of(context).colorScheme.secondary,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.newline,
-                      controller: controllerdes,
-                      onChanged: (value) => setState(() {
-                        controllerdes.text = value.toString();
-                      }),
-                      decoration: InputDecoration(
-                        labelText: 'Descripcion de la clase',
-                        prefixIcon: Icon(Icons.add),
-                        labelStyle: TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'Arial',
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height * 0.01,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: size.width * 0.43,
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 1.0),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: TextField(
-                          enableInteractiveSelection: true,
-                          onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                          cursorColor: Theme.of(context).colorScheme.secondary,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.newline,
-                          controller: controllerday1,
-                          onChanged: (value) => setState(() {
-                            controllerday1.text = value.toString();
-                          }),
-                          decoration: InputDecoration(
-                            hintText: 'Martes - Jueves',
-                            hintStyle: TextStyle(
-                                color: const Color.fromARGB(255, 175, 175, 175),
-                                fontSize: size.height * 0.018),
-                            suffix: IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        content: SizedBox(
-                                          height: size.height * 0.12,
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                'Utilice el siguiente formato si la clase ocurre más de un día a la semana',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                              SizedBox(
-                                                height: size.height * 0.01,
-                                              ),
-                                              Text(
-                                                'Martes - Jueves',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        title: Icon(
-                                          Icons.info,
-                                          color: Colors.yellow,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.info,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                )),
-                            labelText: 'Días - Principal',
-                            labelStyle: TextStyle(
-                                fontSize: size.height * 0.018,
-                                fontFamily: 'Arial',
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: size.width * 0.43,
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 1.0),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: TextField(
-                          enableInteractiveSelection: true,
-                          onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                          cursorColor: Theme.of(context).colorScheme.secondary,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.newline,
-                          controller: controllerday2,
-                          onChanged: (value) => setState(() {
-                            controllerday2.text = value.toString();
-                          }),
-                          decoration: InputDecoration(
-                            hintText: 'Martes - Jueves',
-                            hintStyle: TextStyle(
-                                color: const Color.fromARGB(255, 175, 175, 175),
-                                fontSize: size.height * 0.018),
-                            suffix: IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        content: SizedBox(
-                                          height: size.height * 0.2,
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                'Este campo es opcional, llénelo si la clase se ofrece en un grupo distinto al del horario principal. Utilice el siguiente formato si la clase ocurre más de un día a la semana',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                              SizedBox(
-                                                height: size.height * 0.01,
-                                              ),
-                                              Text(
-                                                'Martes - Jueves',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        title: Icon(
-                                          Icons.info,
-                                          color: Colors.yellow,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.info,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                )),
-                            labelText: 'Días - Secundario',
-                            labelStyle: TextStyle(
-                                fontSize: size.height * 0.018,
-                                fontFamily: 'Arial',
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: size.width * 0.43,
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 1.0),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: TextField(
-                          enableInteractiveSelection: true,
-                          onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                          cursorColor: Theme.of(context).colorScheme.secondary,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.newline,
-                          controller: controllertime1,
-                          onChanged: (value) => setState(() {
-                            controllertime1.text = value.toString();
-                          }),
-                          decoration: InputDecoration(
-                            hintText: '17:30 - 19:30',
-                            hintStyle: TextStyle(
-                                color: const Color.fromARGB(255, 175, 175, 175),
-                                fontSize: size.height * 0.018),
-                            suffix: IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        content: SizedBox(
-                                          height: size.height * 0.12,
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                'Utilice el siguiente formato para el horario principal',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                              SizedBox(
-                                                height: size.height * 0.01,
-                                              ),
-                                              Text(
-                                                '17:30 - 19:30',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        title: Icon(
-                                          Icons.info,
-                                          color: Colors.yellow,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.info,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                )),
-                            labelText: 'Horario - Principal',
-                            labelStyle: TextStyle(
-                                fontSize: size.height * 0.018,
-                                fontFamily: 'Arial',
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: size.width * 0.43,
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 1.0),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: TextField(
-                          enableInteractiveSelection: true,
-                          onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
-                          cursorColor: Theme.of(context).colorScheme.secondary,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.newline,
-                          controller: controllertime2,
-                          onChanged: (value) => setState(() {
-                            controllertime2.text = value.toString();
-                          }),
-                          decoration: InputDecoration(
-                            hintText: '10:00 - 12:00',
-                            hintStyle: TextStyle(
-                                color: const Color.fromARGB(255, 175, 175, 175),
-                                fontSize: size.height * 0.018),
-                            suffix: IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        content: SizedBox(
-                                          height: size.height * 0.12,
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                'Este campo es opcional. Utilice el siguiente formato para el horario secundario',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                              SizedBox(
-                                                height: size.height * 0.01,
-                                              ),
-                                              Text(
-                                                '10:00 - 12:00',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        title: Icon(
-                                          Icons.info,
-                                          color: Colors.yellow,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.info,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                )),
-                            labelText: 'Horario - Secundario',
-                            labelStyle: TextStyle(
-                                fontSize: size.height * 0.018,
-                                fontFamily: 'Arial',
-                                color: Theme.of(context).colorScheme.secondary),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   
                   SizedBox(
-                    height: size.height * 0.02,
-                  ),
-                  SizedBox(
-                    width: size.height * 0.35,
-                    height: size.height * 0.06,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (controller.text == '') {
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Agregar una clase'),
-                                  content: Text(
-                                      'Estás seguro que quieres añadir una clase?'),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          FirebaseFirestore.instance
-                                              .collection('clases')
-                                              .doc(controller.text)
-                                              .set({
-                                            'Name': controller.text,
-                                            'Descripcion': controllerdes.text,
-                                            'Subname': controllersubtitulo.text,
-                                            'Days': controllerday1.text,
-                                            'Days 2': controllerday2.text,
-                                            'Time': controllertime1.text,
-                                            'Time 2': controllertime2.text
-                                          });
-                                          Navigator.of(context).pop();
-                                          controller.clear();
-                                          controllerdes.clear();
-                                          controllerday1.clear();
-                                          controllerday2.clear();
-                                          controllertime1.clear();
-                                          controllertime2.clear();
-                                          controllersubtitulo.clear();
-                                        },
-                                        child: Text(
-                                          'Aceptar',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary),
-                                        )),
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Cancelar',
-                                            style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary)))
-                                  ],
-                                );
-                              });
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: Color.fromRGBO(4, 99, 128, 1),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 35, vertical: 10)),
-                      child: Text(
-                        'Confirmar',
-                        style: TextStyle(
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            fontSize: size.height * 0.02,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height*0.03,
+                    height: size.height * 0.03,
                   ),
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
@@ -689,17 +205,16 @@ class _AdminclasesState extends State<Adminclases> {
                                                 });
                                           },
                                           backgroundColor: Colors.red,
-                                          icon: Icons.delete, 
+                                          icon: Icons.delete,
                                           label: 'borrar',
                                         ),
                                         ///////////////
                                         SlidableAction(
                                           borderRadius:
                                               BorderRadius.circular(15.0),
-                                          onPressed: (context) {
-                                            
-                                          },
-                                          backgroundColor: const Color.fromARGB(255, 244, 158, 54),
+                                          onPressed: (context) {},
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 244, 158, 54),
                                           icon: Icons.edit,
                                           label: 'editar',
                                         )
@@ -774,6 +289,512 @@ class _AdminclasesState extends State<Adminclases> {
                           return const SizedBox();
                         }
                       }),
+                      Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextField(
+                      enableInteractiveSelection: true,
+                      onTapOutside: (event) {
+                        print('onTapOutside');
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      },
+                      cursorColor: Theme.of(context).colorScheme.secondary,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      controller: controller,
+                      onChanged: (value) => setState(() {
+                        controller.text = value.toString();
+                      }),
+                      decoration: InputDecoration(
+                        labelText: 'Título de la clase',
+                        prefixIcon: Icon(Icons.add),
+                        labelStyle: TextStyle(
+                            fontSize: size.height * 0.018,
+                            fontFamily: 'Arial',
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextField(
+                      enableInteractiveSelection: true,
+                      onTapOutside: (event) {
+                        print('onTapOutside');
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      },
+                      cursorColor: Theme.of(context).colorScheme.secondary,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      controller: controllersubtitulo,
+                      onChanged: (value) => setState(() {
+                        controllersubtitulo.text = value.toString();
+                      }),
+                      decoration: InputDecoration(
+                        labelText: 'Subtítulo de la clase - Opcional',
+                        prefixIcon: Icon(Icons.add),
+                        labelStyle: TextStyle(
+                            fontSize: size.height * 0.018,
+                            fontFamily: 'Arial',
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextField(
+                      enableInteractiveSelection: true,
+                      onTapOutside: (event) {
+                        print('onTapOutside');
+                        FocusManager.instance.primaryFocus?.unfocus();
+                      },
+                      cursorColor: Theme.of(context).colorScheme.secondary,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
+                      controller: controllerdes,
+                      onChanged: (value) => setState(() {
+                        controllerdes.text = value.toString();
+                      }),
+                      decoration: InputDecoration(
+                        labelText: 'Descripcion de la clase',
+                        prefixIcon: Icon(Icons.add),
+                        labelStyle: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Arial',
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.01,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: size.width * 0.43,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 1.0),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                            print('onTapOutside');
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          cursorColor: Theme.of(context).colorScheme.secondary,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                          controller: controllerday1,
+                          onChanged: (value) => setState(() {
+                            controllerday1.text = value.toString();
+                          }),
+                          decoration: InputDecoration(
+                            hintText: 'Martes - Jueves',
+                            hintStyle: TextStyle(
+                                color: const Color.fromARGB(255, 175, 175, 175),
+                                fontSize: size.height * 0.018),
+                            suffix: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        content: SizedBox(
+                                          height: size.height * 0.12,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'Utilice el siguiente formato si la clase ocurre más de un día a la semana',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                              SizedBox(
+                                                height: size.height * 0.01,
+                                              ),
+                                              Text(
+                                                'Martes - Jueves',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        title: Icon(
+                                          Icons.info,
+                                          color: Colors.yellow,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.info,
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                )),
+                            labelText: 'Días - Principal',
+                            labelStyle: TextStyle(
+                                fontSize: size.height * 0.018,
+                                fontFamily: 'Arial',
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: size.width * 0.43,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 1.0),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                            print('onTapOutside');
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          cursorColor: Theme.of(context).colorScheme.secondary,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                          controller: controllerday2,
+                          onChanged: (value) => setState(() {
+                            controllerday2.text = value.toString();
+                          }),
+                          decoration: InputDecoration(
+                            hintText: 'Martes - Jueves',
+                            hintStyle: TextStyle(
+                                color: const Color.fromARGB(255, 175, 175, 175),
+                                fontSize: size.height * 0.018),
+                            suffix: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        content: SizedBox(
+                                          height: size.height * 0.2,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'Este campo es opcional, llénelo si la clase se ofrece en un grupo distinto al del horario principal. Utilice el siguiente formato si la clase ocurre más de un día a la semana',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                              SizedBox(
+                                                height: size.height * 0.01,
+                                              ),
+                                              Text(
+                                                'Martes - Jueves',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        title: Icon(
+                                          Icons.info,
+                                          color: Colors.yellow,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.info,
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                )),
+                            labelText: 'Días - Secundario',
+                            labelStyle: TextStyle(
+                                fontSize: size.height * 0.018,
+                                fontFamily: 'Arial',
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: size.width * 0.43,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 1.0),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                            print('onTapOutside');
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          cursorColor: Theme.of(context).colorScheme.secondary,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                          controller: controllertime1,
+                          onChanged: (value) => setState(() {
+                            controllertime1.text = value.toString();
+                          }),
+                          decoration: InputDecoration(
+                            hintText: '17:30 - 19:30',
+                            hintStyle: TextStyle(
+                                color: const Color.fromARGB(255, 175, 175, 175),
+                                fontSize: size.height * 0.018),
+                            suffix: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        content: SizedBox(
+                                          height: size.height * 0.12,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'Utilice el siguiente formato para el horario principal',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                              SizedBox(
+                                                height: size.height * 0.01,
+                                              ),
+                                              Text(
+                                                '17:30 - 19:30',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        title: Icon(
+                                          Icons.info,
+                                          color: Colors.yellow,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.info,
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                )),
+                            labelText: 'Horario - Principal',
+                            labelStyle: TextStyle(
+                                fontSize: size.height * 0.018,
+                                fontFamily: 'Arial',
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: size.width * 0.43,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 1.0),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: TextField(
+                          enableInteractiveSelection: true,
+                          onTapOutside: (event) {
+                            print('onTapOutside');
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          cursorColor: Theme.of(context).colorScheme.secondary,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                          controller: controllertime2,
+                          onChanged: (value) => setState(() {
+                            controllertime2.text = value.toString();
+                          }),
+                          decoration: InputDecoration(
+                            hintText: '10:00 - 12:00',
+                            hintStyle: TextStyle(
+                                color: const Color.fromARGB(255, 175, 175, 175),
+                                fontSize: size.height * 0.018),
+                            suffix: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        content: SizedBox(
+                                          height: size.height * 0.12,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                'Este campo es opcional. Utilice el siguiente formato para el horario secundario',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                              SizedBox(
+                                                height: size.height * 0.01,
+                                              ),
+                                              Text(
+                                                '10:00 - 12:00',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        title: Icon(
+                                          Icons.info,
+                                          color: Colors.yellow,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.info,
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                )),
+                            labelText: 'Horario - Secundario',
+                            labelStyle: TextStyle(
+                                fontSize: size.height * 0.018,
+                                fontFamily: 'Arial',
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  SizedBox(
+                    width: size.height * 0.35,
+                    height: size.height * 0.06,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (controller.text == '') {
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Agregar una clase'),
+                                  content: Text(
+                                      'Estás seguro que quieres añadir una clase?'),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          FirebaseFirestore.instance
+                                              .collection('clases')
+                                              .doc(controller.text)
+                                              .set({
+                                            'Name': controller.text,
+                                            'Descripcion': controllerdes.text,
+                                            'Subname': controllersubtitulo.text,
+                                            'Days': controllerday1.text,
+                                            'Days 2': controllerday2.text,
+                                            'Time': controllertime1.text,
+                                            'Time 2': controllertime2.text
+                                          });
+                                          Navigator.of(context).pop();
+                                          controller.clear();
+                                          controllerdes.clear();
+                                          controllerday1.clear();
+                                          controllerday2.clear();
+                                          controllertime1.clear();
+                                          controllertime2.clear();
+                                          controllersubtitulo.clear();
+                                        },
+                                        child: Text(
+                                          'Aceptar',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
+                                        )),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Cancelar',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary)))
+                                  ],
+                                );
+                              });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: Color.fromRGBO(4, 99, 128, 1),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 10)),
+                      child: Text(
+                        'Confirmar',
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            fontSize: size.height * 0.02,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             )

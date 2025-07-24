@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lapuerta2/ForgotPasswordPage.dart';
@@ -27,12 +28,12 @@ class _LoginNowState extends State<LoginNow> {
   bool _isObscure = true;
 
   String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Ingrese una contraseña';
-    if (value.length < 8) return 'Mínimo 8 caracteres';
-    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Debe tener una mayúscula';
-    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Debe tener una minúscula';
-    if (!RegExp(r'[0-9]').hasMatch(value)) return 'Debe tener un número';
-    if (!RegExp(r'[!@#\\$&*~]').hasMatch(value)) return 'Debe tener un símbolo';
+    if (value == null || value.isEmpty) return 'Ingrese una contraseña'.tr();
+    if (value.length < 8) return 'Mínimo 8 caracteres'.tr();
+    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Debe tener una mayúscula'.tr();
+    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Debe tener una minúscula'.tr();
+    if (!RegExp(r'[0-9]').hasMatch(value)) return 'Debe tener un número'.tr();
+    if (!RegExp(r'[!@#\\$&*~]').hasMatch(value)) return 'Debe tener un símbolo: !@#%?_'.tr();
     return null;
   }
 
@@ -219,7 +220,7 @@ class _LoginNowState extends State<LoginNow> {
 
   Widget _errorMessage() {
     return Text(
-      errorMessage == '' ? '' : 'Correo o contraseña incorrectos',
+      errorMessage == '' ? '' : 'Correo o contraseña incorrectos'.tr(),
       style: TextStyle(color: Colors.white),
     );
   }
@@ -244,7 +245,7 @@ class _LoginNowState extends State<LoginNow> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         child: Text(
-          isLogin ? 'Inicar Sesión' : 'Registrarse',
+          isLogin ? 'Inicar Sesión'.tr() : 'Registrarse',
           style: TextStyle(
             color: const Color.fromARGB(255, 255, 255, 255),
             fontSize: size.height * 0.021,
@@ -272,7 +273,7 @@ class _LoginNowState extends State<LoginNow> {
             });
           },
           child: Text(
-            isLogin ? 'No tienes una cuenta? Registrate' : 'Ir a inicar sesión',
+            isLogin ? 'No tienes una cuenta? Registrate'.tr() : 'Ir a inicar sesión'.tr(),
             style: TextStyle(
                 color: const Color.fromARGB(255, 0, 238, 255),
                 fontWeight: FontWeight.bold,
@@ -386,7 +387,7 @@ void didChangeDependencies() {
           children: <Widget>[
             //_loginOrRegisterButton(),
             _entryField(
-              'correo electrónico',
+              'correo electrónico'.tr(),
               _controllerEmail,
               Icons.email_outlined,
             ),
@@ -394,7 +395,7 @@ void didChangeDependencies() {
               height: size.height * 0.01,
             ),
             _entryFieldPassword(
-                'contraseña', _controllerPassword, Icons.lock_outline_rounded),
+                'contraseña'.tr(), _controllerPassword, Icons.lock_outline_rounded),
             SizedBox(
               height: size.height * 0.0,
             ),
@@ -413,7 +414,7 @@ void didChangeDependencies() {
                     }));
                   },
                   child: Text(
-                    'Olvidaste tu contraseña?',
+                    '¿Olvidaste tu contraseña?'.tr(),
                     textAlign: TextAlign.end,
                     style: TextStyle(
                         fontSize: size.height * 0.014,
@@ -435,7 +436,7 @@ void didChangeDependencies() {
             ),
             InkWell(
               child: Text(
-                'Ir atrás',
+                'Atrás'.tr(),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -462,17 +463,17 @@ void didChangeDependencies() {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             // _loginOrRegisterButton(),
-            _entryField('nombre', _controllerName, Icons.person_2_outlined),
+            _entryField('nombre'.tr(), _controllerName, Icons.person_2_outlined),
             SizedBox(
               height: 10.0,
             ),
             _entryField(
-                'correo electrónico', _controllerEmail, Icons.email_outlined),
+                'correo electrónico'.tr(), _controllerEmail, Icons.email_outlined),
             SizedBox(
               height: 10.0,
             ),
             _entryFieldPassword(
-                'contraseña', _controllerPassword, Icons.lock_outline_rounded),
+                'contraseña'.tr(), _controllerPassword, Icons.lock_outline_rounded),
             SizedBox(
               height: 10.0,
             ),
@@ -513,7 +514,7 @@ void didChangeDependencies() {
                                 width: 15,
                               ),
                               Text(
-                                'elija su rol',
+                                'elija su rol'.tr(),
                                 style: TextStyle(
                                     fontFamily: 'Arial',
                                     color: const Color.fromARGB(
@@ -566,7 +567,7 @@ void didChangeDependencies() {
             ),
             InkWell(
               child: Text(
-                'Ir atrás',
+                'Atrás'.tr(),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,

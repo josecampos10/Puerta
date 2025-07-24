@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -35,6 +36,8 @@ class _ProfileHomeState extends State<Profilehome> {
   bool isSwitched = false;
   late Stream<DocumentSnapshot<Map<String, dynamic>>> base;
   final currentUsera = FirebaseAuth.instance.currentUser!;
+  bool isEnglish = false;
+
 
   void requestNotificationPermission() async {
     NotificationSettings settings =
@@ -154,21 +157,38 @@ class _ProfileHomeState extends State<Profilehome> {
     }
   }
 
+  Future<void> loadUserLanguagePreference() async {
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUser.email)
+      .get();
+
+  final data = doc.data();
+  final isSpanish = data?['spanish'] == 'true'; // viene como string
+
+  setState(() {
+    isEnglish = !isSpanish; // true = inglés activo
+  });
+
+  context.setLocale(Locale(isEnglish ? 'en' : 'es'));
+}
+
+  
   Widget emailVerificationBadge() {
     Size size = MediaQuery.of(context).size;
     final user = FirebaseAuth.instance.currentUser;
     final isVerified = user?.emailVerified ?? false;
 
     return Container(
-      width: size.height*0.02,
-      height: size.height*0.02,
+      width: size.height * 0.02,
+      height: size.height * 0.02,
       decoration: BoxDecoration(
         color: isVerified ? Colors.green : Colors.grey,
         shape: BoxShape.circle,
       ),
       child: Icon(
         Icons.check,
-        size: size.height*0.016,
+        size: size.height * 0.016,
         color: Colors.white,
       ),
     );
@@ -216,7 +236,7 @@ class _ProfileHomeState extends State<Profilehome> {
       );
     }
   }
-  
+
   String push = '';
   Uint8List? pickedImage;
   NotificationServices notificationServices = NotificationServices();
@@ -230,10 +250,12 @@ class _ProfileHomeState extends State<Profilehome> {
         .collection('users')
         .doc(currentUsera.email) // 👈 Your document id change accordingly
         .snapshots();
+    loadUserLanguagePreference(); 
   }
 
   @override
   Widget build(BuildContext context) {
+    var isEnglish = context.locale.languageCode == 'en';
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -380,7 +402,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                   const Color.fromARGB(36, 255, 255, 255),
                               highlightColor: Colors.transparent,
                               child: Text(
-                                'Verificar correo',
+                                'Verificar correo'.tr(),
                                 style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 49, 183, 255),
@@ -464,13 +486,100 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: 20,
                   ),
                   Text(
-                    'Cuenta',
+                    'Cuenta'.tr(),
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.024,
+                        fontSize: size.height * 0.022,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
+                  ),
+                  Expanded(child: SizedBox()),
+                  Container(
+                    width: size.width * 0.27,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Theme.of(context).colorScheme.tertiary),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'ES',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: size.height * 0.015,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          width: size.width * 0.00,
+                        ),
+                        SizedBox(
+                          height: size.height * 0.045,
+                          child: Transform.scale(
+                            scale: 0.8,
+                            child: Switch(
+                              trackOutlineColor:
+                                  WidgetStateProperty.resolveWith<Color?>(
+                                      (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.disabled)) {
+                                  return Colors.transparent;
+                                }
+                                return Colors
+                                    .transparent; // Use the default color.
+                              }),
+                              thumbColor:
+                                  WidgetStateProperty.resolveWith<Color>(
+                                      (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.disabled)) {
+                                  return Colors.orange.withOpacity(.48);
+                                }
+                                return Theme.of(context).colorScheme.tertiary;
+                              }),
+                              inactiveThumbColor: Colors.white,
+                              activeTrackColor: Colors.white,
+                              //activeTrackColor: const Color.fromARGB(0, 255, 255, 255),
+                              activeColor:
+                                  const Color.fromARGB(255, 255, 255, 255),
+                              inactiveTrackColor:
+                                  Color.fromRGBO(255, 255, 255, 1),
+                              value: isEnglish,
+                              onChanged: (value) async {
+                                bool activo = value;
+                                if (activo == true) {
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .update({'spanish': 'false'});
+                                } else{
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(currentUser.email)
+                                      .update({'spanish': 'true'});
+                                }
+                                setState(() {
+    isEnglish = value;
+  });
+
+                                context.setLocale(Locale(value ? 'en' : 'es'));
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: size.width * 0.0,
+                        ),
+                        Text(
+                          'EN',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: size.height * 0.015,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: size.width * 0.03,
                   )
                 ],
               ),
@@ -504,7 +613,7 @@ class _ProfileHomeState extends State<Profilehome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '    Editar Perfil',
+                            'Editar perfil'.tr(),
                             style: TextStyle(
                                 fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
@@ -551,7 +660,7 @@ class _ProfileHomeState extends State<Profilehome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '    Cambiar contraseña',
+                            'Cambiar contraseña'.tr(),
                             style: TextStyle(
                                 fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
@@ -955,7 +1064,7 @@ class _ProfileHomeState extends State<Profilehome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '    Seguridad y Privacidad',
+                            'Seguridad y privacidad'.tr(),
                             style: TextStyle(
                                 fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
@@ -1000,7 +1109,7 @@ class _ProfileHomeState extends State<Profilehome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '    Hacer un pago',
+                            'Hacer un pago'.tr(),
                             style: TextStyle(
                                 fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
@@ -1026,11 +1135,11 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: 20,
                   ),
                   Text(
-                    'Notificaciones',
+                    'Notificaciones'.tr(),
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.024,
+                        fontSize: size.height * 0.022,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -1066,7 +1175,7 @@ class _ProfileHomeState extends State<Profilehome> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(
-                                  'Notificaciones',
+                                  'Notificaciones'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Arial',
                                       color: Theme.of(context)
@@ -1074,7 +1183,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                           .secondary),
                                 ),
                                 content: Text(
-                                  'Para cambiar los ajustes de Notificaciones vaya a los ajustes de su teléfono',
+                                  'Para cambiar los ajustes de Notificaciones vaya a los ajustes de su teléfono'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Arial',
                                       color: Theme.of(context)
@@ -1088,7 +1197,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                         Navigator.of(context).pop();
                                       },
                                       child: Text(
-                                        'Cancelar',
+                                        'Cancelar'.tr(),
                                         style: TextStyle(
                                             fontFamily: 'Arial',
                                             color: Theme.of(context)
@@ -1103,7 +1212,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                       //Navigator.of(context).pop();
 
                                       child: Text(
-                                        'Ir a Ajustes',
+                                        'Ir a Ajustes'.tr(),
                                         style: TextStyle(
                                             fontFamily: 'Arial',
                                             color: Theme.of(context)
@@ -1118,7 +1227,7 @@ class _ProfileHomeState extends State<Profilehome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '    Ajustes',
+                            'Ajustes'.tr(),
                             style: TextStyle(
                                 fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
@@ -1195,11 +1304,11 @@ class _ProfileHomeState extends State<Profilehome> {
                     width: size.height * 0.02,
                   ),
                   Text(
-                    'Cerrar sesión',
+                    'Cerrar sesión'.tr(),
                     style: TextStyle(
                         color:
                             const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-                        fontSize: size.height * 0.024,
+                        fontSize: size.height * 0.022,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Arial'),
                   )
@@ -1235,7 +1344,7 @@ class _ProfileHomeState extends State<Profilehome> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(
-                                  'Salir',
+                                  'Salir'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Arial',
                                       color: Theme.of(context)
@@ -1243,7 +1352,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                           .secondary),
                                 ),
                                 content: Text(
-                                    'Estás seguro que deseas cerrar sesión?',
+                                    'Estás seguro que deseas cerrar sesión?'.tr(),
                                     style: TextStyle(
                                         fontFamily: 'Arial',
                                         color: Theme.of(context)
@@ -1255,7 +1364,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                         Navigator.of(context).pop();
                                       },
                                       child: Text(
-                                        'Cancelar',
+                                        'Cancelar'.tr(),
                                         style: TextStyle(
                                             fontFamily: 'Arial',
                                             color: Theme.of(context)
@@ -1267,7 +1376,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                         signOut();
                                         Navigator.of(context).pop();
                                       },
-                                      child: Text('Aceptar',
+                                      child: Text('Aceptar'.tr(),
                                           style: TextStyle(
                                               fontFamily: 'Arial',
                                               color: Theme.of(context)
@@ -1281,7 +1390,7 @@ class _ProfileHomeState extends State<Profilehome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '    Salir',
+                            'Salir'.tr(),
                             style: TextStyle(
                                 fontSize: size.height * 0.024,
                                 color: const Color.fromARGB(255, 255, 255, 255),
@@ -1298,7 +1407,7 @@ class _ProfileHomeState extends State<Profilehome> {
                 ],
               ),
               SizedBox(
-                height: size.height * 0.035,
+                height: size.height * 0.025,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1346,7 +1455,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                         Navigator.of(context).pop();
                                       },
                                       child: Text(
-                                        'Cancelar',
+                                        'Cancelar'.tr(),
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -1354,72 +1463,92 @@ class _ProfileHomeState extends State<Profilehome> {
                                             fontFamily: 'Arial'),
                                       )),
                                   TextButton(
-  onPressed: () async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    final userEmail = currentUser?.email;
+                                    onPressed: () async {
+                                      final currentUser =
+                                          FirebaseAuth.instance.currentUser;
+                                      final userEmail = currentUser?.email;
 
-    // 1. Cerrar sesión visualmente y navegar al onboarding
-    await Future.delayed(const Duration(milliseconds: 300));
+                                      // 1. Cerrar sesión visualmente y navegar al onboarding
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 300));
 
-    if (navigatorKey.currentState?.mounted ?? false) {
-      navigatorKey.currentState?.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const OnboardingPage()),
-        (route) => false,
-      );
-    }
+                                      if (navigatorKey.currentState?.mounted ??
+                                          false) {
+                                        navigatorKey.currentState
+                                            ?.pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const OnboardingPage()),
+                                          (route) => false,
+                                        );
+                                      }
 
-    // 2. Esperar navegación
-    await Future.delayed(const Duration(milliseconds: 300));
+                                      // 2. Esperar navegación
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 300));
 
-    try {
-      if (userEmail != null) {
-        // 3. Eliminar posts del usuario
-        final postsSnapshot = await FirebaseFirestore.instance
-            .collection('posts')
-            .where('UserEmail', isEqualTo: userEmail)
-            .get();
+                                      try {
+                                        if (userEmail != null) {
+                                          // 3. Eliminar posts del usuario
+                                          final postsSnapshot =
+                                              await FirebaseFirestore.instance
+                                                  .collection('posts')
+                                                  .where('UserEmail',
+                                                      isEqualTo: userEmail)
+                                                  .get();
 
-        for (final doc in postsSnapshot.docs) {
-          await doc.reference.delete();
-        }
+                                          for (final doc
+                                              in postsSnapshot.docs) {
+                                            await doc.reference.delete();
+                                          }
 
-        // 4. Eliminar imagen de perfil
-        try {
-          await FirebaseStorage.instance.ref(userEmail).delete();
-        } catch (_) {
-          print('⚠️ No hay imagen de perfil para eliminar.');
-        }
+                                          // 4. Eliminar imagen de perfil
+                                          try {
+                                            await FirebaseStorage.instance
+                                                .ref(userEmail)
+                                                .delete();
+                                          } catch (_) {
+                                            print(
+                                                '⚠️ No hay imagen de perfil para eliminar.');
+                                          }
 
-        // 5. Eliminar cuenta de Firebase Auth
-        await currentUser?.delete();
+                                          // 5. Eliminar cuenta de Firebase Auth
+                                          await currentUser?.delete();
 
-        // 6. Esperar cierre de sesión
-        await FirebaseAuth.instance.signOut();
+                                          // 6. Esperar cierre de sesión
+                                          await FirebaseAuth.instance.signOut();
 
-        // 7. Eliminar documento del usuario
-        final docRef = FirebaseFirestore.instance.collection('users').doc(userEmail);
-        final docSnapshot = await docRef.get();
+                                          // 7. Eliminar documento del usuario
+                                          final docRef = FirebaseFirestore
+                                              .instance
+                                              .collection('users')
+                                              .doc(userEmail);
+                                          final docSnapshot =
+                                              await docRef.get();
 
-        if (docSnapshot.exists) {
-          await docRef.delete();
-          print('✅ Documento del usuario eliminado');
-        } else {
-          print('⚠️ Documento ya no existe');
-        }
-      }
-    } catch (e) {
-      print('❌ Error al eliminar cuenta o documento: $e');
-    }
-  },
-  child: Text(
-    'Aceptar',
-    style: TextStyle(
-      fontFamily: 'Arial',
-      color: Theme.of(context).colorScheme.secondary,
-    ),
-  ),
-),
-
+                                          if (docSnapshot.exists) {
+                                            await docRef.delete();
+                                            print(
+                                                '✅ Documento del usuario eliminado');
+                                          } else {
+                                            print('⚠️ Documento ya no existe');
+                                          }
+                                        }
+                                      } catch (e) {
+                                        print(
+                                            '❌ Error al eliminar cuenta o documento: $e');
+                                      }
+                                    },
+                                    child: Text(
+                                      'Aceptar'.tr(),
+                                      style: TextStyle(
+                                        fontFamily: 'Arial',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               );
                             });
@@ -1428,7 +1557,7 @@ class _ProfileHomeState extends State<Profilehome> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '    Eliminar cuenta',
+                            'Eliminar cuenta'.tr(),
                             style: TextStyle(
                                 fontSize: size.height * 0.015,
                                 color: const Color.fromARGB(255, 255, 255, 255),

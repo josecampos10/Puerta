@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -151,7 +152,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
             Container(
                 padding: EdgeInsets.only(top: size.height * 0.14),
                 child: Text(
-                  'Seleccione un monto', style: TextStyle(fontSize: size.height*0.024),
+                  'Ingrese o seleccione un monto'.tr(), style: TextStyle(fontSize: size.height*0.024),
                 )),
           ],
         ),
@@ -216,6 +217,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                         child: IntrinsicWidth(
                           stepWidth: 1.0,
                           child: TextField(
+                            
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
                             onTapOutside: (event) {
@@ -226,12 +228,12 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                             onChanged: (value) {},
                             controller: _controllerName,
                             style: TextStyle(
-                                color: const Color.fromARGB(255, 0, 0, 0),
+                                color: Theme.of(context).colorScheme.secondary,
                                 fontSize: size.height * 0.078,
                                 fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                             decoration: InputDecoration(
-                              prefix: Text('\$'),
+                              prefix: Text('\$', style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                               prefixStyle: TextStyle(
                                   color: const Color.fromARGB(255, 0, 0, 0),
                                   fontSize: size.height * 0.07,
@@ -267,7 +269,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                             width: size.width * 0.01,
                           ),
                           Text(
-                            'Pago Seguro',
+                            'Pago Seguro'.tr(),
                             style: TextStyle(fontSize: size.height * 0.015),
                           )
                         ],
@@ -540,7 +542,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
                             prefix: Text('  '),
-                            hintText: 'Ingrese el motivo del pago',
+                            hintText: 'Ingrese el motivo del pago'.tr(),
                             hintStyle: TextStyle(
                                 color:
                                     const Color.fromARGB(255, 148, 148, 148), fontSize: size.height*0.018),

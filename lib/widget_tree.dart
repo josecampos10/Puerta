@@ -48,7 +48,7 @@ class _WidgetTreeState extends State<WidgetTree> {
             }
 
             // ✅ Usuario válido y con documento
-            return user.email != 'admin@lapuertawaco.com'
+            return user.email != 'info@lapuertawaco.com'
                 ? const Mainwrapper()
                 : const LoginNow(); // o reemplaza por otro widget admin
           },

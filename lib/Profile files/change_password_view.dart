@@ -1,10 +1,9 @@
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lapuerta2/ForgotPasswordPage.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class changePasswordView extends StatefulWidget {
   const changePasswordView({super.key});
@@ -48,12 +47,12 @@ class _changePasswordViewState extends State<changePasswordView> {
   }
 
   String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Ingrese una contraseña';
-    if (value.length < 8) return 'Mínimo 8 caracteres';
-    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Debe tener una mayúscula';
-    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Debe tener una minúscula';
-    if (!RegExp(r'[0-9]').hasMatch(value)) return 'Debe tener un número';
-    if (!RegExp(r'[!@#\$&*~]').hasMatch(value)) return 'Debe tener un símbolo';
+    if (value == null || value.isEmpty) return 'Ingrese una contraseña'.tr();
+    if (value.length < 8) return 'Mínimo 8 caracteres'.tr();
+    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Debe tener una mayúscula'.tr();
+    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Debe tener una minúscula'.tr();
+    if (!RegExp(r'[0-9]').hasMatch(value)) return 'Debe tener un número'.tr();
+    if (!RegExp(r'[!@#\\$&*~]').hasMatch(value)) return 'Debe tener un símbolo: !@#%?_'.tr();
     return null;
   }
 
@@ -64,17 +63,45 @@ class _changePasswordViewState extends State<changePasswordView> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        toolbarHeight: size.height * 0.12,
-        centerTitle: false,
-        title: Text(
-          'Cambiar contraseña',
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: size.height * 0.024,
-              color: Colors.white),
+        iconTheme: CupertinoIconThemeData(
+          color: Colors.white,
+          size: size.height * 0.035,
         ),
+        bottomOpacity: 0.0,
+        toolbarHeight: size.height * 0.12,
+        leadingWidth: size.width * 0.13,
+        //leading:
+        title: Container(
+            padding: EdgeInsets.only(top: size.height * 0.0),
+            child: Text(
+              'Cambiar contraseña'.tr(),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: size.height * 0.024,
+                  color: Colors.white,
+                  fontFamily: ''),
+            )),
+        centerTitle: false,
+        titleTextStyle: TextStyle(
+            fontFamily: '',
+            fontWeight: FontWeight.bold,
+            fontSize: size.height * 0.023,
+            color: const Color.fromARGB(255, 255, 255, 255)),
         backgroundColor: Theme.of(context).colorScheme.tertiary,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/img/puntos.png'),
+              fit: BoxFit.fill,
+              colorFilter: (Theme.of(context).colorScheme.tertiary !=
+                      Color.fromRGBO(4, 99, 128, 1))
+                  ? ColorFilter.mode(
+                      const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
+                  : ColorFilter.mode(
+                      const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
+            ),
+          ),
+        ),
         actions: [
           Container(
             margin: EdgeInsets.only(right: 16),
@@ -123,7 +150,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                   children: [
                     Row(
                       children: [
-                        buildLabel('Contraseña actual'),
+                        buildLabel('Contraseña actual'.tr()),
                         IconButton(
                             onPressed: () {
                               showDialog(
@@ -131,7 +158,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       title: Text(
-                                        'Cambiar contraseña',
+                                        'Cambiar contraseña'.tr(),
                                         style: TextStyle(
                                             fontFamily: 'Arial',
                                             color: Theme.of(context)
@@ -139,7 +166,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                                                 .secondary),
                                       ),
                                       content: Text(
-                                        'Ingrese la contraseña actual para poder cambiar su contraseña',
+                                        'Ingrese la contraseña actual para poder cambiar su contraseña'.tr(),
                                         style: TextStyle(
                                             fontFamily: 'Arial',
                                             color: Theme.of(context)
@@ -152,7 +179,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                                               Navigator.of(context).pop();
                                             },
                                             child: Text(
-                                              'Cerrar',
+                                              'Cerrar'.tr(),
                                               style: TextStyle(
                                                   fontFamily: 'Arial',
                                                   color: Theme.of(context)
@@ -182,7 +209,7 @@ class _changePasswordViewState extends State<changePasswordView> {
                           onTap: () =>
                               Navigator.pushNamed(context, '/passwordreset'),
                           child: Text(
-                            'Olvidaste tu contraseña?',
+                            '¿Olvidaste tu contraseña?'.tr(),
                             textAlign: TextAlign.end,
                             style: TextStyle(
                                 fontSize: size.height * 0.014,
@@ -196,13 +223,13 @@ class _changePasswordViewState extends State<changePasswordView> {
                       ],
                     ),
                     SizedBox(height: size.height * 0.02),
-                    buildLabel('Nueva contraseña'),
+                    buildLabel('Nueva contraseña'.tr()),
                     SizedBox(height: size.height * 0.01),
                     buildPasswordField(_controllerNew, _showNew, () {
                       setState(() => _showNew = !_showNew);
                     }, validator: validatePassword),
                     SizedBox(height: size.height * 0.02),
-                    buildLabel('Confirmar contraseña'),
+                    buildLabel('Confirmar contraseña'.tr()),
                     SizedBox(height: size.height * 0.01),
                     buildPasswordField(_controllerConfirm, _showConfirm, () {
                       setState(() => _showConfirm = !_showConfirm);
@@ -247,7 +274,7 @@ class _changePasswordViewState extends State<changePasswordView> {
         style: TextStyle(
             color: Theme.of(context).colorScheme.secondary,
             fontSize: size.height * 0.018,
-            fontWeight: FontWeight.normal,
+            fontWeight: FontWeight.bold,
             fontFamily: 'Arial'),
       ),
     );
@@ -354,7 +381,7 @@ class _changePasswordViewState extends State<changePasswordView> {
 
     if (newPassword != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Las contraseñas no coinciden',style: TextStyle(color: Colors.white),),
+        content: Text('Las contraseñas no coinciden'.tr(),style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.red,
       ));
       return;
@@ -378,7 +405,7 @@ class _changePasswordViewState extends State<changePasswordView> {
       _controllerConfirm.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Contraseña actualizada exitosamente',style: TextStyle(color: Colors.white),),
+        content: Text('Contraseña actualizada exitosamente'.tr(),style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.green,
       ));
     } on FirebaseAuthException catch (e) {

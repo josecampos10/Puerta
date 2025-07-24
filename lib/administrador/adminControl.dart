@@ -14,11 +14,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lapuerta2/administrador/image_storage_methods.dart';
 import 'package:lapuerta2/administrador/utils.dart';
 import 'package:lapuerta2/detalles_image_slider.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 final gridItems = [
-  'Noticias',
-  'Clases',
-  'Servicios',
+'Noticias',
+'Clases',
+'Servicios'
 ];
 
 class AdminControl extends StatefulWidget {

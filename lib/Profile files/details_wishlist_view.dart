@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -92,7 +93,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Editar perfil',
+              'Editar perfil'.tr(),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,
@@ -304,11 +305,12 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      'Nombre',
+                                      'Nombre'.tr(),
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
+                                          fontWeight: FontWeight.bold,
                                           fontFamily: 'Arial',
                                           fontSize: size.height * 0.018),
                                     )
@@ -378,12 +380,13 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      'Número de teléfono',
+                                      'Número de teléfono'.tr(),
                                       style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondary,
                                           fontFamily: 'Arial',
+                                          fontWeight: FontWeight.bold,
                                           fontSize: size.height * 0.018),
                                     ),
                                     IconButton(
@@ -400,7 +403,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                       Icon(Icons.check_circle),
                                                   iconColor: Colors.green,
                                                   content: Text(
-                                                    'Asegúrese de utilizar un número de teléfono al que tenga acceso',
+                                                    'Asegúrese de utilizar un número de teléfono al que tenga acceso'.tr(),
                                                     style: TextStyle(
                                                         color: Theme.of(context)
                                                             .colorScheme
@@ -544,7 +547,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                             TextEditingController();
                                                         return AlertDialog(
                                                           title: Text(
-                                                              'Confirma tu contraseña'),
+                                                              'Confirma tu contraseña'.tr()),
                                                           content: TextField(
                                                             cursorColor:
                                                                 Theme.of(
@@ -557,7 +560,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                             decoration:
                                                                 InputDecoration(
                                                                     labelText:
-                                                                        'Contraseña'),
+                                                                        'Contraseña'.tr()),
                                                           ),
                                                           actions: [
                                                             TextButton(
@@ -664,7 +667,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                     Navigator.of(context).pop();
                                                   }
                                                 },
-                                                child: Text('Aceptar',
+                                                child: Text('Aceptar'.tr(),
                                                     style: TextStyle(
                                                         color: Theme.of(context)
                                                             .colorScheme
@@ -673,7 +676,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                 },
-                                                child: Text('Cancelar',
+                                                child: Text('Cancelar'.tr(),
                                                     style: TextStyle(
                                                         color: Theme.of(context)
                                                             .colorScheme
@@ -689,7 +692,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 35, vertical: 10)),
                               child: Text(
-                                'Guardar cambios',
+                                'Guardar cambios'.tr(),
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Arial',

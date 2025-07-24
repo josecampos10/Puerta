@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +92,15 @@ Future<void> main() async {
   //await FirebaseApi().initNotifications();
   //Stripe.publishableKey = "pk_test_51RBIWtRtC705svstNUXRchCHHCdhkTiYrhGRKaDoP7upv0XhIkoJUmY8Gb3Nj8i2bCMACY0mMnEKOw6eB5dDwFe600Z60ceaGG";
 
-  runApp(const MyApp());
+  await EasyLocalization.ensureInitialized();
+
+
+  runApp(EasyLocalization(
+    supportedLocales: const [Locale('en'), Locale('es')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('es'),
+      startLocale: null,
+    child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -111,9 +120,15 @@ class MyApp extends StatelessWidget {
         SystemUiMode.edgeToEdge); // ✅ ACTUALIZADO
     FlutterNativeSplash.remove();
     SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp, 
+        ////// FOR IPAD ONLY //////
+        //DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight
+        ]);
 
     return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       initialRoute: 'initial',
       themeAnimationDuration: Duration.zero,
       debugShowCheckedModeBanner: false,
@@ -134,7 +149,7 @@ class MyApp extends StatelessWidget {
                     FirebaseApi().initNotifications(email);
                   });
 
-                  if (email != 'admin@lapuertawaco.com') {
+                  if (email != 'info@lapuertawaco.com') {
                     return const Mainwrapper();
                   }
                   return const OnboardingPage();

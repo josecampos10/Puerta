@@ -71,14 +71,19 @@ class DetallesClassHome extends StatelessWidget {
                     )
                   ],
                 ),
-                //SizedBox(height: size.height * 0.008),
-                Text(
-                  documentSnapshot['Name'],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: size.height * 0.05,
-                      fontFamily: 'Arial'),
+                SizedBox(height: size.height * 0.04),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    documentSnapshot['Name'],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      
+                      fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: size.height * 0.035,
+                        fontFamily: 'Arial'),
+                  ),
                 ),
               ],
             ),

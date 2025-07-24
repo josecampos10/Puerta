@@ -13,6 +13,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class Studentgedfilesam extends StatefulWidget {
   const Studentgedfilesam({super.key});
@@ -164,7 +165,7 @@ class _StudentgedfilesamState extends State<Studentgedfilesam> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Mis clases',
+             ez.tr('Mis clases'),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,
@@ -362,7 +363,7 @@ class _StudentgedfilesamState extends State<Studentgedfilesam> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: Center(
                                         child: Text(
-                                          'Sin archivos',
+                                          'Sin archivos'.tr(),
                                           style: TextStyle(
                                             fontSize: size.height * 0.018,
                                             color: Theme.of(context)

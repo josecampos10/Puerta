@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,19 +10,19 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
+import 'package:lapuerta2/detalles_class.dart';
 import 'package:lapuerta2/detalles_image.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:lapuerta2/detalles_image_slider.dart';
 import 'package:lapuerta2/onboarding.dart';
-import 'package:lapuerta2/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 final gridItems = [
   'Noticias',
   'Clases',
-  'Servicios',
-];
+  'Servicios'
+  ];
 
 class UserhomePrincipal extends StatefulWidget {
   @override
@@ -51,6 +50,8 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
   Uint8List? pickedImage;
   final Uri _urlfacebook = Uri.parse('https://www.facebook.com/puertawaco');
   int selectedIndex = 0;
+  late Stream<QuerySnapshot> clases;
+  bool isEnglish = false;
 
   late Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> futurePosts;
 
@@ -177,6 +178,22 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
     }
   }
 
+   Future<void> loadUserLanguagePreference() async {
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUser?.email)
+      .get();
+
+  final data = doc.data();
+  final isSpanish = data?['spanish'] == 'true'; // viene como string
+
+  setState(() {
+    isEnglish = !isSpanish; // true = inglés activo
+  });
+
+  context.setLocale(Locale(isEnglish ? 'en' : 'es'));
+}
+
   @override
   void initState() {
     super.initState();
@@ -184,15 +201,17 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
       Duration(),
       () => SystemChannels.textInput.invokeMethod('TextInput.hide'),
     );
+    var firebase = FirebaseFirestore.instance;
+    clases = firebase.collection('clases').snapshots();
     _checkUserValidity();
+    loadUserLanguagePreference();
     setState(() {
       imageCache.clear();
       imageCache.clearLiveImages();
     });
-
     getProfilePicture();
     pickedImage;
-    var firebase = FirebaseFirestore.instance;
+
     imageStream = firebase.collection("Image_Slider").snapshots();
     imageESLstream = firebase.collection("Image_Slider_ESL").snapshots();
     imageRecursoStream =
@@ -284,7 +303,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                             ),
                             Center(
                               child: Text(
-                                'Contáctanos',
+                                'Contáctanos'.tr(),
                                 style: TextStyle(
                                     fontSize: size.height * 0.035,
                                     fontWeight: FontWeight.bold,
@@ -337,7 +356,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                     enabledBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
                                             color: Colors.transparent)),
-                                    labelText: 'Asunto',
+                                    labelText: 'Asunto'.tr(),
                                     prefixIcon: Icon(Icons.short_text_rounded,
                                         color: const Color.fromARGB(
                                             255, 155, 155, 155)),
@@ -403,7 +422,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                     enabledBorder: UnderlineInputBorder(
                                         borderSide: BorderSide(
                                             color: Colors.transparent)),
-                                    labelText: 'Mensaje',
+                                    labelText: 'Mensaje'.tr(),
                                     prefixIcon: Icon(Icons.message,
                                         color: const Color.fromARGB(
                                             255, 155, 155, 155)),
@@ -439,7 +458,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 0, vertical: 0),
                                     child: Text(
-                                      'Enviar',
+                                      'Enviar'.tr(),
                                       style: TextStyle(
                                           color: const Color.fromARGB(
                                               255, 255, 255, 255),
@@ -538,10 +557,12 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'Hola,',
+                        'Hola'.tr(), // ← Usando el alias para acceder a tr()
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                            color: Colors.white, fontSize: size.height * 0.018),
+                          color: Colors.white,
+                          fontSize: size.height * 0.018,
+                        ),
                       ),
                     ],
                   ),
@@ -727,7 +748,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                     CrossAxisAlignment.center,
                                                 children: [
                                                   Text(
-                                                    gridItems[position],
+                                                    gridItems[position].tr(),
                                                     textAlign: TextAlign.start,
                                                     style: TextStyle(
                                                       fontSize:
@@ -848,50 +869,137 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                           if (snapshot.hasData &&
                               snapshot.data!.docs.length > 1 &&
                               selectedIndex == 1) {
-                            return CarouselSlider.builder(
-                                carouselController: carouselController,
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (_, index, __) {
-                                  DocumentSnapshot sliderImage =
-                                      snapshot.data!.docs[index];
-                                  return ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ImageDetallesHomeSlider(
-                                                        sliderImage:
-                                                            sliderImage)));
-                                      },
-                                      child: Hero(
-                                        tag: sliderImage,
-                                        child: SizedBox(
-                                          width: size.width * 0.8,
-                                          child: Image.network(
-                                            sliderImage['Image'],
-                                            filterQuality: FilterQuality.low,
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                options: CarouselOptions(
-                                    aspectRatio: size.height * 0.0045,
-                                    viewportFraction: size.height * 0.00045,
-                                    autoPlayCurve: Curves.fastOutSlowIn,
-                                    autoPlayInterval: Duration(seconds: 10),
-                                    autoPlay: true,
-                                    enlargeCenterPage: true,
-                                    onPageChanged: (index, _) {
-                                      setState(() {
-                                        currentSlideIndex = index;
-                                      });
-                                    }));
+                            return SingleChildScrollView(
+                              padding: EdgeInsets.all(size.width * 0.001),
+                              child: Column(
+                                children: [
+                                  StreamBuilder<QuerySnapshot>(
+                                      stream: clases,
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<QuerySnapshot>
+                                              snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Column(children: [
+                                            SizedBox(
+                                              height: size.height * 0.02,
+                                            ),
+                                            SpinKitFadingCircle(
+                                              color:
+                                                  Color.fromRGBO(4, 99, 128, 1),
+                                              size: size.width * 0.1,
+                                            ),
+                                          ]);
+                                        }
+                                        if (snapshot.hasData) {
+                                          final snap = snapshot.data!.docs;
+                                          return SizedBox(
+                                            height: size.height * 0.11,
+                                            width: size.width,
+                                            child: GridView.builder(
+                                              physics: ScrollPhysics(),
+                                              scrollDirection: Axis.horizontal,
+                                              gridDelegate:
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisSpacing:
+                                                          size.width * 0.02,
+                                                      crossAxisCount: 1,
+                                                      childAspectRatio: 0.5),
+                                              shrinkWrap: true,
+                                              primary: false,
+                                              itemCount: snap.length,
+                                              cacheExtent: 1000.0,
+                                              itemBuilder: (context, index) {
+                                                final DocumentSnapshot
+                                                    documentSnapshot =
+                                                    snapshot.data!.docs[index];
+                                                if (snap[index]['Name'] ==
+                                                    'ESL Chick-fil-A') {
+                                                  return const SizedBox
+                                                      .shrink(); // Oculta este item
+                                                }
+
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                DetallesClassHome(
+                                                                    documentSnapshot:
+                                                                        documentSnapshot)));
+                                                  },
+                                                  child: Card(
+                                                    borderOnForeground: false,
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    size.height *
+                                                                        0.03)),
+                                                    elevation:
+                                                        size.height * 0.5,
+                                                    shadowColor: Colors.black,
+                                                    color: const Color.fromRGBO(
+                                                        4, 99, 128, 1),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    size.height *
+                                                                        0.03),
+                                                        image:
+                                                            const DecorationImage(
+                                                          image: AssetImage(
+                                                              'assets/img/back.png'),
+                                                          fit: BoxFit.cover,
+                                                          filterQuality:
+                                                              FilterQuality.low,
+                                                          opacity: 0.4,
+                                                        ),
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Center(
+                                                            child: Text(
+                                                              snap[index]
+                                                                  ['Name'],
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    size.height *
+                                                                        0.018,
+                                                                fontFamily:
+                                                                    'Arial',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        } else {
+                                          return const SizedBox();
+                                        }
+                                      })
+                                ],
+                              ),
+                            );
                           } else {
                             return Container();
                           }

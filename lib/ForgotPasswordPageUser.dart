@@ -1,6 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lapuerta2/widget_tree.dart';
 
 class ForgotPasswordPageUser extends StatefulWidget {
   const ForgotPasswordPageUser({super.key});
@@ -34,7 +34,7 @@ class _ForgotPasswordPageUserState extends State<ForgotPasswordPageUser> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
             child: Text(
-              'Enviar enlace',
+              'Enviar enlace'.tr(),
               style: TextStyle(
                   color: const Color.fromARGB(255, 255, 255, 255),
                   fontSize: size.height * 0.021,
@@ -127,7 +127,7 @@ class _ForgotPasswordPageUserState extends State<ForgotPasswordPageUser> {
               Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    '¿Olvidaste tu contraseña?',
+                    '¿Olvidaste tu contraseña?'.tr(),
                     style: TextStyle(
                         color: const Color.fromARGB(255, 0, 238, 255),
                         fontWeight: FontWeight.bold),
@@ -136,7 +136,7 @@ class _ForgotPasswordPageUserState extends State<ForgotPasswordPageUser> {
               Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'Ingresa el correo electrónico asociado a tu cuenta para recibir el enlace para cambiar tu contraseña',
+                    'Ingresa el correo electrónico asociado a tu cuenta para recibir el enlace para cambiar tu contraseña'.tr(),
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.left,
@@ -178,7 +178,7 @@ class _ForgotPasswordPageUserState extends State<ForgotPasswordPageUser> {
                         borderSide: BorderSide(color: Colors.transparent)),
                     enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.transparent)),
-                    labelText: 'correo electrónico',
+                    labelText: 'correo electrónico'.tr(),
                     prefixIcon: Icon(
                       Icons.email,
                       color: const Color.fromARGB(255, 155, 155, 155),
@@ -205,7 +205,7 @@ class _ForgotPasswordPageUserState extends State<ForgotPasswordPageUser> {
                       Navigator.of(context).pop();
                     },
                     child: Text(
-                      'Atrás',
+                      'Atrás'.tr(),
                       textAlign: TextAlign.end,
                       style: TextStyle(
                           fontSize: size.height * 0.017,

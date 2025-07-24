@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:animated_icon/animated_icon.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +110,7 @@ class _UsermapHomeState extends State<UsermapHome> {
             child: Row(
               children: [
                 Text(
-                  'Mis clases',
+                  'Mis clases'.tr(),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: size.height * 0.024,
@@ -123,7 +124,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: Text(
-                                'Clases registradas',
+                                'Clases registradas'.tr(),
                                 style: TextStyle(
                                     fontFamily: 'Arial',
                                     color: Theme.of(context)
@@ -131,7 +132,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                         .secondary),
                               ),
                               content: Text(
-                                'Si no ve ninguna clase, consulte su inscripción en secretaría',
+                                'Si no ve ninguna clase, consulte su inscripción en secretaría'.tr(),
                                 style: TextStyle(
                                     fontFamily: 'Arial',
                                     color: Theme.of(context)
@@ -144,7 +145,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                       Navigator.of(context).pop();
                                     },
                                     child: Text(
-                                      'Cerrar',
+                                      'Cerrar'.tr(),
                                       style: TextStyle(
                                           fontFamily: 'Arial',
                                           color: Theme.of(context)
@@ -1832,7 +1833,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura Básica",
+                                              "Costura Básica".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -2045,7 +2046,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadanía",
+                                              "Ciudadanía".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -2258,7 +2259,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Cosmetología",
+                                              "Cosmetología".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -2684,7 +2685,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 1",
+                                              "Corte y Confección 1".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -2897,7 +2898,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 2",
+                                              "Corte y Confección 2".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -4610,7 +4611,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura Básica",
+                                              "Costura Básica".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -4825,7 +4826,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadanía",
+                                              "Ciudadanía".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -5040,7 +5041,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Cosmetología",
+                                              "Cosmetología".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -5572,7 +5573,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 1",
+                                              "Corte y Confección 1".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -5785,7 +5786,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 2",
+                                              "Corte y Confección 2".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -5892,6 +5893,220 @@ class _UsermapHomeState extends State<UsermapHome> {
               ),
 
               //PARTE DE VOLUNTARIO********************************************
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Voluntario') {
+                      if (data['Volunteer'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                Navigator.pushNamed(context, '/studentVolunteer');
+
+                                try {
+                                  final lastPostSnapshot =
+                                      await FirebaseFirestore.instance
+                                          .collection('postsState')
+                                          .doc('Volunteer')
+                                          .get();
+
+                                  final lastPostValue =
+                                      lastPostSnapshot.data()?['lastpost'];
+
+                                  if (lastPostValue != null) {
+                                    await FirebaseFirestore.instance
+                                        .collection('postsStateUser')
+                                        .doc(currentUser.email)
+                                        .collection('classes')
+                                        .doc('Volunteer')
+                                        .set({'lastRead': lastPostValue});
+                                  }
+
+                                  setState(() {
+                                    _notificationCountESLpm = 0;
+                                  });
+                                } catch (e) {
+                                  print(
+                                      '❌ Error actualizando estado de lectura: $e');
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/volunteer.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.people,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 12, 40, 148)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 12, 40, 148),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "Voluntarios".tr(),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                  DocumentSnapshot>(
+                                                stream: FirebaseFirestore
+                                                    .instance
+                                                    .collection(
+                                                        'postsStateUser')
+                                                    .doc(currentUser.email)
+                                                    .collection('classes')
+                                                    .doc('Volunteer')
+                                                    .snapshots(),
+                                                builder:
+                                                    (context, userSnapshot) {
+                                                  if (!userSnapshot.hasData ||
+                                                      !userSnapshot
+                                                          .data!.exists) {
+                                                    return Container(); // o muestra el ícono por defecto si quieres
+                                                  }
+
+                                                  final userData = userSnapshot
+                                                          .data!
+                                                          .data()
+                                                      as Map<String, dynamic>;
+                                                  final lastRead =
+                                                      userData['lastRead'];
+
+                                                  return StreamBuilder<
+                                                      DocumentSnapshot>(
+                                                    stream: FirebaseFirestore
+                                                        .instance
+                                                        .collection(
+                                                            'postsState')
+                                                        .doc('Volunteer')
+                                                        .snapshots(),
+                                                    builder: (context,
+                                                        globalSnapshot) {
+                                                      if (!globalSnapshot
+                                                              .hasData ||
+                                                          !globalSnapshot
+                                                              .data!.exists) {
+                                                        return Container();
+                                                      }
+
+                                                      final globalData =
+                                                          globalSnapshot.data!
+                                                                  .data()
+                                                              as Map<String,
+                                                                  dynamic>;
+                                                      final lastPost =
+                                                          globalData[
+                                                              'lastpost'];
+
+                                                      if (lastPost !=
+                                                          lastRead) {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+
+                                                      return Container(); // ya fue leído
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
 
               StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                 stream: streamfeed,
@@ -7485,7 +7700,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura Básica",
+                                              "Costura Básica".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -7698,7 +7913,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadanía",
+                                              "Ciudadanía".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -7911,7 +8126,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Cosmetología",
+                                              "Cosmetología".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -8337,7 +8552,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 1",
+                                              "Corte y Confección 1".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -8550,7 +8765,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 2",
+                                              "Corte y Confección 2".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -8665,6 +8880,221 @@ class _UsermapHomeState extends State<UsermapHome> {
                     return const Text('Something went wrong');
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(children: []);
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  if (snapshot.hasData) {
+                    if (data['rol'] == 'Staff') {
+                      if (data['Volunteer'] == 'inscrito') {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: size.height * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                Navigator.pushNamed(context, '/profeVolunteers');
+
+                                try {
+                                  final lastPostSnapshot =
+                                      await FirebaseFirestore.instance
+                                          .collection('postsState')
+                                          .doc('Volunteer')
+                                          .get();
+
+                                  final lastPostValue =
+                                      lastPostSnapshot.data()?['lastpost'];
+
+                                  if (lastPostValue != null) {
+                                    await FirebaseFirestore.instance
+                                        .collection('postsStateUser')
+                                        .doc(currentUser.email)
+                                        .collection('classes')
+                                        .doc('Volunteer')
+                                        .set({'lastRead': lastPostValue});
+                                  }
+
+                                  setState(() {
+                                    _notificationCountESLpm = 0;
+                                  });
+                                } catch (e) {
+                                  print(
+                                      '❌ Error actualizando estado de lectura: $e');
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  image: DecorationImage(
+                                      opacity: 0.6,
+                                      image:
+                                          AssetImage('assets/img/volunteer.png'),
+                                      filterQuality: FilterQuality.low,
+                                      fit: BoxFit.fitWidth),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      spreadRadius: 5,
+                                      blurRadius: 7,
+                                      offset: Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.15,
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      padding: const EdgeInsets.all(12),
+                                      child: Icon(Icons.people,
+                                          size: size.height * 0.1,
+                                          color:
+                                              Color.fromARGB(155, 12, 40, 148)),
+                                    ),
+                                    Container(
+                                      width: size.width / 1.03 -
+                                          size.width * 0.05 -
+                                          size.width * 0.05,
+                                      decoration: const BoxDecoration(
+                                          color:
+                                              Color.fromARGB(155, 12, 40, 148),
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(12),
+                                              bottomLeft: Radius.circular(12))),
+                                      padding: const EdgeInsets.all(12),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                              child: SizedBox(
+                                            width: size.width * 0.0,
+                                          )),
+                                          SizedBox(
+                                            width: size.width * 0.3,
+                                            child: Text(
+                                              "Voluntarios".tr(),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: size.width * 0.05,
+                                                  color: Colors.white,
+                                                  fontFamily: 'Arial'),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: SizedBox(
+                                              width: size.width * 0.0,
+                                              child: StreamBuilder<
+                                                  DocumentSnapshot>(
+                                                stream: FirebaseFirestore
+                                                    .instance
+                                                    .collection(
+                                                        'postsStateUser')
+                                                    .doc(currentUser.email)
+                                                    .collection('classes')
+                                                    .doc('Volunteer')
+                                                    .snapshots(),
+                                                builder:
+                                                    (context, userSnapshot) {
+                                                  if (!userSnapshot.hasData ||
+                                                      !userSnapshot
+                                                          .data!.exists) {
+                                                    return Container(); // o muestra el ícono por defecto si quieres
+                                                  }
+
+                                                  final userData = userSnapshot
+                                                          .data!
+                                                          .data()
+                                                      as Map<String, dynamic>;
+                                                  final lastRead =
+                                                      userData['lastRead'];
+
+                                                  return StreamBuilder<
+                                                      DocumentSnapshot>(
+                                                    stream: FirebaseFirestore
+                                                        .instance
+                                                        .collection(
+                                                            'postsState')
+                                                        .doc('Volunteer')
+                                                        .snapshots(),
+                                                    builder: (context,
+                                                        globalSnapshot) {
+                                                      if (!globalSnapshot
+                                                              .hasData ||
+                                                          !globalSnapshot
+                                                              .data!.exists) {
+                                                        return Container();
+                                                      }
+
+                                                      final globalData =
+                                                          globalSnapshot.data!
+                                                                  .data()
+                                                              as Map<String,
+                                                                  dynamic>;
+                                                      final lastPost =
+                                                          globalData[
+                                                              'lastpost'];
+
+                                                      if (lastPost !=
+                                                          lastRead) {
+                                                        return Container(
+                                                          height: size.height *
+                                                              0.031,
+                                                          child: AnimateIcon(
+                                                            key: UniqueKey(),
+                                                            onTap: () {},
+                                                            iconType: IconType
+                                                                .continueAnimation,
+                                                            color: Colors.white,
+                                                            animateIcon:
+                                                                AnimateIcons
+                                                                    .bell,
+                                                          ),
+                                                        );
+                                                      }
+
+                                                      return Container(); // ya fue leído
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          // Show badge only if there are new notifications
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }
+                  }
+
+                  return Container(); // 👈 your valid data here
+                },
+              ),
+
+              StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                stream: streamfeed,
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text('Something went wrong');
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Text('');
                   }
                   Map<String, dynamic> data =
@@ -8679,7 +9109,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                         return Column(
                           children: [
                             SizedBox(
-                              height: size.height * 0.00,
+                              height: size.height * 0.03,
                             ),
                             GestureDetector(
                               onTap: () async {
@@ -10264,7 +10694,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Costura Básica",
+                                              "Costura Básica".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -10479,7 +10909,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Ciudadanía",
+                                              "Ciudadanía".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -10694,7 +11124,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.4,
                                             child: Text(
-                                              "Cosmetología",
+                                              "Cosmetología".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -11226,7 +11656,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 1",
+                                              "Corte y Confección 1".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
@@ -11439,7 +11869,7 @@ class _UsermapHomeState extends State<UsermapHome> {
                                           SizedBox(
                                             width: size.width * 0.6,
                                             child: Text(
-                                              "Corte y Confección 2",
+                                              "Corte y Confección 2".tr(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,

@@ -162,6 +162,68 @@ exports.sendPostNotificationGlobal = onDocumentCreated("posts/{postId}", async (
 });
 
 
+//////////////////VOLUNTARIOS////////////////////////
+
+exports.sendClassPostNotificationVolunteers = onDocumentCreated("Volunteers/{postId}", async (event) => {
+  const post = event.data?.data();
+  if (!post) return;
+
+  const content = post.Comment ?? "";
+  const authorName = post.Name ?? "La Puerta";
+
+  const usersSnap = await db.collection("users").get();
+
+  let successCount = 0;
+
+  for (const doc of usersSnap.docs) {
+    const userData = doc.data();
+    const isEnrolled = userData.Volunteer === "inscrito";
+    const token = userData.token;
+
+    if (!isEnrolled || !token) continue;
+
+    // 🔢 Obtener y actualizar el badgeCount actual
+    const currentBadge = userData.badgeCount ?? 0;
+    const newBadge = currentBadge + 1;
+
+    // 📝 Guardar el nuevo badgeCount en Firestore
+    await doc.ref.update({ badgeCount: newBadge });
+
+    // 🔔 Crear notificación individual con badge personalizado
+    const message = {
+      token,
+      data: {
+        title: `${authorName}`,
+        body: content.slice(0, 100) + (content.length > 100 ? "…" : ""),
+      },
+      android: {
+        priority: "high",
+      },
+      apns: {
+        headers: {
+          "apns-priority": "10",
+        },
+        payload: {
+          aps: {
+            contentAvailable: true,
+            sound: "default",
+            badge: newBadge,
+          },
+        },
+      },
+    };
+
+    try {
+      await messaging.send(message);
+      successCount++;
+    } catch (err) {
+      console.error(`❌ Error al enviar a ${doc.id}:`, err);
+    }
+  }
+
+  console.log(`✅ Notificaciones Voluntarios enviadas: ${successCount}/${usersSnap.size}`);
+});
+
 
 //////////////////FEED////////////////////////
 

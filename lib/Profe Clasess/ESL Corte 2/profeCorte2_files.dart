@@ -13,6 +13,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class ProfeCorte2files extends StatefulWidget {
   const ProfeCorte2files({super.key});
@@ -180,7 +181,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Mis clases',
+              ez.tr('Mis clases'),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,
@@ -364,7 +365,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                       padding:
                                           EdgeInsets.symmetric(horizontal: 6),
                                       child: Text(
-                                        'Archivo seleccionado',
+                                        'Archivo seleccionado'.tr(),
                                         style: TextStyle(
                                             fontFamily: 'Arial',
                                             fontSize: size.height * 0.02,
@@ -467,7 +468,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: Center(
                                         child: Text(
-                                          'Sin archivos',
+                                          'Sin archivos'.tr(),
                                           style: TextStyle(
                                             fontSize: size.height * 0.018,
                                             color: Theme.of(context)
@@ -530,7 +531,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                                               context) {
                                                             return AlertDialog(
                                                               title: Text(
-                                                                'Eliminar archivo',
+                                                                'Eliminar archivo'.tr(),
                                                                 style: TextStyle(
                                                                     fontFamily:
                                                                         'Arial',
@@ -540,7 +541,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                                                         .secondary),
                                                               ),
                                                               content: Text(
-                                                                'Estás seguro que quieres borrar este archivo?',
+                                                                'Estás seguro que quieres borrar este archivo?'.tr(),
                                                                 style: TextStyle(
                                                                     fontFamily:
                                                                         'Arial',
@@ -572,7 +573,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                                                         SnackBar(
                                                                           content:
                                                                               Text(
-                                                                            'Archivo borrado, refresque la lista de archivos',
+                                                                            'Archivo borrado, refresque la lista de archivos'.tr(),
                                                                             style: TextStyle(
                                                                                 fontFamily: 'Arial',
                                                                                 color: Colors.white,
@@ -589,7 +590,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                      'Aceptar',
+                                                                      'Aceptar'.tr(),
                                                                       style: TextStyle(
                                                                           fontFamily:
                                                                               'Arial',
@@ -605,7 +606,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar',
+                                                                        'Cancelar'.tr(),
                                                                         style: TextStyle(
                                                                             fontFamily:
                                                                                 'Arial',
@@ -617,7 +618,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                                                     },
                                                     backgroundColor: Colors.red,
                                                     icon: Icons.delete,
-                                                    label: 'borrar',
+                                                    label: 'borrar'.tr(),
                                                   )
                                                 ]),
                                             child: Container(

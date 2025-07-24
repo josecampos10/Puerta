@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +12,11 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:lapuerta2/main.dart';
 
 final gridItems = [
-  'Todos',
-  'Estudiantes',
-  'Profesores',
-  'Staff',
-  'Voluntarios'
+  'Todos'.tr(),
+  'Estudiantes'.tr(),
+  'Profesores'.tr(),
+  'Staff'.tr(),
+  'Voluntarios'.tr()
 ];
 
 class AdminUsuarios extends StatefulWidget {
@@ -206,7 +207,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                 width: size.width * 0.0,
                                               ),
                                               Text(
-                                                gridItems[position],
+                                                gridItems[position].tr(),
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                   fontSize: size.height * 0.017,
@@ -344,7 +345,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar',
+                                                                        'Cancelar'.tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -563,7 +564,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar',
+                                                                        'Cancelar'.tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -782,7 +783,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar',
+                                                                        'Cancelar'.tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -1001,7 +1002,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar',
+                                                                        'Cancelar'.tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -1265,7 +1266,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                   checkIfUserIsAdmin();
                                                                 },
                                                                 child: Text(
-                                                                    'Cancelar',
+                                                                    'Cancelar'.tr(),
                                                                     style: TextStyle(
                                                                         color: Theme.of(context)
                                                                             .colorScheme

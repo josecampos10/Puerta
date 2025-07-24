@@ -1,5 +1,10 @@
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class AdminPanel extends StatefulWidget {
@@ -11,8 +16,12 @@ class AdminPanel extends StatefulWidget {
 class _AdminPanelState extends State<AdminPanel> {
   final currentUser = FirebaseAuth.instance.currentUser!;
 
+  Uint8List? pickedImage;
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> imagenes;
+
 Future<void> checkUserRoles() async {
   User? user = FirebaseAuth.instance.currentUser;
+  final currentUser = FirebaseAuth.instance.currentUser!;
 
   if (user != null) {
     // ✅ Refrescar el token antes de usarlo
@@ -41,6 +50,11 @@ Future<void> checkUserRoles() async {
 void initState() {
   super.initState();
   checkUserRoles(); // ✅ ya no necesitas usar setState aquí
+  imagenes = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.email) // 👈 Your document id change accordingly
+        .snapshots();
+  getProfilePicture();
 }
 
   @override
@@ -50,34 +64,105 @@ void initState() {
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       appBar: AppBar(
         bottomOpacity: 0.0,
-        toolbarHeight: size.height * 0.09,
-        leadingWidth: size.width * 0.17,
-        leading: Container(
-          padding: EdgeInsets.all(size.width * 0.015),
-          width: size.width * 0.2,
-          child: CircleAvatar(
-            backgroundColor: const Color.fromARGB(0, 240, 195, 195),
-            child: Image.asset(
-              'assets/img/logo.png',
-              fit: BoxFit.scaleDown,
-              scale: size.height * 0.004,
-              color: Colors.white,
-            ),
-          ),
-        ),
+        toolbarHeight: size.height * 0.12,
+        leadingWidth: size.width * 0.0,
+        leading: Text(''),
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.03),
-            child: Text(
-              'Panel de Administrador', style: TextStyle(fontFamily: 'Arial', fontSize: size.height*0.015),
+            child: Container(
+              child: Column(
+                children: [
+                  
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: StreamBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: imagenes,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return const Text('Something went wrong');
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Column(children: [
+                                SpinKitFadingCircle(
+                                  color: Color.fromRGBO(255, 255, 255, 1),
+                                  size: size.width * 0.055,
+                                ),
+                              ]);
+                            }
+                            Map<String, dynamic> data =
+                                snapshot.data!.data() as Map<String, dynamic>;
+                            return (data['name']) != null
+                                ? Text(
+                                    data['name'],
+                                    style: TextStyle(
+                                        fontSize: size.height * 0.023,
+                                        fontFamily: 'Arial',
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255)),
+                                  )
+                                : Text(''); // 👈 your valid data here
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             )),
-        centerTitle: true,
-        titleTextStyle: TextStyle(
-            fontFamily: '',
-            fontWeight: FontWeight.bold,
-            fontSize: size.height * 0.023,
-            color: const Color.fromARGB(255, 255, 255, 255)),
+        centerTitle: false,
+        //titleTextStyle: ,
         backgroundColor: Theme.of(context).colorScheme.tertiary,
-        actions: [],
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/img/puntos.png'),
+                fit: BoxFit.cover,
+                colorFilter: (Theme.of(context).colorScheme.tertiary !=
+                        Color.fromRGBO(4, 99, 128, 1))
+                    ? ColorFilter.mode(
+                        const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
+                    : ColorFilter.mode(
+                        const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
+                alignment: Alignment.topCenter,
+                scale: 27.0),
+          ),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: size.height * 0.095,
+                width: size.height * 0.095,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    border: Border.all(
+                      color: Color.fromRGBO(255, 255, 255, 0.174),
+                      width: size.height * 0.003,
+                    ),
+                    shape: BoxShape.circle,
+                    image: pickedImage != null
+                        ? DecorationImage(
+                            fit: BoxFit.cover,
+                            image: Image.memory(
+                              pickedImage!,
+                              key: UniqueKey(),
+                            ).image)
+                        : null),
+              ),
+              SizedBox(
+                width: size.width * 0.03,
+              )
+            ],
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -517,4 +602,18 @@ void initState() {
       ),
     );
   }
+
+  Future<void> getProfilePicture() async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef.child(currentUser!.email.toString());
+
+    try {
+      final imageBytes = await imageRef.getData();
+      if (imageBytes == null) return;
+      setState(() => pickedImage = imageBytes);
+    } catch (e) {
+      print('Profile Picture could not be found');
+    }
+  }
+
 }

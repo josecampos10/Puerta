@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
@@ -68,7 +69,7 @@ class _GuestdonateHomeState extends State<GuestdonateHome> {
                       Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          'Ubicación',
+                          'Ubicación'.tr(),
                           style: TextStyle(
                               fontSize: size.height * 0.027,
                               fontFamily: 'Arial',

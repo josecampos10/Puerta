@@ -9,6 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart' as ez;
 
 class Profeeslclifton extends StatefulWidget {
   const Profeeslclifton({super.key});
@@ -69,7 +70,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
         title: Container(
             padding: EdgeInsets.only(top: size.height * 0.0),
             child: Text(
-              'Mis clases',
+              ez.tr('Mis clases'),
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,
@@ -351,7 +352,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                                                   0, 0, 187, 212)),
                                         ),
                                         //isCollapsed: true,
-                                        hintText: "mensaje...",
+                                        hintText: "mensaje...".tr(),
                                         hintStyle: TextStyle(
                                             color: Colors.grey,
                                             fontFamily: 'Arial'),
@@ -373,9 +374,9 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                                                           ConnectionState.done) {
                                                         return AlertDialog(
                                                           title: Text(
-                                                              'Publicar mensaje'),
+                                                              'Publicar mensaje'.tr(),style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                                                           content: Text(
-                                                              'Estás seguro que quieres publicar este mensaje?'),
+                                                              'Estás seguro que quieres publicar este mensaje?'.tr(), style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                                                           actions: [
                                                             TextButton(
                                     onPressed: () async {
@@ -409,7 +410,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                                       controller.clear();
                                     },
                                     child: Text(
-                                      'Aceptar',
+                                      'Aceptar'.tr(),
                                       style: TextStyle(
                                         color: Theme.of(context).colorScheme.secondary,
                                       ),
@@ -424,7 +425,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                                                                       .pop();
                                                                 },
                                                                 child: Text(
-                                                                  'Cancelar',
+                                                                  'Cancelar'.tr(),
                                                                   style: TextStyle(
                                                                       color: Theme.of(
                                                                               context)
@@ -492,7 +493,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                           width: size.width * 0.01,
                         ),
                         Text(
-                          'Archivos',
+                          'Archivos'.tr(),
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.018,
@@ -529,7 +530,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                           width: size.width * 0.01,
                         ),
                         Text(
-                          'Estudiantes',
+                          'Estudiantes'.tr(),
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: size.height * 0.018,
@@ -584,7 +585,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                                             top: size.height * 0.05),
                                         child: Center(
                                           child: Text(
-                                            'Aún no hay publicaciones',
+                                            'Aún no hay publicaciones'.tr(),
                                             style: TextStyle(
                                               fontSize: size.height * 0.018,
                                               color: Theme.of(context)
@@ -769,7 +770,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                                                                             },
                                                                             child:
                                                                                 Text(
-                                                                              'Aceptar',
+                                                                              'Aceptar'.tr(),
                                                                               style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontFamily: 'Arial'),
                                                                             )),
                                                                         TextButton(
@@ -778,7 +779,7 @@ class _ProfeeslcliftonState extends State<Profeeslclifton> {
                                                                               Navigator.of(context).pop();
                                                                             },
                                                                             child:
-                                                                                Text('Cancelar', style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontFamily: 'Arial')))
+                                                                                Text('Cancelar'.tr(), style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontFamily: 'Arial')))
                                                                       ],
                                                                     );
                                                                   });

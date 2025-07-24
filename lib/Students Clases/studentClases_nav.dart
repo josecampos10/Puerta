@@ -43,6 +43,9 @@ import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED.dart';
 
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/Voluntarios/profeVoluntarios.dart';
+import 'package:lapuerta2/Profe%20Clasess/Voluntarios/profeVoluntarios_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/Voluntarios/profeVoluntarios_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/feed/feedlapuerta.dart';
 import 'package:lapuerta2/Students%20Clases/Corte%202/studentCorte2.dart';
 import 'package:lapuerta2/Students%20Clases/Corte%202/studentCorte2_files.dart';
@@ -64,6 +67,8 @@ import 'package:lapuerta2/Students%20Clases/ESL%20pm/studentESLpm_files.dart';
 import 'package:lapuerta2/Students%20Clases/GED%20am/studentGEDam.dart';
 import 'package:lapuerta2/Students%20Clases/GED%20am/studentGEDam_files.dart';
 import 'package:lapuerta2/Students%20Clases/GED%20pm/studentGEDpm_files.dart';
+import 'package:lapuerta2/Students%20Clases/Voluntarios/studentVoluntarios.dart';
+import 'package:lapuerta2/Students%20Clases/Voluntarios/studentVoluntarios_files.dart';
 import 'package:lapuerta2/UsermapHome.dart';
 
 import 'package:lapuerta2/Students%20Clases/Ciudadania/studentCiudadania.dart';
@@ -92,6 +97,14 @@ class _StudentclasesNavState extends State<StudentclasesNav>
             settings: settings,
             builder: (BuildContext context) {
               ////////////////////////ESTUDIANTES//////////////////////************** */
+              ///Voluntarios///
+              if (settings.name == '/studentVolunteer') {
+                return Studentvoluntarios();
+              }
+              if (settings.name == '/studentvolunteers_files') {
+                return Studentvoluntariosfiles();
+              }
+              
               ///ESL CLIFTON////
               if (settings.name == '/studentESLclifton') {
                 return Studenteslclifton();
@@ -194,6 +207,18 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               
 
               //***********************************PROFESORES ***************************
+              //GED PM////
+              if (settings.name == '/profeVolunteers') {
+                return Volunteers();
+              }
+              if (settings.name == '/profeVolunteers_files') {
+                return Profevoluntariosfiles();
+              }
+              if (settings.name == '/profeVolunteers_students') {
+                return ProfeVoluntariosStudents();
+              }
+
+
               //GED PM////
               if (settings.name == '/profeGEDpm') {
                 return Profegedpm();

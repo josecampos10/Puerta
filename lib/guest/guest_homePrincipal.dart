@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -77,55 +78,45 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
     }
   }
 
-  Future<void> send(emailAddress) async {
-    final Email email = Email(
-      body: _bodyController.text,
-      subject: _subjectController.text,
-      recipients: ['info@lapuertawaco.com'],
-      //attachmentPaths: attachments,
-      isHTML: false,
-    );
+  Future<void> send() async {
+  final Email email = Email(
+    body: _bodyController.text,
+    subject: _subjectController.text,
+    recipients: ['info@lapuertawaco.com'],
+    isHTML: false,
+  );
 
-    // ignore: unused_local_variable
-    String platformResponse;
-
-    try {
-      await FlutterEmailSender.send(email);
-      platformResponse = 'success';
-    } catch (error) {
-      print(error);
-      platformResponse = error.toString();
-    }
-
-    if (!mounted) return;
-
-    /*ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(platformResponse),
-      ),
-    );*/
+  try {
+    await FlutterEmailSender.send(email);
+    print('Correo enviado con éxito');
+  } catch (error) {
+    print('Error al enviar correo: $error');
   }
+
+  if (!mounted) return;
+}
+
 
   Future<void> signOut() async {
-  try {
-    // Eliminar token de Firestore si el usuario está logueado
-    final user = _firebaseAuth.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.email)
-          .update({'token': FieldValue.delete()});
+    try {
+      // Eliminar token de Firestore si el usuario está logueado
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.email)
+            .update({'token': FieldValue.delete()});
 
-      // También borra el token local
-      await FirebaseMessaging.instance.deleteToken();
+        // También borra el token local
+        await FirebaseMessaging.instance.deleteToken();
+      }
+
+      // Finalmente, cerrar sesión
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      print('Error signing out: $e');
     }
-
-    // Finalmente, cerrar sesión
-    await _firebaseAuth.signOut();
-  } catch (e) {
-    print('Error signing out: $e');
   }
-}
 
   @override
   void initState() {
@@ -150,215 +141,210 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-            shape: CircleBorder(),
-            child: Icon(
-              Icons.email_rounded,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              showModalBottomSheet(
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  builder: (context) => Padding(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: SizedBox(
-                        width: size.width,
-                        child: Column(
-                          //crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              height: size.height * 0.005,
-                            ),
-                            Center(
-                              child: Container(
-                                width: size.width * 0.3,
-                                height: size.height * 0.01,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+        shape: CircleBorder(),
+        child: Icon(
+          Icons.email_rounded,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          showModalBottomSheet(
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              builder: (context) => Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: SizedBox(
+                    width: size.width,
+                    child: Column(
+                      //crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: size.height * 0.005,
+                        ),
+                        Center(
+                          child: Container(
+                            width: size.width * 0.3,
+                            height: size.height * 0.01,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color:
+                                    const Color.fromARGB(255, 195, 195, 195)),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.014,
+                        ),
+                        Center(
+                          child: Text(
+                            'Contáctanos'.tr(),
+                            style: TextStyle(
+                                fontSize: size.height * 0.035,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Arial'),
+                          ),
+                        ),
+                        Center(
+                          child: Container(
+                            //color: Theme.of(context).colorScheme.primary,
+                            width: size.width * 0.9,
+                            height: size.height * 0.06,
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 0),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    top: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1),
+                                    bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1),
+                                    left: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1),
+                                    right: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1)),
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: TextField(
+                              style: TextStyle(
+                                fontSize: size.height * 0.022,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              cursorHeight: size.height * 0.023,
+                              controller: _subjectController,
+                              decoration: InputDecoration(
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                border: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                labelText: 'Asunto'.tr(),
+                                prefixIcon: Icon(Icons.short_text_rounded,
                                     color: const Color.fromARGB(
-                                        255, 195, 195, 195)),
+                                        255, 155, 155, 155)),
+                                labelStyle: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    fontFamily: 'Arial',
+                                    color: const Color.fromARGB(
+                                        255, 155, 155, 155)),
                               ),
                             ),
-                            SizedBox(
-                              height: size.height * 0.014,
-                            ),
-                            Center(
-                              child: Text(
-                                'Contáctanos',
-                                style: TextStyle(
-                                    fontSize: size.height * 0.035,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Arial'),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        Center(
+                          child: Container(
+                            width: size.width * 0.9,
+                            height: size.height * 0.2,
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 0),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    top: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1),
+                                    bottom: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1),
+                                    left: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1),
+                                    right: BorderSide(
+                                        color: const Color.fromARGB(
+                                            255, 110, 110, 110),
+                                        width: 1)),
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: TextField(
+                              autofocus: false,
+                              minLines: 1,
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
+                              style: TextStyle(
+                                fontSize: size.height * 0.022,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              cursorHeight: size.height * 0.023,
+                              controller: _bodyController,
+                              decoration: InputDecoration(
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                border: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent)),
+                                labelText: 'Mensaje'.tr(),
+                                prefixIcon: Icon(Icons.message,
+                                    color: const Color.fromARGB(
+                                        255, 155, 155, 155)),
+                                labelStyle: TextStyle(
+                                    fontSize: size.height * 0.02,
+                                    fontFamily: 'Arial',
+                                    color: const Color.fromARGB(
+                                        255, 155, 155, 155)),
                               ),
                             ),
-                            Center(
-                              child: Container(
-                                //color: Theme.of(context).colorScheme.primary,
-                                width: size.width * 0.9,
-                                height: size.height * 0.06,
-                                margin: EdgeInsets.symmetric(
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        SizedBox(
+                          width: size.width * 0.9,
+                          height: size.height * 0.07,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                send();
+                                Navigator.pop(context);
+                                _bodyController.clear();
+                                _subjectController.clear();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 96, 146, 255),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10))),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 0, vertical: 0),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        top: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1),
-                                        bottom: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1),
-                                        left: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1),
-                                        right: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1)),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: TextField(
+                                child: Text(
+                                  'Enviar'.tr(),
                                   style: TextStyle(
-                                    fontSize: size.height * 0.022,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  ),
-                                  cursorHeight: size.height * 0.023,
-                                  controller: _subjectController,
-                                  decoration: InputDecoration(
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent)),
-                                    border: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent)),
-                                    enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent)),
-                                    labelText: 'Asunto',
-                                    prefixIcon: Icon(Icons.short_text_rounded,
-                                        color: const Color.fromARGB(
-                                            255, 155, 155, 155)),
-                                    labelStyle: TextStyle(
-                                        fontSize: size.height * 0.02,
-                                        fontFamily: 'Arial',
-                                        color: const Color.fromARGB(
-                                            255, 155, 155, 155)),
-                                  ),
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255),
+                                      fontSize: size.height * 0.021,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Arial'),
                                 ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: size.height * 0.01,
-                            ),
-                            Center(
-                              child: Container(
-                                width: size.width * 0.9,
-                                height: size.height * 0.2,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 0, vertical: 0),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        top: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1),
-                                        bottom: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1),
-                                        left: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1),
-                                        right: BorderSide(
-                                            color: const Color.fromARGB(
-                                                255, 110, 110, 110),
-                                            width: 1)),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: TextField(
-                                  autofocus: false,
-                                  minLines: 1,
-                                  maxLines: null,
-                                  keyboardType: TextInputType.multiline,
-                                  textInputAction: TextInputAction.newline,
-                                  style: TextStyle(
-                                    fontSize: size.height * 0.022,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                  ),
-                                  cursorHeight: size.height * 0.023,
-                                  controller: _bodyController,
-                                  decoration: InputDecoration(
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent)),
-                                    border: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent)),
-                                    enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.transparent)),
-                                    labelText: 'Mensaje',
-                                    prefixIcon: Icon(Icons.message,
-                                        color: const Color.fromARGB(
-                                            255, 155, 155, 155)),
-                                    labelStyle: TextStyle(
-                                        fontSize: size.height * 0.02,
-                                        fontFamily: 'Arial',
-                                        color: const Color.fromARGB(
-                                            255, 155, 155, 155)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: size.height * 0.01,
-                            ),
-                            SizedBox(
-                              width: size.width * 0.9,
-                              height: size.height * 0.07,
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    send(currentUser!.email);
-                                    Navigator.pop(context);
-                                    _bodyController.clear();
-                                    _subjectController.clear();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 96, 146, 255),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 0, vertical: 0),
-                                    child: Text(
-                                      'Enviar',
-                                      style: TextStyle(
-                                          color: const Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          fontSize: size.height * 0.021,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Arial'),
-                                    ),
-                                  )),
-                            ),
-                            SizedBox(
-                              height: size.height * 0.02,
-                            ),
-                            /*Row(
+                              )),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.02,
+                        ),
+                        /*Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
@@ -370,64 +356,63 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                 ),
                               ],
                             ),*/
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.call,
-                                  size: size.height * 0.02,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                                SizedBox(
-                                  width: size.width * 0.008,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    launchPhoneDialer('2547543503');
-                                  },
-                                  child: Text('(254) 754-3503',
-                                      style: TextStyle(
-                                          color: const Color.fromARGB(
-                                              239, 38, 130, 236),
-                                          fontSize: size.height * 0.017,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Arial')),
-                                )
-                              ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.call,
+                              size: size.height * 0.02,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                             SizedBox(
-                              height: size.height * 0.01,
+                              width: size.width * 0.008,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                    onTap: () => _launchUrlfacebook(),
-                                    child: Icon(FontAwesomeIcons.facebook)),
-                                SizedBox(
-                                  width: size.width * 0.02,
-                                ),
-                                GestureDetector(
-                                    onTap: () => _launchUrlinstagram(),
-                                    child: Icon(FontAwesomeIcons.instagram)),
-                                SizedBox(
-                                  width: size.width * 0.02,
-                                ),
-                                GestureDetector(
-                                    onTap: () => _launchUrlx(),
-                                    child: Icon(FontAwesomeIcons.twitter))
-                              ],
-                            ),
-                            SizedBox(
-                              height: size.height * 0.02,
+                            InkWell(
+                              onTap: () {
+                                launchPhoneDialer('2547543503');
+                              },
+                              child: Text('(254) 754-3503',
+                                  style: TextStyle(
+                                      color: const Color.fromARGB(
+                                          239, 38, 130, 236),
+                                      fontSize: size.height * 0.017,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Arial')),
                             )
                           ],
                         ),
-                      )),
-                  context: context);
-            },
-          ),
+                        SizedBox(
+                          height: size.height * 0.01,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                                onTap: () => _launchUrlfacebook(),
+                                child: Icon(FontAwesomeIcons.facebook)),
+                            SizedBox(
+                              width: size.width * 0.02,
+                            ),
+                            GestureDetector(
+                                onTap: () => _launchUrlinstagram(),
+                                child: Icon(FontAwesomeIcons.instagram)),
+                            SizedBox(
+                              width: size.width * 0.02,
+                            ),
+                            GestureDetector(
+                                onTap: () => _launchUrlx(),
+                                child: Icon(FontAwesomeIcons.twitter))
+                          ],
+                        ),
+                        SizedBox(
+                          height: size.height * 0.02,
+                        )
+                      ],
+                    ),
+                  )),
+              context: context);
+        },
+      ),
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       appBar: AppBar(
         bottomOpacity: 0.0,
@@ -443,11 +428,12 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        'Hola,',
+                        'Hola'.tr(),
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                            color: Colors.white, fontSize: size.height * 0.018),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: size.height * 0.018),
                       ),
                     ],
                   ),
@@ -457,7 +443,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                       Align(
                         alignment: Alignment.topLeft,
                         child: Text(
-                          'Bienvenidos',
+                          'Bienvenidos'.tr(),
                           style: TextStyle(
                               fontSize: size.height * 0.027,
                               fontFamily: 'Arial',
@@ -478,23 +464,25 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
             image: DecorationImage(
               image: AssetImage('assets/img/puntos.png'),
               fit: BoxFit.fill,
-                colorFilter: (Theme.of(context).colorScheme.tertiary !=
-                        Color.fromRGBO(4, 99, 128, 1))
-                    ? ColorFilter.mode(
-                        const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
-                    : ColorFilter.mode(
-                        const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
+              colorFilter: (Theme.of(context).colorScheme.tertiary !=
+                      Color.fromRGBO(4, 99, 128, 1))
+                  ? ColorFilter.mode(
+                      const Color.fromARGB(255, 68, 68, 68), BlendMode.color)
+                  : ColorFilter.mode(
+                      const Color.fromARGB(0, 255, 29, 29), BlendMode.color),
             ),
           ),
         ),
         actions: [
           IconButton(
             color: Colors.white,
-            icon: Icon(Icons.logout, size: size.height*0.03,),
+            icon: Icon(
+              Icons.logout,
+              size: size.height * 0.03,
+            ),
             onPressed: () {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => OnboardingPage()));
-              
             },
           ),
         ],
@@ -592,14 +580,13 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                                       width: size.width * 0.0,
                                                     ),
                                                     Text(
-                                                      gridItems[position],
+                                                      gridItems[position].tr(),
                                                       textAlign:
                                                           TextAlign.start,
                                                       style: TextStyle(
                                                         fontSize:
                                                             size.height * 0.017,
-                                                        fontFamily:
-                                                            'Arial',
+                                                        fontFamily: 'Arial',
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color: (selectedIndex ==
@@ -700,7 +687,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.height*0.002,
+                                    aspectRatio: size.height * 0.002,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -720,9 +707,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                         builder: (_, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Column(children: [
-                              
-                            ]);
+                            return Column(children: []);
                           }
                           if (snapshot.hasData &&
                               snapshot.data!.docs.length > 1 &&
@@ -760,7 +745,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.height*0.002,
+                                    aspectRatio: size.height * 0.002,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -780,9 +765,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                         builder: (_, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Column(children: [
-                              
-                            ]);
+                            return Column(children: []);
                           }
                           if (snapshot.hasData &&
                               snapshot.data!.docs.length > 1 &&
@@ -820,7 +803,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.height*0.002,
+                                    aspectRatio: size.height * 0.002,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -839,69 +822,70 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                   ),
                 ),
               ),
-              
-
               Row(
                 children: [
+                  SizedBox(width: size.width*0.05),
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      '   Clases disponibles',
+                      'Clases disponibles'.tr(),
                       textAlign: TextAlign.start,
                       style: TextStyle(
-                        fontFamily: 'Arial',
+                          fontFamily: 'Arial',
                           fontSize: size.height * 0.022,
                           fontWeight: FontWeight.bold,
                           color: const Color.fromARGB(255, 148, 148, 148)),
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text(
-                                'Registro',
-                                style: TextStyle(
-                                    fontFamily: 'Arial',
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                              ),
-                              content: Text(
-                                'Para registrarse a una clase por favor acérquese a las oficinas o contáctenos vía teléfono',
-                                style: TextStyle(
-                                    fontFamily: 'Arial',
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                              ),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      'Cerrar',
-                                      style: TextStyle(
-                                          fontFamily: 'Arial',
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary),
-                                    )),
-                              ],
-                            );
-                          });
-                    },
-                    icon: Icon(
-                      Icons.info,
-                      color: const Color.fromARGB(137, 255, 255, 255),
-                      size: size.height * 0.026,
-                    ))
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  'Registro'.tr(),
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
+                                content: Text(
+                                  'Para registrarse a una clase por favor acérquese a las oficinas o contáctenos vía teléfono'.tr(),
+                                  style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary),
+                                ),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        'Cerrar'.tr(),
+                                        style: TextStyle(
+                                            fontFamily: 'Arial',
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                      )),
+                                ],
+                              );
+                            });
+                      },
+                      icon: Icon(
+                        Icons.info,
+                        color: Theme.of(context).colorScheme.tertiary,
+                        size: size.height * 0.026,
+                      ))
                 ],
               ),
-              SizedBox(height: size.height*0.006,),
+              SizedBox(
+                height: size.height * 0.006,
+              ),
               SingleChildScrollView(
                 padding: EdgeInsets.all(size.width * 0.001),
                 child: Column(
@@ -932,9 +916,9 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                 scrollDirection: Axis.vertical,
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisSpacing: size.width*0.02,
+                                        crossAxisSpacing: size.width * 0.02,
                                         crossAxisCount: 2,
-                                        childAspectRatio: 1.3),
+                                        childAspectRatio: 1.4),
                                 shrinkWrap: true,
                                 primary: false,
                                 itemCount: snap.length,
@@ -942,56 +926,69 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                 itemBuilder: (context, index) {
                                   final DocumentSnapshot documentSnapshot =
                                       snapshot.data!.docs[index];
-                                  if (snap[index]['Name'] == 'ESL Chick-fil-A') {
-  return const SizedBox.shrink(); // Oculta este item
-}
+                                  if (snap[index]['Name'] ==
+                                      'ESL Chick-fil-A') {
+                                    return const SizedBox
+                                        .shrink(); // Oculta este item
+                                  }
 
-return GestureDetector(
-  onTap: () {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                DetallesClassHome(documentSnapshot: documentSnapshot)));
-  },
-  child: Card(
-    borderOnForeground: false,
-    shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(size.width * 0.04)),
-    elevation: size.height * 0.5,
-    shadowColor: Colors.black,
-    color: const Color.fromRGBO(4, 99, 128, 1),
-    child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size.width * 0.04),
-        image: const DecorationImage(
-          image: AssetImage('assets/img/back.png'),
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.low,
-          opacity: 0.4,
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(size.width * 0.01),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              snap[index]['Name'],
-              style: TextStyle(
-                fontSize: size.height * 0.025,
-                fontFamily: 'Arial',
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-);
-
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetallesClassHome(
+                                                      documentSnapshot:
+                                                          documentSnapshot)));
+                                    },
+                                    child: Card(
+                                      borderOnForeground: false,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              size.width * 0.04)),
+                                      elevation: size.height * 0.5,
+                                      shadowColor: Colors.black,
+                                      color:
+                                          const Color.fromRGBO(4, 99, 128, 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              size.width * 0.04),
+                                          image: const DecorationImage(
+                                            image: AssetImage(
+                                                'assets/img/back.png'),
+                                            fit: BoxFit.cover,
+                                            filterQuality: FilterQuality.low,
+                                            opacity: 0.4,
+                                          ),
+                                        ),
+                                        child: Padding(
+                                          padding:
+                                              EdgeInsets.all(size.width * 0.01),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Center(
+                                                child: Text(
+                                                  snap[index]['Name'],
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        size.height * 0.025,
+                                                    fontFamily: 'Arial',
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                             );
@@ -1005,198 +1002,6 @@ return GestureDetector(
               SizedBox(
                 height: size.height * 0.01,
               ),
-              /*Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  '   Publicaciones',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontSize: size.height * 0.023,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 0, 0, 0)),
-                ),
-              ),
-              SizedBox(
-                height: size.height * 0.01,
-              ),
-              SingleChildScrollView(
-                reverse: false,
-                padding: EdgeInsets.all(size.width * 0.001),
-                child: Column(
-                  children: [
-                    StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('posts')
-                            .orderBy('Time', descending: false)
-                            .snapshots(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Column(children: [
-                              SizedBox(
-                                height: size.height * 0.02,
-                              ),
-                              SpinKitFadingCircle(
-                                color: Color.fromRGBO(4, 99, 128, 1),
-                                size: size.width * 0.1,
-                              ),
-                            ]);
-                          }
-                          if (snapshot.hasData) {
-                            final snap = snapshot.data!.docs;
-                            return RefreshIndicator(
-                              color: Color.fromRGBO(3, 69, 88, 1),
-                              backgroundColor: Colors.white,
-                              displacement: 1,
-                              strokeWidth: 3,
-                              onRefresh: () async {},
-                              child: SizedBox(
-                                height: size.height * 0.48,
-                                width: double.infinity,
-                                child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: MasonryGridView.builder(
-                                    padding: EdgeInsets.zero,
-                                    gridDelegate:
-                                        SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 1),
-                                    mainAxisSpacing: 1,
-                                    crossAxisSpacing: 1,
-                                    physics: ScrollPhysics(),
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    primary: true,
-                                    itemCount: snap.length,
-                                    cacheExtent: 1000.0,
-                                    itemBuilder: (context, index) {
-                                      // final DocumentSnapshot documentSnapshot =
-                                      //  snapshot.data!.docs[index];
-                                      return GestureDetector(
-                                        onTap: () {},
-                                        child: Card(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      size.width * 0.04)),
-                                          elevation: size.height * 0.01,
-                                          shadowColor: Colors.black,
-                                          color:
-                                              Color.fromRGBO(255, 255, 255, 1),
-                                          child: Container(
-                                            //constraints: const BoxConstraints(minHeight: ),
-                                            //width: 180,
-                                            //height: 20,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(
-                                                  size.width * 0.03),
-                                              child: Column(
-                                                children: [
-                                                  Row(children: [
-                                                    CircleAvatar(
-                                                      minRadius:
-                                                          size.height * 0.015,
-                                                      maxRadius:
-                                                          size.height * 0.015,
-                                                      backgroundColor:
-                                                          const Color.fromARGB(
-                                                              255, 94, 64, 112),
-                                                    ),
-                                                    SizedBox(
-                                                      width: size.width * 0.02,
-                                                    ),
-                                                    Align(
-                                                      alignment:
-                                                          Alignment.topLeft,
-                                                      child: Text(
-                                                        snap[index]['User'],
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              size.height *
-                                                                  0.019,
-                                                          fontFamily:
-                                                              'JosefinSans',
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          color: const Color
-                                                                  .fromARGB(
-                                                                  255, 0, 0, 0)
-                                                              .withOpacity(0.9),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: size.width * 0.02,
-                                                    ),
-                                                    Text(
-                                                      snap[index]['Date'],
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            size.height * 0.014,
-                                                        fontFamily:
-                                                            'JosefinSans',
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color: const Color
-                                                                .fromARGB(
-                                                                255, 0, 0, 0)
-                                                            .withOpacity(0.6),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: size.width * 0.02,
-                                                    ),
-                                                    Text(
-                                                      snap[index]['Time'],
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            size.height * 0.014,
-                                                        fontFamily:
-                                                            'JosefinSans',
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color: const Color
-                                                                .fromARGB(
-                                                                255, 0, 0, 0)
-                                                            .withOpacity(0.6),
-                                                      ),
-                                                    ),
-                                                  ]),
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.topLeft,
-                                                    child: Text(
-                                                      snap[index]['Comment'],
-                                                      style: TextStyle(
-                                                        fontSize: size.height *
-                                                            0.0162,
-                                                        fontFamily: 'Impact',
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Color.fromRGBO(
-                                                                0, 0, 0, 1)
-                                                            .withOpacity(0.9),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
-                        })
-                  ],
-                ),
-              ),*/
               SizedBox(
                 height: size.height * 0.01,
               ),
