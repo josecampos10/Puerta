@@ -76,7 +76,7 @@ class _StudentvoluntariosfilesState extends State<Studentvoluntariosfiles> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Archivo subido, refresque la lista de archivos',
+          'Archivo subido, refresque la lista de archivos'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,
@@ -469,7 +469,7 @@ class _StudentvoluntariosfilesState extends State<Studentvoluntariosfiles> {
         .showSnackBar(
           SnackBar(
         content: Text(
-          'Descargado',
+          'Descargado'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,
@@ -492,7 +492,7 @@ class _StudentvoluntariosfilesState extends State<Studentvoluntariosfiles> {
           .showSnackBar(
              SnackBar(
         content: Text(
-          'Descargado',
+          'Descargado'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,

@@ -6,6 +6,8 @@ import 'package:lapuerta2/Profe%20Clasess/Cosmetologia/profeCosmetologia_files.d
 import 'package:lapuerta2/Profe%20Clasess/Cosmetologia/profeCosmetologia_students.dart';
 
 import 'package:lapuerta2/Profe%20Clasess/Costura%20_am/profeCostura_students_am.dart';
+import 'package:lapuerta2/Profe%20Clasess/Donantes_feed/Donantesfeed.dart';
+import 'package:lapuerta2/Profe%20Clasess/Donantes_feed/donors_list.dart';
 import 'package:lapuerta2/Profe%20Clasess/ESL%201%20%20pm/profeESLpm_students.dart';
 
 import 'package:lapuerta2/Profe%20Clasess/Ciudadania/profeCiudadania_files.dart';
@@ -43,6 +45,12 @@ import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED.dart';
 
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDam2/profeGEDam2.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDam2/profeGEDam2_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDam2/profeGEDam2_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDpm2/profeGED2.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDpm2/profeGED2_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDpm2/profeGED2_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/Voluntarios/profeVoluntarios.dart';
 import 'package:lapuerta2/Profe%20Clasess/Voluntarios/profeVoluntarios_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/Voluntarios/profeVoluntarios_students.dart';
@@ -67,6 +75,10 @@ import 'package:lapuerta2/Students%20Clases/ESL%20pm/studentESLpm_files.dart';
 import 'package:lapuerta2/Students%20Clases/GED%20am/studentGEDam.dart';
 import 'package:lapuerta2/Students%20Clases/GED%20am/studentGEDam_files.dart';
 import 'package:lapuerta2/Students%20Clases/GED%20pm/studentGEDpm_files.dart';
+import 'package:lapuerta2/Students%20Clases/GEDam2/studentGEDam2.dart';
+import 'package:lapuerta2/Students%20Clases/GEDam2/studentGEDam2_files.dart';
+import 'package:lapuerta2/Students%20Clases/GEDpm2/studentGED2.dart';
+import 'package:lapuerta2/Students%20Clases/GEDpm2/studentGEDpm2_files.dart';
 import 'package:lapuerta2/Students%20Clases/Voluntarios/studentVoluntarios.dart';
 import 'package:lapuerta2/Students%20Clases/Voluntarios/studentVoluntarios_files.dart';
 import 'package:lapuerta2/UsermapHome.dart';
@@ -154,12 +166,26 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               if (settings.name == '/studentGEDpm_files') {
                 return Studentgedfilespm();
               }
+              ////// GED PM 2/////////
+              if (settings.name == '/studentGEDpm2') {
+                return Studentgedpm2();
+              }
+              if (settings.name == '/studentGEDpm2_files') {
+                return Studentgedfilespm2();
+              }
               ////// GED AM/////////
               if (settings.name == '/studentGEDam') {
                 return Studentgedam();
               }
               if (settings.name == '/studentGEDam_files') {
                 return Studentgedfilesam();
+              }
+              ////// GED AM 2/////////
+              if (settings.name == '/studentGEDam2') {
+                return Studentgedam2();
+              }
+              if (settings.name == '/studentGEDam2_files') {
+                return Studentgedfilesam2();
               }
               ///////COSTURA AM ////////////
               if (settings.name == '/studentCosturaAM') {
@@ -207,7 +233,14 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               
 
               //***********************************PROFESORES ***************************
-              //GED PM////
+              ///////////DONANTE///////
+              if (settings.name == '/profeDonante') {
+                return Donantesfeed();
+              }
+              if (settings.name == '/profeDonanteStudents') {
+                return Donorslist();
+              }
+              ///////VOLUNTEERS////
               if (settings.name == '/profeVolunteers') {
                 return Volunteers();
               }
@@ -229,6 +262,16 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               if (settings.name == '/profeGEDpm_students') {
                 return Profegedstudentspm();
               }
+              //GED PM 2////
+              if (settings.name == '/profeGEDpm2') {
+                return Profegedpm2();
+              }
+              if (settings.name == '/profeGEDpm2_files') {
+                return Profegedfilespm2();
+              }
+              if (settings.name == '/profeGEDpm2_students') {
+                return Profegedstudentspm2();
+              }
               //GED AM///
               if (settings.name == '/profeGEDam') {
                 return Profegedam();
@@ -238,6 +281,16 @@ class _StudentclasesNavState extends State<StudentclasesNav>
               }
               if (settings.name == '/profeGEDam_students') {
                 return Profegedstudentsam();
+              }
+              //GED AM 2///
+              if (settings.name == '/profeGEDam2') {
+                return Profegedam2();
+              }
+              if (settings.name == '/profeGEDam2_files') {
+                return Profegedfilesam2();
+              }
+              if (settings.name == '/profeGEDam2_students') {
+                return Profegedstudentsam2();
               }
               //ESL PM 1 //
               if (settings.name == '/profeESLpm') {

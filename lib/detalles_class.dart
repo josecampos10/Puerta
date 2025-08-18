@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -75,7 +76,7 @@ class DetallesClassHome extends StatelessWidget {
                 Align(
                   alignment: Alignment.center,
                   child: Text(
-                    documentSnapshot['Name'],
+                    documentSnapshot['Name'].toString().tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       
@@ -99,7 +100,7 @@ class DetallesClassHome extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      'Horario',
+                      'Horario'.tr(),
                       style: TextStyle(
                           fontFamily: 'Arial',
                           fontSize: size.width * 0.056,
@@ -160,7 +161,7 @@ class DetallesClassHome extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      'Descripción',
+                      'Descripción'.tr(),
                       style: TextStyle(
                           fontSize: size.width * 0.055,
                           fontWeight: FontWeight.bold,
@@ -184,7 +185,7 @@ class DetallesClassHome extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            documentSnapshot['Descripcion'],
+                            documentSnapshot['Descripcion'].toString().tr(),
                             textAlign: TextAlign.left,
                             style: TextStyle(
                               fontFamily: 'Arial',
@@ -212,7 +213,7 @@ class DetallesClassHome extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.circular(size.width * 0.035))),
                     child: Text(
-                      'Más información',
+                      'Más información'.tr(),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                           fontSize: size.width * 0.045,

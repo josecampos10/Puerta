@@ -22,6 +22,7 @@ class _MainWrapperState extends State<Mainwrapper> {
   User? get currentUser => _firebaseAuth.currentUser;
   int _selectedIndex = 0;
   int _notificationCount = 0; // Count of new notifications
+  String userRole = '';
 
   PageController? _pageController;
 
@@ -39,6 +40,18 @@ class _MainWrapperState extends State<Mainwrapper> {
 }
   
 
+    Future<void> getUserRole() async {
+    final email = FirebaseAuth.instance.currentUser?.email;
+    if (email == null) return;
+
+    final doc = await FirebaseFirestore.instance.collection('users').doc(email).get();
+    if (doc.exists) {
+      setState(() {
+        userRole = doc.data()?['rol'] ?? '';
+      });
+    }
+  }
+  
   @override
   void initState() {
     super.initState();
@@ -49,6 +62,7 @@ class _MainWrapperState extends State<Mainwrapper> {
       imageCache.clearLiveImages();
     });
     _pageController = PageController(initialPage: 1, keepPage: false);
+    getUserRole();
   }
 
   /// Listens for new posts in Firestore and updates the notification count
@@ -159,7 +173,7 @@ class _MainWrapperState extends State<Mainwrapper> {
               BottomNavigationBarItem(
                   //key: _reminderDetailsKey,
                   icon: Icon(
-                    Icons.class_,
+                     userRole == 'Donante' ? Icons.volunteer_activism : Icons.class_,
                   ),
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
                   label: ''),

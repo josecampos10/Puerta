@@ -275,221 +275,170 @@ class _ProfeCosturastudentsState extends State<ProfeCosturastudents> {
                           ]);
                         }
                         if (snapshot.hasData) {
-                          final snap = snapshot.data!.docs;
+  final snap = snapshot.data!.docs;
 
-// 1. Filtrar solo inscritos
-                          final inscritos = snap
-                              .where((d) => d['costuraAM'] == 'inscrito')
-                              .toList();
+  // Filtrar inscritos con rol Profesor o Estudiante
+final filtered = snap.where((d) {
+  final data = d.data() as Map<String, dynamic>;
+  final ciudadania = data['costuraAM']?.toString().trim();
+  final rol = data['rol']?.toString().trim();
+  return ciudadania == 'inscrito' && (rol == 'Profesor' || rol == 'Estudiante');
+}).toList();
 
-// 2. Separar profesores y no-profesores
-                          final profesores = inscritos.where((d) {
-                            final rol =
-                                (d.data() as Map<String, dynamic>)['rol']
-                                    ?.toString()
-                                    .toLowerCase()
-                                    .trim();
-                            return rol == 'profesor';
-                          }).toList();
+// Separar profesores y estudiantes
+final profesores = filtered.where((d) =>
+  (d.data() as Map<String, dynamic>)['rol']?.toString().trim() == 'Profesor'
+).toList();
 
-                          final otros = inscritos.where((d) {
-                            final rol =
-                                (d.data() as Map<String, dynamic>)['rol']
-                                    ?.toString()
-                                    .toLowerCase()
-                                    .trim();
-                            return rol != 'profesor';
-                          }).toList();
+final estudiantes = filtered.where((d) =>
+  (d.data() as Map<String, dynamic>)['rol']?.toString().trim() == 'Estudiante'
+).toList();
 
-// 3. Ordenar ambas listas alfabéticamente por nombre
-                          profesores.sort((a, b) => (a['name'] ?? '')
-                              .toString()
-                              .toLowerCase()
-                              .compareTo(
-                                  (b['name'] ?? '').toString().toLowerCase()));
-                          otros.sort((a, b) => (a['name'] ?? '')
-                              .toString()
-                              .toLowerCase()
-                              .compareTo(
-                                  (b['name'] ?? '').toString().toLowerCase()));
+// Ordenar alfabéticamente por nombre
+int ordenarPorNombre(DocumentSnapshot a, DocumentSnapshot b) {
+  final nombreA = (a['name'] ?? '').toString().toLowerCase();
+  final nombreB = (b['name'] ?? '').toString().toLowerCase();
+  return nombreA.compareTo(nombreB);
+}
 
-// 4. Combinar: profesores primero
-                          final List<DocumentSnapshot> orderedList = [
-                            ...profesores,
-                            ...otros
-                          ];
+profesores.sort(ordenarPorNombre);
+estudiantes.sort(ordenarPorNombre);
 
-                          if (orderedList.isEmpty) {
-                            return RefreshIndicator(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              onRefresh: _refresh,
-                              child: ListView(
-                                physics: AlwaysScrollableScrollPhysics(),
-                                children: [
-                                  SizedBox(height: size.height * 0.15),
-                                  Center(
-                                    child: Text(
-                                      'No hay usuarios inscritos',
-                                      style: TextStyle(
-                                        fontSize: size.height * 0.018,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+// Combinar: profesores primero, luego estudiantes
+final List<DocumentSnapshot> orderedList = [...profesores, ...estudiantes];
+
+
+  if (orderedList.isEmpty) {
+    return RefreshIndicator(
+      color: Theme.of(context).colorScheme.tertiary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      onRefresh: _refresh,
+      child: ListView(
+        physics: AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: size.height * 0.15),
+          Center(
+            child: Text(
+              'No hay usuarios inscritos',
+              style: TextStyle(
+                fontSize: size.height * 0.018,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  return RefreshIndicator(
+    elevation: 0,
+    color: Theme.of(context).colorScheme.tertiary,
+    backgroundColor: Theme.of(context).colorScheme.primary,
+    displacement: 1,
+    strokeWidth: 3,
+    onRefresh: _refresh,
+    child: SizedBox(
+      height: size.height * 0.524,
+      width: double.infinity,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: MasonryGridView.builder(
+          padding: EdgeInsets.zero,
+          gridDelegate:
+              SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
+          mainAxisSpacing: 1,
+          crossAxisSpacing: 1,
+          physics: ScrollPhysics(),
+          shrinkWrap: true,
+          primary: true,
+          itemCount: orderedList.length,
+          cacheExtent: 1000.0,
+          itemBuilder: (context, index) {
+            final doc = orderedList[index];
+            return AnimationConfiguration.staggeredList(
+              position: index,
+              child: ScaleAnimation(
+                duration: Duration(milliseconds: 300),
+                child: FadeInAnimation(
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(size.width * 0.02),
+                    ),
+                    elevation: 0,
+                    color: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            width: 1,
+                            color: const Color.fromARGB(148, 163, 163, 163),
+                          ),
+                        ),
+                      ),
+                      padding: EdgeInsets.all(size.width * 0.03),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.person_3,
+                                  size: size.height * 0.02,
+                                  color: Color.fromRGBO(0, 129, 168, 1)),
+                              SizedBox(width: size.width * 0.02),
+                              Text(
+                                doc['name'] ?? '—',
+                                style: TextStyle(
+                                  fontSize: size.height * 0.019,
+                                  fontFamily: 'Arial',
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .secondary,
+                                ),
                               ),
-                            );
-                          }
-
-                          return RefreshIndicator(
-                            elevation: 0,
-                            color: Theme.of(context).colorScheme.tertiary,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            displacement: 1,
-                            strokeWidth: 3,
-                            onRefresh: _refresh,
-                            child: SizedBox(
-                              height: size.height * 0.524,
-                              width: double.infinity,
-                              child: Align(
-                                  alignment: Alignment.topCenter,
-                                  child: MasonryGridView.builder(
-                                    padding: EdgeInsets.zero,
-                                    gridDelegate:
-                                        SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 1),
-                                    mainAxisSpacing: 1,
-                                    crossAxisSpacing: 1,
-                                    physics: ScrollPhysics(),
-                                    shrinkWrap: true,
-                                    primary: true,
-                                    itemCount: orderedList.length,
-                                    cacheExtent: 1000.0,
-                                    itemBuilder: (context, index) {
-                                      final doc = orderedList[index];
-
-                                      // ── Encabezado ──────────────────────────────────────────────────────
-                                      return AnimationConfiguration
-                                          .staggeredList(
-                                        position: index,
-                                        child: ScaleAnimation(
-                                          duration: Duration(milliseconds: 300),
-                                          child: FadeInAnimation(
-                                            child: Card(
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          size.width * 0.02)),
-                                              elevation: 0,
-                                              color: Colors.transparent,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      width: 1,
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              148,
-                                                              163,
-                                                              163,
-                                                              163),
-                                                    ),
-                                                  ),
-                                                ),
-                                                padding: EdgeInsets.all(
-                                                    size.width * 0.03),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Icon(Icons.person_3,
-                                                            size: size.height *
-                                                                0.02,
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    0,
-                                                                    129,
-                                                                    168,
-                                                                    1)),
-                                                        SizedBox(
-                                                            width: size.width *
-                                                                0.02),
-                                                        Text(
-                                                          doc['name'] ?? '—',
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.019,
-                                                            fontFamily: 'Arial',
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .secondary,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(height: 4),
-                                                    Text(doc['rol'] ?? '—',
-                                                        style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.0162,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    0,
-                                                                    129,
-                                                                    168,
-                                                                    1))),
-                                                    Text(doc['email'] ?? '—',
-                                                        style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.0162,
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    153,
-                                                                    153,
-                                                                    153))),
-                                                    Text(doc['phone'] ?? '—',
-                                                        style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.0162,
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    153,
-                                                                    153,
-                                                                    153))),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  )),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            doc['rol'] ?? '—',
+                            style: TextStyle(
+                              fontSize: size.height * 0.0162,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromRGBO(0, 129, 168, 1),
                             ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text('error');
-                        } else {
-                          return CircularProgressIndicator();
-                        }
+                          ),
+                          Text(
+                            doc['email'] ?? '—',
+                            style: TextStyle(
+                              fontSize: size.height * 0.0162,
+                              color: Color.fromARGB(255, 153, 153, 153),
+                            ),
+                          ),
+                          Text(
+                            doc['phone'] ?? '—',
+                            style: TextStyle(
+                              fontSize: size.height * 0.0162,
+                              color: Color.fromARGB(255, 153, 153, 153),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    ),
+  );
+} else if (snapshot.hasError) {
+  return Text('error');
+} else {
+  return CircularProgressIndicator();
+}
                       },
                     )
                   ],

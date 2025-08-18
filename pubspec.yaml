@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.8+8
+version: 1.1.8+18
 
 environment:
   sdk: ^3.5.4
@@ -100,6 +100,9 @@ dependencies:
   animated_icon: ^0.0.9
   flutter_app_badge_control: ^0.0.2
   easy_localization: ^3.0.7+1
+  cached_network_image: ^3.4.1
+  webview_flutter: ^4.9.0
+  video_player: ^2.10.0
 
 
   
@@ -125,9 +128,11 @@ flutter_native_splash:
   android: true
   ios: true
   web: false
+  fullscreen: true
   #background_image_android: "assets/img/foto2.jpg"
   #background_image_ios: "assets/img/foto2.jpg"
   image: "assets/img/logo.png"
+  branding: "assets/img/logonark.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -182,6 +187,15 @@ flutter:
     - assets/img/ESLam.png
     - assets/img/ESLchick.png
     - assets/img/volunteer.png
+    - assets/img/logonark.png
+    - assets/img/Donate2.png
+    - assets/img/people.png
+    - assets/img/family.png
+    - assets/img/location.png
+    - assets/img/coop.png
+    - assets/img/handson.png
+
+  
   
 
     - assets/translations/

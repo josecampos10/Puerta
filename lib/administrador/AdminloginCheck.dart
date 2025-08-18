@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -55,6 +56,7 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
     return Center(
       child: Container(
         height: size.height * 0.06,
+        width: size.width*0.5,
         margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         decoration: BoxDecoration(
             border: Border(
@@ -104,6 +106,7 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
     return Center(
       child: Container(
         height: size.height * 0.06,
+        width: size.width*0.5,
         margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         decoration: BoxDecoration(
             color: const Color.fromARGB(255, 255, 255, 255),
@@ -176,8 +179,8 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
   Widget _submitButton() {
     Size size = MediaQuery.of(context).size;
     return SizedBox(
-      width: size.width * 0.9,
-      height: size.height * 0.07,
+      width: size.width * 0.2,
+      height: size.height * 0.06,
       child: ElevatedButton(
           onPressed: isLogin
               ? adminsignInWithEmailAndPassword
@@ -189,7 +192,7 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
             child: Text(
-              isLogin ? 'Inicar Sesión' : 'Registrarse',
+              isLogin ? 'Inicar Sesión'.tr() : 'Registrarse'.tr(),
               style: TextStyle(
                   color: Colors.white,
                   fontSize: size.height * 0.021,
@@ -200,8 +203,9 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
   }
 
   Widget _loginOrRegisterButton() {
+    Size size = MediaQuery.of(context).size;
     return SizedBox(
-      width: 300,
+      width: size.width - 10,
       child: TextButton(
           onPressed: () {
             setState(() {
@@ -213,8 +217,8 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
           },
           child: Text(
             isLogin
-                ? 'Ingrese sus credenciales de administrador'
-                : 'Ir a inicar sesión',
+                ? 'Ingrese sus credenciales de administrador'.tr()
+                : 'Ir a inicar sesión'.tr(),
             style:
                 TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
           )),
@@ -296,7 +300,7 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
           children: <Widget>[
             _loginOrRegisterButton(),
             _entryField(
-              'correo electrónico',
+              'correo electrónico'.tr(),
               _controllerEmail,
               Icons.email_outlined,
             ),
@@ -304,7 +308,7 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
               height: 10.0,
             ),
             _entryFieldPassword(
-                'contraseña', _controllerPassword, Icons.lock_outline_rounded),
+                'contraseña'.tr(), _controllerPassword, Icons.lock_outline_rounded),
             SizedBox(
               height: 5.0,
             ),
@@ -314,15 +318,15 @@ class _AdminLoginNowState extends State<AdminLoginNow> {
             ),
             _submitButton(),
             SizedBox(
-              height: size.height * 0.01,
+              height: size.height * 0.05,
             ),
             InkWell(
               child: Text(
-                'Ir atrás',
+                'Ir atrás'.tr(),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
-                    fontSize: size.width * 0.04),
+                    fontSize: size.height * 0.02),
               ),
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const OnboardingPage())),

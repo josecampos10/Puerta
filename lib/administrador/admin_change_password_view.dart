@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AdminchangePasswordView extends StatefulWidget {
   const AdminchangePasswordView({super.key});
@@ -189,7 +189,7 @@ class _AdminchangePasswordViewState extends State<AdminchangePasswordView> {
                                                 .showSnackBar(
                                               SnackBar(
                                                 content: Text(
-                                                  '✅ Contraseña actualizada correctamente',
+                                                  '✅ Contraseña actualizada correctamente'.tr(),
                                                   style: TextStyle(
                                                       color: Colors.white),
                                                 ),
@@ -213,7 +213,7 @@ class _AdminchangePasswordViewState extends State<AdminchangePasswordView> {
                                         }
                                       },
                                       child: Text(
-                                        'Aceptar'.tr,
+                                        'Aceptar'.tr(),
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme

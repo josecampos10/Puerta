@@ -10,73 +10,71 @@ class Auth {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   User? get currentUser => _firebaseAuth.currentUser;
+  
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
- Future<void> signInWithEmailAndPassword({
-  required String email,
-  required String password,
-}) async {
-  try {
-    // 1. Iniciar sesión
-    final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  Future<void> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      // 1. Iniciar sesión
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    final user = userCredential.user;
-    final userEmail = user?.email;
+      final user = userCredential.user;
+      final userEmail = user?.email;
 
-    if (userEmail == null) {
-      debugPrint('❌ No se pudo obtener el email del usuario autenticado.');
-      return;
+      if (userEmail == null) {
+        debugPrint('❌ No se pudo obtener el email del usuario autenticado.');
+        return;
+      }
+
+      // 2. Solicitar permisos de notificación en iOS
+      await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      // 3. Obtener el token FCM
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+
+      if (fcmToken == null) {
+        debugPrint('❌ El token FCM es null, no se actualizará en Firestore.');
+        return;
+      }
+
+      // 4. Guardar el token en Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userEmail)
+          .update({'token': fcmToken});
+
+      debugPrint('✅ Token actualizado en Firestore: $fcmToken');
+    } on FirebaseAuthException catch (e) {
+      Fluttertoast.showToast(
+        msg: 'Correo o contraseña incorrectos'.tr(),
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      debugPrint('⚠️ FirebaseAuthException: ${e.message}');
+    } catch (e) {
+      debugPrint('⚠️ Error general al iniciar sesión: $e');
     }
-
-    // 2. Solicitar permisos de notificación en iOS
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    // 3. Obtener el token FCM
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-
-    if (fcmToken == null) {
-      debugPrint('❌ El token FCM es null, no se actualizará en Firestore.');
-      return;
-    }
-
-    // 4. Guardar el token en Firestore
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userEmail)
-        .update({'token': fcmToken});
-
-    debugPrint('✅ Token actualizado en Firestore: $fcmToken');
-
-  } on FirebaseAuthException catch (e) {
-    Fluttertoast.showToast(
-      msg: 'Correo o contraseña incorrectos'.tr(),
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.TOP,
-      backgroundColor: Colors.black54,
-      textColor: Colors.white,
-      fontSize: 14.0,
-    );
-    debugPrint('⚠️ FirebaseAuthException: ${e.message}');
-  } catch (e) {
-    debugPrint('⚠️ Error general al iniciar sesión: $e');
   }
-}
-
 
   Future<void> createUserWithEmailAndPassword({
     required String name,
     required String email,
     required String password,
     required String rol,
-    
   }) async {
     //UserCredential result = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
     //User? user = result.user;
@@ -100,37 +98,90 @@ class Auth {
         'ESLchick': '',
         'ESLclifton': '',
         'Corte1': '',
-        'Corte2': '',   
-        'Volunteer': ''   
+        'Corte2': '',
+        'Volunteer': '',
+        'createdAt': FieldValue.serverTimestamp(),
+        'GEDpm2': '',
+        'GEDam2': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsESL_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsESL_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsESpm2L_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsESpm2L_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsESLam_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsESLam_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsESLam2_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsESLam2_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsGEDpm_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsGEDpm_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsGEDam_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsGEDam_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsCosturaAM_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsCosturaAM_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsCiudadania_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsCiudadania_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsCosmetologia_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsCosmetologia_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
-      await FirebaseFirestore.instance.collection('users').doc(email).collection('postsESLchick_State').doc('State').set({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(email)
+          .collection('postsESLchick_State')
+          .doc('State')
+          .set({
         'lastpost': '',
       });
 
@@ -151,33 +202,28 @@ class Auth {
         textColor: Colors.white,
         fontSize: 14.0,
       );
-      if(e.message.toString() == ''){
-        
-      }
+      if (e.message.toString() == '') {}
     }
   }
 
   Future<void> signOut() async {
-  try {
-    // Eliminar token de Firestore si el usuario está logueado
-    final user = _firebaseAuth.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.email)
-          .update({'token': FieldValue.delete()});
+    try {
+      // Eliminar token de Firestore si el usuario está logueado
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.email)
+            .update({'token': FieldValue.delete()});
 
-      // También borra el token local
-      await FirebaseMessaging.instance.deleteToken();
+        // También borra el token local
+        await FirebaseMessaging.instance.deleteToken();
+      }
+
+      // Finalmente, cerrar sesión
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      print('Error signing out: $e');
     }
-
-    // Finalmente, cerrar sesión
-    await _firebaseAuth.signOut();
-  } catch (e) {
-    print('Error signing out: $e');
   }
 }
-
-}
-
-

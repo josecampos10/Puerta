@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,15 +15,12 @@ import 'package:lapuerta2/detalles_class.dart';
 import 'package:lapuerta2/detalles_image.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:lapuerta2/detalles_image_slider.dart';
+import 'package:lapuerta2/mapa_recursos.dart';
 import 'package:lapuerta2/onboarding.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-final gridItems = [
-  'Noticias',
-  'Clases',
-  'Servicios'
-  ];
+final gridItems = ['Noticias', 'Clases', 'Servicios', 'Recursos'];
 
 class UserhomePrincipal extends StatefulWidget {
   @override
@@ -178,21 +176,21 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
     }
   }
 
-   Future<void> loadUserLanguagePreference() async {
-  final doc = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(currentUser?.email)
-      .get();
+  Future<void> loadUserLanguagePreference() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser?.email)
+        .get();
 
-  final data = doc.data();
-  final isSpanish = data?['spanish'] == 'true'; // viene como string
+    final data = doc.data();
+    final isSpanish = data?['spanish'] == 'true'; // viene como string
 
-  setState(() {
-    isEnglish = !isSpanish; // true = inglés activo
-  });
+    setState(() {
+      isEnglish = !isSpanish; // true = inglés activo
+    });
 
-  context.setLocale(Locale(isEnglish ? 'en' : 'es'));
-}
+    context.setLocale(Locale(isEnglish ? 'en' : 'es'));
+  }
 
   @override
   void initState() {
@@ -711,7 +709,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 1,
-                                    childAspectRatio: size.height * 0.0003),
+                                    childAspectRatio: size.height * 0.00045),
                             shrinkWrap: true,
                             primary: false,
                             itemCount: gridItems.length,
@@ -752,10 +750,10 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                     textAlign: TextAlign.start,
                                                     style: TextStyle(
                                                       fontSize:
-                                                          size.height * 0.017,
+                                                          size.height * 0.014,
                                                       fontFamily: 'Arial',
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                          FontWeight.normal,
                                                       color: (selectedIndex ==
                                                               position)
                                                           ? Color.fromARGB(255,
@@ -904,7 +902,7 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                       crossAxisSpacing:
                                                           size.width * 0.02,
                                                       crossAxisCount: 1,
-                                                      childAspectRatio: 0.5),
+                                                      childAspectRatio: 0.8),
                                               shrinkWrap: true,
                                               primary: false,
                                               itemCount: snap.length,
@@ -1060,6 +1058,52 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                           }
                         },
                       ),
+                      ///////RECURSOS MAPA AQUI
+                      (selectedIndex == 3)
+                          ? GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          MapaPersonalizadoView()),
+                                );
+                              },
+                              child: Container(
+                                child: Container(
+                                  height: size.height * 0.13,
+                                  width: size.width * 0.95,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/img/location.png'),
+                                          fit: BoxFit.cover)),
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Mapa de Recursos'.tr(),
+                                          textAlign: TextAlign.right,
+                                          style: TextStyle(
+                                              fontFamily: 'Arial',
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: size.height * 0.025),
+                                        ),
+                                        SizedBox(
+                                          width: size.width * 0.06,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              child: Text(''),
+                            )
                     ],
                   ),
                 ),
@@ -1351,15 +1395,39 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                   'no imagen'
                                                               ? GestureDetector(
                                                                   onTap: () {
-                                                                    Navigator.push(
-                                                                        context,
-                                                                        MaterialPageRoute(
-                                                                            builder: (context) =>
-                                                                                ImageDetallesHome(documentSnapshot: documentSnapshot)));
+                                                                    Navigator
+                                                                        .push(
+                                                                      context,
+                                                                      PageRouteBuilder(
+                                                                        transitionDuration:
+                                                                            Duration(milliseconds: 500), // más suave
+                                                                        reverseTransitionDuration:
+                                                                            Duration(milliseconds: 500),
+                                                                        pageBuilder: (_,
+                                                                                __,
+                                                                                ___) =>
+                                                                            ImageDetallesHome(documentSnapshot: documentSnapshot),
+                                                                      ),
+                                                                    );
                                                                   },
                                                                   child: Hero(
                                                                     tag:
                                                                         documentSnapshot,
+                                                                    flightShuttleBuilder:
+                                                                        (
+                                                                      flightContext,
+                                                                      animation,
+                                                                      flightDirection,
+                                                                      fromHeroContext,
+                                                                      toHeroContext,
+                                                                    ) {
+                                                                      return FadeTransition(
+                                                                        opacity:
+                                                                            animation.drive(Tween(begin: 1.0, end: size.height).chain(CurveTween(curve: Curves.easeInOut))),
+                                                                        child: toHeroContext
+                                                                            .widget,
+                                                                      );
+                                                                    },
                                                                     child:
                                                                         Container(
                                                                       height: size
@@ -1388,11 +1456,15 @@ class _UserhomePrincipalState extends State<UserhomePrincipal> {
                                                                               size.height * 0.0,
                                                                         ),
                                                                         //shape: BoxShape.circle,
-                                                                        image: DecorationImage(
-                                                                            fit: BoxFit.cover,
-                                                                            image: Image.network(
-                                                                              snap[index]['postUrl']!,
-                                                                            ).image),
+                                                                        image:
+                                                                            DecorationImage(
+                                                                          fit: BoxFit
+                                                                              .contain,
+                                                                          image:
+                                                                              CachedNetworkImageProvider(
+                                                                            snap[index]['postUrl']!,
+                                                                          ),
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                   ),

@@ -379,9 +379,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
       body: Container(
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(size.width * 0.08),
-                topRight: Radius.circular(size.width * 0.08))),
+            ),
         height: size.height * 0.9,
         width: size.width,
         child: SingleChildScrollView(
@@ -417,7 +415,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     width: size.height * 0.01,
                   ),
                   Container(
-                    width: size.width - 20,
+                    width: size.width*0.85,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiary,
@@ -463,7 +461,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     width: size.height * 0.01,
                   ),
                   Container(
-                    width: size.width - 20,
+                    width: size.width*0.85,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiary,
@@ -509,7 +507,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     width: size.height * 0.01,
                   ),
                   Container(
-                    width: size.width - 20,
+                    width: size.width*0.85,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiary,
@@ -913,7 +911,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     width: size.height * 0.01,
                   ),
                   Container(
-                    width: size.width - 20,
+                    width: size.width*0.85,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiary,
@@ -978,7 +976,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     width: size.height * 0.01,
                   ),
                   Container(
-                    width: size.width - 20,
+                    width: size.width*0.85,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiary,
@@ -1132,7 +1130,7 @@ class _AdminProfileHomeState extends State<AdminProfilehome> {
                     width: 10,
                   ),
                   Container(
-                    width: size.width - 20,
+                    width: size.width*0.85,
                     height: size.height * 0.06,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.tertiary,

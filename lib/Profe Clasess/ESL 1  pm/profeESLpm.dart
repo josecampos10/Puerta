@@ -245,12 +245,11 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                       child: SizedBox(
                         width: size.width,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(width: size.width * 0.01),
                             SizedBox(
                               height: size.height * 0.06,
-                              width: size.width * 0.98,
+                              width: size.width * 0.86,
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
                                 margin: EdgeInsets.symmetric(
@@ -780,12 +779,11 @@ class _ProfeeslpmState extends State<Profeeslpm> {
                                                                           Icon(
                                                                         Icons
                                                                             .info,
-                                                                        color: Colors
-                                                                            .yellow,
+                                                                        color: const Color.fromARGB(255, 255, 163, 59)
                                                                       ),
                                                                       content:
                                                                           Text(
-                                                                        'Desea eliminar esto?',
+                                                                        'Desea eliminar esto?'.tr(),
                                                                         textAlign:
                                                                             TextAlign.center,
                                                                         style: TextStyle(

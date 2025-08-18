@@ -148,29 +148,14 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
     Size size = MediaQuery.of(context).size;
     // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
-        title: Text(
-          'Crear Publicación',
-          style: TextStyle(
-              fontSize: size.width * 0.045,
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
-        ),
-        toolbarHeight: size.height * 0.09,
-        backgroundColor: Theme.of(context).colorScheme.tertiary,
-      ),
       resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       body: Container(
         height: size.height * 0.93,
         width: size.width,
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(size.width * 0.08),
-                topRight: Radius.circular(size.width * 0.08))),
+          color: Theme.of(context).colorScheme.primary,
+        ),
         child: SingleChildScrollView(
           //physics: NeverScrollableScrollPhysics(),
           padding:
@@ -178,7 +163,33 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
           reverse: false,
           child: Column(children: [
             SizedBox(
-              height: size.height * 0.03,
+              height: size.height * 0.02,
+            ),
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomRight: Radius.circular(20))),
+                  alignment: Alignment.center,
+                  width: size.width * 0.18,
+                  height: size.height * 0.055,
+                  child: Text(
+                    'Crear publicación',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: 'Arial',
+                        fontWeight: FontWeight.bold,
+                        fontSize: size.height * 0.02,
+                        color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: size.height * 0.02,
             ),
             StreamBuilder<DocumentSnapshot>(
                 stream: imagenes,
@@ -205,13 +216,13 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                         width: size.width * 0.03,
                       ),
                       Container(
-                        height: size.height * 0.065,
-                        width: size.height * 0.065,
+                        height: size.height * 0.1,
+                        width: size.height * 0.1,
                         decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.tertiary,
                             border: Border.all(
-                              color: Color.fromRGBO(255, 255, 255, 0.174),
-                              width: size.height * 0.003,
+                              color: Theme.of(context).colorScheme.tertiary,
+                              width: size.height * 0.006,
                             ),
                             shape: BoxShape.circle,
                             image: pickedImage != null
@@ -229,7 +240,7 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                       Text(
                         data['name'],
                         style: TextStyle(
-                            fontSize: size.width * 0.045,
+                            fontSize: size.height * 0.03,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.secondary),
                       ),
@@ -267,64 +278,70 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                     ],
                   );
                 }),
+                SizedBox(height: size.height*0.02,),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+              width: size.width*0.8,
+              height: size.height*0.2,
+              ///margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
               decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(0)),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary
+                                        .withAlpha(30),
+                                    borderRadius: BorderRadius.circular(10)),
               child: Theme(
                 data: Theme.of(context).copyWith(
-    textSelectionTheme: TextSelectionThemeData(
-      selectionColor: Colors.blue.withOpacity(0.4), // visible highlight
-      selectionHandleColor: Theme.of(context).colorScheme.secondary,
-      cursorColor: Theme.of(context).colorScheme.secondary,
-    ),
-  ),
+                  textSelectionTheme: TextSelectionThemeData(
+                    selectionColor:
+                        Colors.blue.withOpacity(0.4), // visible highlight
+                    selectionHandleColor:
+                        Theme.of(context).colorScheme.secondary,
+                    cursorColor: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
                 child: TextField(
+                  cursorHeight: size.height*0.025,
                   contextMenuBuilder: (BuildContext context,
-                                          EditableTextState editableTextState) {
-                                        return AdaptiveTextSelectionToolbar
-                                            .buttonItems(
-                                          anchors:
-                                              editableTextState.contextMenuAnchors,
-                                          buttonItems: [
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.copySelection(
-                                                    SelectionChangedCause.toolbar);
-                                              },
-                                              type: ContextMenuButtonType.copy,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.cutSelection(
-                                                    SelectionChangedCause.toolbar);
-                                              },
-                                              type: ContextMenuButtonType.cut,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.pasteText(
-                                                    SelectionChangedCause.toolbar);
-                                              },
-                                              type: ContextMenuButtonType.paste,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.selectAll(
-                                                    SelectionChangedCause.toolbar);
-                                              },
-                                              type: ContextMenuButtonType.selectAll,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                      enableInteractiveSelection: true,
+                      EditableTextState editableTextState) {
+                    return AdaptiveTextSelectionToolbar.buttonItems(
+                      anchors: editableTextState.contextMenuAnchors,
+                      buttonItems: [
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .copySelection(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.copy,
+                        ),
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .cutSelection(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.cut,
+                        ),
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .pasteText(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.paste,
+                        ),
+                        ContextMenuButtonItem(
+                          onPressed: () {
+                            editableTextState
+                                .selectAll(SelectionChangedCause.toolbar);
+                          },
+                          type: ContextMenuButtonType.selectAll,
+                        ),
+                      ],
+                    );
+                  },
+                  enableInteractiveSelection: true,
                   onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
+                    print('onTapOutside');
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  },
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   textInputAction: TextInputAction.newline,
@@ -333,15 +350,16 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                     //controllerdes.text = value.toString();
                   }),
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.only(left: size.width*0.02, right: size.width*0.02),
+                    border: InputBorder.none,
                     enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Color.fromARGB(0, 0, 0, 0), width: 0.0)),
-                    labelText: 'Que desea escribir...',
-                    prefixIcon: Icon(
+                    hint: Text('Que desea escribir...'),
+                    suffix: Icon(
                       Icons.add,
                       color: Theme.of(context).colorScheme.secondary,
                     ),
-                    labelStyle: TextStyle(fontSize: 14, fontFamily: 'Arial'),
                   ),
                 ),
               ),
@@ -349,10 +367,10 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
             Row(
               children: [
                 SizedBox(
-                  width: size.width * 0.01,
+                  width: size.width * 0.028,
                 ),
                 SizedBox(
-                  width: size.width * 0.10,
+                  width: size.width * 0.05,
                   child: IconButton(
                       onPressed: () => _imageSelect(context),
                       icon: Image(
@@ -415,8 +433,8 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                           if (snapshot.connectionState ==
                                               ConnectionState.done) {
                                             return SizedBox(
-                                              height: size.height * 0.06,
-                                              width: size.width * 0.5,
+                                              height: size.height * 0.07,
+                                              width: size.width * 0.25,
                                               child: ElevatedButton(
                                                 onPressed: () {
                                                   if (controllerdes.text ==
@@ -475,19 +493,24 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                                                       'createdAt':
                                                                           Timestamp
                                                                               .now(),
-                                                                      'UserEmail': currentUser?.email ?? '',
+                                                                      'UserEmail':
+                                                                          currentUser?.email ??
+                                                                              '',
                                                                     });
                                                                     ScaffoldMessenger.of(
-                                                                              context)
-                                                                          .showSnackBar(
-                                                                        SnackBar(
-                                                                            backgroundColor:
-                                                                                Theme.of(context).colorScheme.tertiary,
-                                                                            content: Text(
-                                                                              'Publicado',
-                                                                              style: TextStyle(color: Colors.white),
-                                                                            )),
-                                                                      );
+                                                                            context)
+                                                                        .showSnackBar(
+                                                                      SnackBar(
+                                                                          backgroundColor: Theme.of(context)
+                                                                              .colorScheme
+                                                                              .tertiary,
+                                                                          content:
+                                                                              Text(
+                                                                            'Publicado',
+                                                                            style:
+                                                                                TextStyle(color: Colors.white),
+                                                                          )),
+                                                                    );
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
@@ -539,19 +562,24 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                                         EdgeInsets.symmetric(
                                                             horizontal: 25,
                                                             vertical: 10)),
-                                                child: Text(
-                                                  'Siguiente',
-                                                  style: TextStyle(
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255,
-                                                              255,
-                                                              255,
-                                                              255),
-                                                      fontSize:
-                                                          size.width * 0.044,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Enviar',
+                                                      style: TextStyle(
+                                                          color:
+                                                              const Color.fromARGB(
+                                                                  255,
+                                                                  255,
+                                                                  255,
+                                                                  255),
+                                                          fontSize:
+                                                              size.height * 0.025,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             );
@@ -580,134 +608,140 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                         ConnectionState.done) {
                                       return Column(children: [
                                         Container(
-                                          height: size.height * 0.35,
-                                          width: size.height,
-                                          decoration: BoxDecoration(
-                                              color: const Color.fromARGB(
-                                                  0, 158, 158, 158),
-                                              border: Border.all(
-                                                color: Color.fromRGBO(
-                                                    4, 99, 128, 0),
-                                                width: size.height * 0.0,
-                                              ),
-                                              //shape: BoxShape.circle,
-                                              image: DecorationImage(
-                                                  fit: BoxFit.cover,
-                                                  image: Image.memory(
-                                                    _file!,
-                                                  ).image)),
+                                          width: size.width*0.3,
+                                          child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  child: Image(
+                                                   
+                                                    fit: BoxFit.fitWidth,
+                                                    width: double.infinity,
+                                                    loadingBuilder: (context, child, loadingProgress) {
+                                                      if (loadingProgress == null) return child;
+                                                      return Padding(
+                                                        padding: EdgeInsets.symmetric(vertical: 16),
+                                                        child: Center(child: CircularProgressIndicator()),
+                                                      );
+                                                    },
+                                                    errorBuilder: (context, error, stackTrace) => Text('No se pudo cargar la imagen'), image: Image.memory( _file!,).image
+                                                  ),
+                                                ),
+                                        ),
+                                        //Image.memory( _file!,).image
+                                        SizedBox(
+                                          height: size.height * 0.025,
                                         ),
                                         SizedBox(
-                                          height: size.height * 0.01,
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            if (controllerdes.text == '') {
-                                            } else {
-                                              showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: Text(
-                                                          'Publicar actividad'),
-                                                      content: Text(
-                                                          'Estás seguro que quieres publicar esta actividad?'),
-                                                      actions: [
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              DateTime date =
-                                                                  DateTime
-                                                                      .now();
-                                                              String today =
-                                                                  '${date.day}/${date.month}/${date.year}';
-                                                              String timetoday =
-                                                                  '${date.hour}:${date.minute}';
-                                                              FirebaseFirestore
-                                                                  .instance
-                                                                  .collection(
-                                                                      'posts')
-                                                                  .doc(DateTime(
-                                                                          DateTime.now()
-                                                                              .year,
-                                                                          DateTime.now()
-                                                                              .month,
-                                                                          DateTime.now()
-                                                                              .day,
-                                                                          DateTime.now()
-                                                                              .hour,
-                                                                          DateTime.now()
-                                                                              .minute,
-                                                                          DateTime.now()
-                                                                              .second)
-                                                                      .toString())
-                                                                  .update({
-                                                                /*'Comment': controllerdes.text,
-                                          'Date': today,
-                                          'Time': timetoday,
-                                          'User': 'La Puerta',
-                                          'postUrl': 'no image',*/
-                                                                'Image': snapshot
-                                                                    .data
-                                                                    .toString(),
-                                                              });
-
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              postImage(
-                                                                  snapshot.data
+                                          height: size.height * 0.07,
+                                              width: size.width * 0.25,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              if (controllerdes.text == '') {
+                                              } else {
+                                                showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                            'Publicar actividad'),
+                                                        content: Text(
+                                                            'Estás seguro que quieres publicar esta actividad?'),
+                                                        actions: [
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                DateTime date =
+                                                                    DateTime
+                                                                        .now();
+                                                                String today =
+                                                                    '${date.day}/${date.month}/${date.year}';
+                                                                String timetoday =
+                                                                    '${date.hour}:${date.minute}';
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'posts')
+                                                                    .doc(DateTime(
+                                                                            DateTime.now()
+                                                                                .year,
+                                                                            DateTime.now()
+                                                                                .month,
+                                                                            DateTime.now()
+                                                                                .day,
+                                                                            DateTime.now()
+                                                                                .hour,
+                                                                            DateTime.now()
+                                                                                .minute,
+                                                                            DateTime.now()
+                                                                                .second)
+                                                                        .toString())
+                                                                    .update({
+                                                                  /*'Comment': controllerdes.text,
+                                            'Date': today,
+                                            'Time': timetoday,
+                                            'User': 'La Puerta',
+                                            'postUrl': 'no image',*/
+                                                                  'Image': snapshot
+                                                                      .data
                                                                       .toString(),
-                                                                  data['name']);
-
-                                                              controllerdes
-                                                                  .clear();
-                                                            },
-                                                            child: Text(
-                                                                'Aceptar',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .secondary))),
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                            child: Text(
-                                                                'Cancelar',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .secondary)))
-                                                      ],
-                                                    );
-                                                  });
-                                            }
-                                            if (controllerdes.text.isEmpty) {
-                                              return;
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              backgroundColor:
-                                                  Color.fromRGBO(4, 99, 128, 1),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 25,
-                                                  vertical: 10)),
-                                          child: Text(
-                                            'Siguiente',
-                                            style: TextStyle(
-                                                color: const Color.fromARGB(
-                                                    255, 255, 255, 255),
-                                                fontSize: size.width * 0.044,
-                                                fontWeight: FontWeight.bold),
+                                                                });
+                                          
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                                postImage(
+                                                                    snapshot.data
+                                                                        .toString(),
+                                                                    data['name']);
+                                          
+                                                                controllerdes
+                                                                    .clear();
+                                                              },
+                                                              child: Text(
+                                                                  'Aceptar',
+                                                                  style: TextStyle(
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .secondary))),
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                              child: Text(
+                                                                  'Cancelar',
+                                                                  style: TextStyle(
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .secondary)))
+                                                        ],
+                                                      );
+                                                    });
+                                              }
+                                              if (controllerdes.text.isEmpty) {
+                                                return;
+                                              }
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                backgroundColor:
+                                                    Color.fromRGBO(4, 99, 128, 1),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 25,
+                                                    vertical: 10)),
+                                            child: Text(
+                                              'Enviar',
+                                              style: TextStyle(
+                                                  color: const Color.fromARGB(
+                                                      255, 255, 255, 255),
+                                                  fontSize: size.height * 0.025,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
                                         ),
                                       ]);
@@ -715,6 +749,7 @@ class _AdminpublicacionesState extends State<Adminpublicaciones> {
                                     return const Center(
                                         child: CircularProgressIndicator());
                                   }),
+                                  SizedBox(height: size.height*0.02,)
                             ],
                           ),
                         );

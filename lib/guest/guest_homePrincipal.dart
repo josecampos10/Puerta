@@ -10,6 +10,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lapuerta2/detalles_class.dart';
 import 'package:lapuerta2/detalles_image_slider.dart';
+import 'package:lapuerta2/mapa_recursos.dart';
 import 'package:lapuerta2/onboarding.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,6 +18,7 @@ final gridItems = [
   'Noticias',
   'Clases',
   'Servicios',
+  'Recursos'
 ];
 
 class GuesthomePrincipal extends StatefulWidget {
@@ -538,7 +540,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 1,
-                                    childAspectRatio: size.height * 0.0003),
+                                    childAspectRatio: size.height * 0.00045),
                             shrinkWrap: true,
                             primary: false,
                             itemCount: gridItems.length,
@@ -585,7 +587,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                                           TextAlign.start,
                                                       style: TextStyle(
                                                         fontSize:
-                                                            size.height * 0.017,
+                                                            size.height * 0.014,
                                                         fontFamily: 'Arial',
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -631,7 +633,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                     borderRadius: BorderRadius.circular(30),
                     //color: const Color.fromARGB(0, 0, 0, 0),
                   ),
-                  height: size.height * 0.263,
+                  height: size.height * 0.265,
                   width: double.infinity,
                   child: Column(
                     children: [
@@ -687,7 +689,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.height * 0.002,
+                                    aspectRatio: size.height * 0.0022,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -745,7 +747,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.height * 0.002,
+                                    aspectRatio: size.height * 0.0022,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -803,7 +805,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                   );
                                 },
                                 options: CarouselOptions(
-                                    aspectRatio: size.height * 0.002,
+                                    aspectRatio: size.height * 0.0022,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     autoPlayInterval: Duration(seconds: 10),
                                     autoPlay: true,
@@ -818,6 +820,46 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                           }
                         },
                       ),
+                      (selectedIndex == 3)
+                          ? GestureDetector(
+                            onTap: (){
+                              Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapaPersonalizadoView()),
+    );
+                            },
+                            child: Container(
+                                child: Container(
+                                  height: size.height * 0.235,
+                                  width: size.width * 0.95,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/img/location.png'),
+                                          fit: BoxFit.cover)),
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Mapa de Recursos'.tr(), textAlign: TextAlign.right,
+                                          style: TextStyle(
+                                            fontFamily: 'Arial',
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: size.height * 0.025),
+                                        ),
+                                        SizedBox(width: size.width*0.06,)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          )
+                          : Container(
+                              child: Text(''),
+                            )
                     ],
                   ),
                 ),
@@ -832,7 +874,7 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           fontFamily: 'Arial',
-                          fontSize: size.height * 0.022,
+                          fontSize: size.height * 0.02,
                           fontWeight: FontWeight.bold,
                           color: const Color.fromARGB(255, 148, 148, 148)),
                     ),
@@ -972,11 +1014,11 @@ class _GuesthomePrincipalState extends State<GuesthomePrincipal> {
                                             children: [
                                               Center(
                                                 child: Text(
-                                                  snap[index]['Name'],
+                                                  snap[index]['Name'].toString().tr(),
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
                                                     fontSize:
-                                                        size.height * 0.025,
+                                                        size.height * 0.018,
                                                     fontFamily: 'Arial',
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.white,

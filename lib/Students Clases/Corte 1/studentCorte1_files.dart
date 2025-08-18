@@ -76,7 +76,7 @@ class _Studentfilescorte1State extends State<Studentfilescorte1> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Archivo subido, refresque la lista de archivos',
+          'Archivo subido, refresque la lista de archivos'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,
@@ -278,7 +278,7 @@ class _Studentfilescorte1State extends State<Studentfilescorte1> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            data['Name'] ?? 'Nombre clase',
+                            data['Name'] ?? 'Nombre clase'.tr(),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: size.height * 0.04,
@@ -286,7 +286,7 @@ class _Studentfilescorte1State extends State<Studentfilescorte1> {
                                 fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            data['Subname'] ?? 'Descripción',
+                            data['Subname'] ?? 'Descripción'.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: Colors.white,
@@ -495,7 +495,7 @@ class _Studentfilescorte1State extends State<Studentfilescorte1> {
         .showSnackBar(
           SnackBar(
         content: Text(
-          'Descargado',
+          'Descargado'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,
@@ -518,7 +518,7 @@ class _Studentfilescorte1State extends State<Studentfilescorte1> {
           .showSnackBar(
              SnackBar(
         content: Text(
-          'Descargado',
+          'Descargado'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,

@@ -34,6 +34,26 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   final user = FirebaseAuth.instance.customAuthDomain;
   int selectedIndex = 0;
+  TextEditingController _searchController = TextEditingController();
+  String searchText = '';
+
+  String selectedClass = 'Todos';
+  final List<String> classOptions = [
+    'Todos',
+    'ESLpm',
+    'ESLpm2',
+    'ESLam',
+    'ESLam2',
+    'GEDpm',
+    'GEDam',
+    'ciudadania',
+    'cosmetologia',
+    'costuraAM',
+    'Corte1',
+    'Corte2',
+    'ESLclifton',
+    'ESLchick'
+  ];
 
   Future<void> deleteUserByEmail(String email) async {
     try {
@@ -69,21 +89,20 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
   }
 
   Future<void> checkIfUserIsAdmin() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-  final idTokenResult = await user.getIdTokenResult(true);
-  final claims = idTokenResult.claims ?? {};
+    final idTokenResult = await user.getIdTokenResult(true);
+    final claims = idTokenResult.claims ?? {};
 
-  if (claims['superadmin'] == true) {
-    print('✅ El usuario es SUPERADMIN.');
-  } else if (claims['admin'] == true) {
-    print('✅ El usuario es ADMIN.');
-  } else {
-    print('❌ El usuario NO es admin.');
+    if (claims['superadmin'] == true) {
+      print('✅ El usuario es SUPERADMIN.');
+    } else if (claims['admin'] == true) {
+      print('✅ El usuario es ADMIN.');
+    } else {
+      print('❌ El usuario NO es admin.');
+    }
   }
-}
-
 
   Future<void> checkUserRoles() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -106,8 +125,17 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
   @override
   void initState() {
     super.initState();
-    checkUserRoles(); // ✅ ya no necesitas usar setState aquí
-    
+    checkUserRoles();
+    _searchController.addListener(() {
+      // No usamos setState aquí para evitar recarga excesiva
+      searchText = _searchController.text.toLowerCase();
+    }); // ✅ ya no necesitas usar setState aquí
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -115,59 +143,61 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
     Size size = MediaQuery.of(context).size;
     // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        centerTitle: true,
-        title: Text(
-          'Usuarios',
-          style: TextStyle(
-              fontSize: size.height * 0.015,
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
-        ),
-        toolbarHeight: size.height * 0.09,
-        backgroundColor: Theme.of(context).colorScheme.tertiary,
-      ),
       resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       body: Container(
-        height: size.height * 0.93,
+        height: size.height,
         width: size.width,
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(size.width * 0.08),
-                topRight: Radius.circular(size.width * 0.08))),
-        /*decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/img/foto4.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.2), BlendMode.dstATop),
-          ),
-        ),*/
+          color: Theme.of(context).colorScheme.primary,
+        ),
         child: SingleChildScrollView(
           physics: NeverScrollableScrollPhysics(),
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           reverse: false,
           child: Column(children: [
-            SizedBox(
-              height: size.height * 0.02,
-            ),
             SingleChildScrollView(
-              padding: EdgeInsets.all(size.width * 0.001),
               child: Column(
                 children: [
                   SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20))),
+                        alignment: Alignment.center,
+                        width: size.width * 0.18,
+                        height: size.height * 0.055,
+                        child: Text(
+                          'Control de usuarios',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontFamily: 'Arial',
+                              fontWeight: FontWeight.bold,
+                              fontSize: size.height * 0.02,
+                              color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  SizedBox(
                     width: double.infinity,
-                    height: size.height * 0.055,
+                    height: size.height * 0.07,
                     child: GridView.builder(
                       physics: ScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 1,
-                          childAspectRatio: size.height * 0.0003),
+                          childAspectRatio: size.height * 0.00035),
                       shrinkWrap: true,
                       primary: false,
                       itemCount: gridItems.length,
@@ -185,7 +215,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                 child: Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
-                                          size.width * 0.03)),
+                                          size.height * 0.1)),
                                   elevation: size.height * 0.5,
                                   //shadowColor: Colors.black26,
                                   color: (selectedIndex == position)
@@ -239,6 +269,77 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
             SizedBox(
               height: size.height * 0.01,
             ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              height: size.height * 0.06,
+              width: size.width * 0.9,
+              margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 1.0),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary.withAlpha(30),
+                  borderRadius: BorderRadius.circular(10)),
+              child: TextField(
+                cursorColor: Theme.of(context).colorScheme.secondary,
+                controller: _searchController,
+                decoration: InputDecoration(
+                    hintText: 'Buscar por nombre',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              FocusScope.of(context)
+                                  .unfocus(); // Oculta el teclado
+                              setState(() {}); // Actualiza la UI
+                            },
+                          )
+                        : null,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    border: InputBorder.none),
+                onChanged: (_) {
+                  setState(() {});
+                },
+              ),
+            ),
+            if (selectedIndex == 1)
+  Container(
+    height: 45,
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(horizontal: 15),
+    child: ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: classOptions.length,
+      separatorBuilder: (context, index) => SizedBox(width: 8),
+      itemBuilder: (context, index) {
+        final clase = classOptions[index];
+        final isSelected = selectedClass == clase;
+        return ChoiceChip(
+          label: Text(
+            clase,
+            style: TextStyle(
+              color: isSelected
+                  ? Colors.white
+                  : Colors.white38,
+            ),
+          ),
+          selected: isSelected,
+          onSelected: (_) {
+            setState(() {
+              selectedClass = clase;
+            });
+          },
+          elevation: 5,
+          checkmarkColor: Colors.white,
+          side: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+          selectedColor: Theme.of(context).colorScheme.tertiary,
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        );
+      },
+    ),
+  ),
+
             SingleChildScrollView(
               child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -259,6 +360,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                     }
                     if (snapshot.hasData && selectedIndex == 4) {
                       final snap = snapshot.data!.docs;
+                      final filteredSnap = snap.where((doc) {
+                        final name =
+                            doc['name']?.toString().toLowerCase() ?? '';
+                        return name.contains(searchText);
+                      }).toList();
+filteredSnap.sort((a, b) {
+  final nameA = (a.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  final nameB = (b.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  return nameA.compareTo(nameB);
+});
 
                       return RefreshIndicator(
                         color: Color.fromRGBO(3, 69, 88, 1),
@@ -267,7 +378,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.72,
+                          height: size.height * 0.732,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -282,14 +393,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                 scrollDirection: Axis.vertical,
                                 shrinkWrap: true,
                                 primary: true,
-                                itemCount: snap.length,
+                                itemCount: filteredSnap.length,
                                 cacheExtent: 1000.0,
                                 itemBuilder: (context, index) {
                                   // final DocumentSnapshot documentSnapshot =
                                   //  snapshot.data!.docs[index];
-                                  DocumentSnapshot documentSnapshot =
-                                      snapshot.data!.docs[index];
-                                  if (snap[index]['rol'] == 'Voluntario') {
+                                  final documentSnapshot = filteredSnap[index];
+                                  final userData = documentSnapshot.data()
+                                      as Map<String, dynamic>;
+                                  //DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
+                                  if (userData['rol'] == 'Voluntario') {
                                     return AnimationConfiguration.staggeredList(
                                       position: index,
                                       child: ScaleAnimation(
@@ -345,7 +458,8 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'.tr(),
+                                                                        'Cancelar'
+                                                                            .tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -397,7 +511,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                           Icon(
                                                             Icons.person_3,
                                                             size: size.height *
-                                                                0.02,
+                                                                0.03,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
@@ -411,12 +525,13 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             alignment: Alignment
                                                                 .topLeft,
                                                             child: Text(
-                                                              snap[index]
-                                                                  ['name'],
+                                                              userData[
+                                                                      'name'] ??
+                                                                  'Sin nombre',
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     size.height *
-                                                                        0.018,
+                                                                        0.02,
                                                                 fontFamily:
                                                                     'Arial',
                                                                 fontWeight:
@@ -439,15 +554,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             SizedBox(
                                                               width:
                                                                   size.width *
-                                                                      0.065,
+                                                                      0.035,
                                                             ),
                                                             Align(
                                                               alignment:
                                                                   Alignment
                                                                       .topLeft,
                                                               child: Text(
-                                                                snap[index]
-                                                                    ['rol'],
+                                                                userData[
+                                                                        'rol'] ??
+                                                                    'Sin nombre',
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: size
@@ -457,13 +573,49 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                       'Arial',
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .bold,
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      172,
-                                                                      172,
-                                                                      172),
+                                                                          .normal,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.035,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                userData[
+                                                                        'email'] ??
+                                                                    'Sin nombre',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
                                                                 ),
                                                               ),
                                                             ),
@@ -489,6 +641,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                     }
                     if (snapshot.hasData && selectedIndex == 3) {
                       final snap = snapshot.data!.docs;
+                      final filteredSnap = snap.where((doc) {
+                        final name =
+                            doc['name']?.toString().toLowerCase() ?? '';
+                        return name.contains(searchText);
+                      }).toList();
+filteredSnap.sort((a, b) {
+  final nameA = (a.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  final nameB = (b.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  return nameA.compareTo(nameB);
+});
 
                       return RefreshIndicator(
                         color: Color.fromRGBO(3, 69, 88, 1),
@@ -497,7 +659,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.72,
+                          height: size.height * 0.732,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -512,14 +674,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                 scrollDirection: Axis.vertical,
                                 shrinkWrap: true,
                                 primary: true,
-                                itemCount: snap.length,
+                                itemCount: filteredSnap.length,
                                 cacheExtent: 1000.0,
                                 itemBuilder: (context, index) {
                                   // final DocumentSnapshot documentSnapshot =
                                   //  snapshot.data!.docs[index];
-                                  DocumentSnapshot documentSnapshot =
-                                      snapshot.data!.docs[index];
-                                  if (snap[index]['rol'] == 'Staff') {
+                                  final documentSnapshot = filteredSnap[index];
+                                  final userData = documentSnapshot.data()
+                                      as Map<String, dynamic>;
+                                  //DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
+                                  if (userData['rol'] == 'Staff') {
                                     return AnimationConfiguration.staggeredList(
                                       position: index,
                                       child: ScaleAnimation(
@@ -564,7 +728,8 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'.tr(),
+                                                                        'Cancelar'
+                                                                            .tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -616,7 +781,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                           Icon(
                                                             Icons.person_3,
                                                             size: size.height *
-                                                                0.02,
+                                                                0.03,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
@@ -630,12 +795,13 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             alignment: Alignment
                                                                 .topLeft,
                                                             child: Text(
-                                                              snap[index]
-                                                                  ['name'],
+                                                              userData[
+                                                                      'name'] ??
+                                                                  'Sin nombre',
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     size.height *
-                                                                        0.018,
+                                                                        0.02,
                                                                 fontFamily:
                                                                     'Arial',
                                                                 fontWeight:
@@ -658,15 +824,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             SizedBox(
                                                               width:
                                                                   size.width *
-                                                                      0.065,
+                                                                      0.035,
                                                             ),
                                                             Align(
                                                               alignment:
                                                                   Alignment
                                                                       .topLeft,
                                                               child: Text(
-                                                                snap[index]
-                                                                    ['rol'],
+                                                                userData[
+                                                                        'rol'] ??
+                                                                    'Sin nombre',
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: size
@@ -677,12 +844,48 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      172,
-                                                                      172,
-                                                                      172),
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.035,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                userData[
+                                                                        'email'] ??
+                                                                    'Sin nombre',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
                                                                 ),
                                                               ),
                                                             ),
@@ -708,6 +911,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                     }
                     if (snapshot.hasData && selectedIndex == 2) {
                       final snap = snapshot.data!.docs;
+                      final filteredSnap = snap.where((doc) {
+                        final name =
+                            doc['name']?.toString().toLowerCase() ?? '';
+                        return name.contains(searchText);
+                      }).toList();
+filteredSnap.sort((a, b) {
+  final nameA = (a.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  final nameB = (b.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  return nameA.compareTo(nameB);
+});
 
                       return RefreshIndicator(
                         color: Color.fromRGBO(3, 69, 88, 1),
@@ -716,7 +929,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.72,
+                          height: size.height * 0.732,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -731,14 +944,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                 scrollDirection: Axis.vertical,
                                 shrinkWrap: true,
                                 primary: true,
-                                itemCount: snap.length,
+                                itemCount: filteredSnap.length,
                                 cacheExtent: 1000.0,
                                 itemBuilder: (context, index) {
                                   // final DocumentSnapshot documentSnapshot =
                                   //  snapshot.data!.docs[index];
-                                  DocumentSnapshot documentSnapshot =
-                                      snapshot.data!.docs[index];
-                                  if (snap[index]['rol'] == 'Profesor') {
+                                  final documentSnapshot = filteredSnap[index];
+                                  final userData = documentSnapshot.data()
+                                      as Map<String, dynamic>;
+                                  //DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
+                                  if (userData['rol'] == 'Profesor') {
                                     return AnimationConfiguration.staggeredList(
                                       position: index,
                                       child: ScaleAnimation(
@@ -783,7 +998,8 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'.tr(),
+                                                                        'Cancelar'
+                                                                            .tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -835,7 +1051,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                           Icon(
                                                             Icons.person_3,
                                                             size: size.height *
-                                                                0.02,
+                                                                0.03,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
@@ -849,17 +1065,18 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             alignment: Alignment
                                                                 .topLeft,
                                                             child: Text(
-                                                              snap[index]
-                                                                  ['name'],
+                                                              userData[
+                                                                      'name'] ??
+                                                                  'Sin nombre',
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     size.height *
-                                                                        0.018,
+                                                                        0.02,
                                                                 fontFamily:
                                                                     'Arial',
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .normal,
+                                                                        .bold,
                                                                 color: Theme.of(
                                                                         context)
                                                                     .colorScheme
@@ -877,15 +1094,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             SizedBox(
                                                               width:
                                                                   size.width *
-                                                                      0.065,
+                                                                      0.035,
                                                             ),
                                                             Align(
                                                               alignment:
                                                                   Alignment
                                                                       .topLeft,
                                                               child: Text(
-                                                                snap[index]
-                                                                    ['rol'],
+                                                                userData[
+                                                                        'rol'] ??
+                                                                    'Sin nombre',
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: size
@@ -896,12 +1114,48 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      172,
-                                                                      172,
-                                                                      172),
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.035,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                userData[
+                                                                        'email'] ??
+                                                                    'Sin nombre',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
                                                                 ),
                                                               ),
                                                             ),
@@ -927,6 +1181,22 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                     }
                     if (snapshot.hasData && selectedIndex == 1) {
                       final snap = snapshot.data!.docs;
+                     final filteredSnap = snap.where((doc) {
+  final userData = doc.data() as Map<String, dynamic>;
+  final name = userData['name']?.toString().toLowerCase() ?? '';
+
+  final isInSelectedClass = selectedClass == 'Todos' ||
+      (userData[selectedClass]?.toString().toLowerCase() == 'inscrito');
+
+  return name.contains(searchText) && isInSelectedClass;
+}).toList();
+filteredSnap.sort((a, b) {
+  final nameA = (a.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  final nameB = (b.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  return nameA.compareTo(nameB);
+});
+
+
 
                       return RefreshIndicator(
                         color: Color.fromRGBO(3, 69, 88, 1),
@@ -935,7 +1205,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                         strokeWidth: 3,
                         onRefresh: () async {},
                         child: SizedBox(
-                          height: size.height * 0.72,
+                          height: size.height * 0.69,
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.topCenter,
@@ -950,14 +1220,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                 scrollDirection: Axis.vertical,
                                 shrinkWrap: true,
                                 primary: true,
-                                itemCount: snap.length,
+                                itemCount: filteredSnap.length,
                                 cacheExtent: 1000.0,
                                 itemBuilder: (context, index) {
                                   // final DocumentSnapshot documentSnapshot =
                                   //  snapshot.data!.docs[index];
-                                  DocumentSnapshot documentSnapshot =
-                                      snapshot.data!.docs[index];
-                                  if (snap[index]['rol'] == 'Estudiante') {
+                                  final documentSnapshot = filteredSnap[index];
+                                  final userData = documentSnapshot.data()
+                                      as Map<String, dynamic>;
+                                  //DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
+                                  if (userData['rol'] == 'Estudiante') {
                                     return AnimationConfiguration.staggeredList(
                                       position: index,
                                       child: ScaleAnimation(
@@ -1002,7 +1274,8 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                           .pop();
                                                                     },
                                                                     child: Text(
-                                                                        'Cancelar'.tr(),
+                                                                        'Cancelar'
+                                                                            .tr(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Theme.of(context).colorScheme.secondary)))
@@ -1054,7 +1327,7 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                           Icon(
                                                             Icons.person_3,
                                                             size: size.height *
-                                                                0.02,
+                                                                0.03,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
@@ -1068,17 +1341,18 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             alignment: Alignment
                                                                 .topLeft,
                                                             child: Text(
-                                                              snap[index]
-                                                                  ['name'],
+                                                              userData[
+                                                                      'name'] ??
+                                                                  'Sin nombre',
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     size.height *
-                                                                        0.018,
+                                                                        0.02,
                                                                 fontFamily:
                                                                     'Arial',
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .normal,
+                                                                        .bold,
                                                                 color: Theme.of(
                                                                         context)
                                                                     .colorScheme
@@ -1096,15 +1370,16 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                             SizedBox(
                                                               width:
                                                                   size.width *
-                                                                      0.065,
+                                                                      0.035,
                                                             ),
                                                             Align(
                                                               alignment:
                                                                   Alignment
                                                                       .topLeft,
                                                               child: Text(
-                                                                snap[index]
-                                                                    ['rol'],
+                                                                userData[
+                                                                        'rol'] ??
+                                                                    'Sin nombre',
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: size
@@ -1115,12 +1390,48 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal,
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      172,
-                                                                      172,
-                                                                      172),
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.035,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                userData[
+                                                                        'email'] ??
+                                                                    'Sin nombre',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.0162,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
                                                                 ),
                                                               ),
                                                             ),
@@ -1146,254 +1457,365 @@ class _AdminUsuariosState extends State<AdminUsuarios> {
                     }
                     if (snapshot.hasData && selectedIndex == 0) {
                       final snap = snapshot.data!.docs;
+                      final filteredSnap = snap.where((doc) {
+                        final name =
+                            doc['name']?.toString().toLowerCase() ?? '';
+                        return name.contains(searchText);
+                      }).toList();
+                      filteredSnap.sort((a, b) {
+  final nameA = (a.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  final nameB = (b.data() as Map<String, dynamic>)['name']?.toString().toLowerCase() ?? '';
+  return nameA.compareTo(nameB);
+});
+
                       return RefreshIndicator(
                         color: Color.fromRGBO(3, 69, 88, 1),
                         backgroundColor: Colors.white,
                         displacement: 1,
                         strokeWidth: 3,
                         onRefresh: () async {},
-                        child: SizedBox(
-                          height: size.height * 0.72,
-                          width: double.infinity,
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: MasonryGridView.builder(
-                              padding: EdgeInsets.zero,
-                              gridDelegate:
-                                  SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 1),
-                              mainAxisSpacing: 1,
-                              crossAxisSpacing: 1,
-                              physics: ScrollPhysics(),
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              primary: true,
-                              itemCount: snap.length,
-                              cacheExtent: 1000.0,
-                              itemBuilder: (context, index) {
-                                // final DocumentSnapshot documentSnapshot =
-                                //  snapshot.data!.docs[index];
-                                DocumentSnapshot documentSnapshot =
-                                    snapshot.data!.docs[index];
-                                return AnimationConfiguration.staggeredList(
-                                  position: index,
-                                  child: ScaleAnimation(
-                                    duration: Duration(milliseconds: 300),
-                                    child: FadeInAnimation(
-                                      child: Slidable(
-                                        endActionPane: ActionPane(
-                                            motion: StretchMotion(),
-                                            children: [
-                                              SlidableAction(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                onPressed: (context) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return AlertDialog(
-                                                          title: Text(
-                                                              'Eliminar usuario'),
-                                                          content: Text(
-                                                              'Estás seguro que quieres eliminar este usuario?'),
-                                                          actions: [
-                                                            TextButton(
-  onPressed: () async {
-  final userEmailToDelete = snap[index]['email'];
+                        child: Column(
+                          children: [
+                            // Buscador
 
-  // 1️⃣ Eliminar los posts del usuario
-  try {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('posts')
-        .where('UserEmail', isEqualTo: userEmailToDelete)
-        .get();
+                            SizedBox(
+                              height: size.height * 0.732,
+                              width: double.infinity,
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: MasonryGridView.builder(
+                                  padding: EdgeInsets.zero,
+                                  gridDelegate:
+                                      SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 1),
+                                  mainAxisSpacing: 1,
+                                  crossAxisSpacing: 1,
+                                  physics: ScrollPhysics(),
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  primary: true,
+                                  itemCount: filteredSnap.length,
+                                  cacheExtent: 1000.0,
+                                  itemBuilder: (context, index) {
+                                    // final DocumentSnapshot documentSnapshot =
+                                    //  snapshot.data!.docs[index];
+                                    final documentSnapshot =
+                                        filteredSnap[index];
+                                    final userData = documentSnapshot.data()
+                                        as Map<String, dynamic>;
+                                    //DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
+                                    return AnimationConfiguration.staggeredList(
+                                      position: index,
+                                      child: ScaleAnimation(
+                                        duration: Duration(milliseconds: 300),
+                                        child: FadeInAnimation(
+                                          child: Slidable(
+                                            endActionPane: ActionPane(
+                                                motion: StretchMotion(),
+                                                children: [
+                                                  SlidableAction(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    onPressed: (context) {
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title: Text(
+                                                                  'Eliminar usuario'),
+                                                              content: Text(
+                                                                  'Estás seguro que quieres eliminar este usuario?'),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () async {
+                                                                    final userEmailToDelete =
+                                                                        snap[index]
+                                                                            [
+                                                                            'email'];
 
-    if (querySnapshot.docs.isNotEmpty) {
-      for (final doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
-      print('✅ Posts eliminados.');
-    } else {
-      print('ℹ️ No se encontraron posts.');
-    }
-  } catch (e) {
-    print('❌ Error al eliminar posts: $e');
-  }
+                                                                    // 1️⃣ Eliminar los posts del usuario
+                                                                    try {
+                                                                      final querySnapshot = await FirebaseFirestore
+                                                                          .instance
+                                                                          .collection(
+                                                                              'posts')
+                                                                          .where(
+                                                                              'UserEmail',
+                                                                              isEqualTo: userEmailToDelete)
+                                                                          .get();
 
-  // 2️⃣ Eliminar imagen de perfil
-  try {
-    await FirebaseStorage.instance.ref(userEmailToDelete).delete();
-    print('✅ Imagen de perfil eliminada.');
-  } catch (e) {
-    print('⚠️ No se encontró imagen de perfil o error al eliminar: $e');
-  }
+                                                                      if (querySnapshot
+                                                                          .docs
+                                                                          .isNotEmpty) {
+                                                                        for (final doc
+                                                                            in querySnapshot.docs) {
+                                                                          await doc
+                                                                              .reference
+                                                                              .delete();
+                                                                        }
+                                                                        print(
+                                                                            '✅ Posts eliminados.');
+                                                                      } else {
+                                                                        print(
+                                                                            'ℹ️ No se encontraron posts.');
+                                                                      }
+                                                                    } catch (e) {
+                                                                      print(
+                                                                          '❌ Error al eliminar posts: $e');
+                                                                    }
 
-  // 3️⃣ Eliminar documento del usuario en 'users'
-  try {
-  final userDocRef = FirebaseFirestore.instance
-      .collection('users')
-      .doc(userEmailToDelete);
+                                                                    // 2️⃣ Eliminar imagen de perfil
+                                                                    try {
+                                                                      await FirebaseStorage
+                                                                          .instance
+                                                                          .ref(
+                                                                              userEmailToDelete)
+                                                                          .delete();
+                                                                      print(
+                                                                          '✅ Imagen de perfil eliminada.');
+                                                                    } catch (e) {
+                                                                      print(
+                                                                          '⚠️ No se encontró imagen de perfil o error al eliminar: $e');
+                                                                    }
 
-  final userDoc = await userDocRef.get();
+                                                                    // 3️⃣ Eliminar documento del usuario en 'users'
+                                                                    try {
+                                                                      final userDocRef = FirebaseFirestore
+                                                                          .instance
+                                                                          .collection(
+                                                                              'users')
+                                                                          .doc(
+                                                                              userEmailToDelete);
 
-  if (userDoc.exists) {
-    await userDocRef.delete();
+                                                                      final userDoc =
+                                                                          await userDocRef
+                                                                              .get();
 
-    // 🔁 Verificamos que se haya eliminado correctamente
-    final checkDoc = await userDocRef.get();
-    if (!checkDoc.exists) {
-      print('✅ Documento del usuario eliminado exitosamente.');
-    } else {
-      print('⚠️ Falló la eliminación del documento.');
-    }
-  } else {
-    print('ℹ️ El documento del usuario no existe.');
-  }
-} catch (e) {
-  print('❌ Error al eliminar documento del usuario: $e');
-}
+                                                                      if (userDoc
+                                                                          .exists) {
+                                                                        await userDocRef
+                                                                            .delete();
 
-  Navigator.of(context).pop();
-},
-  child: Text('Aceptar', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
-),
-                                                            TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop();
-                                                                  checkIfUserIsAdmin();
-                                                                },
-                                                                child: Text(
-                                                                    'Cancelar'.tr(),
-                                                                    style: TextStyle(
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .secondary))
-                                                                            )
-                                                          ],
-                                                        );
-                                                      });
-                                                },
-                                                backgroundColor: Colors.red,
-                                                icon: Icons.delete,
-                                                label: 'borrar',
-                                              )
-                                            ]),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        AdminDetallesHome(
-                                                            documentSnapshot:
-                                                                documentSnapshot)));
-                                          },
-                                          child: Card(
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        size.width * 0.02)),
-                                            elevation: size.height * 0.0,
-                                            shadowColor: Colors.black,
-                                            color: Color.fromRGBO(
-                                                219, 219, 219, 0),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          width: 1,
-                                                          color: const Color
-                                                              .fromARGB(127,
-                                                              211, 211, 211)))),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                    size.width * 0.01),
-                                                child: Column(
-                                                  children: [
-                                                    Row(children: [
-                                                      Icon(
-                                                        Icons.person_3,
-                                                        size:
-                                                            size.height * 0.02,
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .tertiary,
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                      Align(
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                        child: Text(
-                                                          snap[index]['name'],
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                size.height *
-                                                                    0.016,
-                                                            fontFamily: 'Arial',
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                                        // 🔁 Verificamos que se haya eliminado correctamente
+                                                                        final checkDoc =
+                                                                            await userDocRef.get();
+                                                                        if (!checkDoc
+                                                                            .exists) {
+                                                                          print(
+                                                                              '✅ Documento del usuario eliminado exitosamente.');
+                                                                        } else {
+                                                                          print(
+                                                                              '⚠️ Falló la eliminación del documento.');
+                                                                        }
+                                                                      } else {
+                                                                        print(
+                                                                            'ℹ️ El documento del usuario no existe.');
+                                                                      }
+                                                                    } catch (e) {
+                                                                      print(
+                                                                          '❌ Error al eliminar documento del usuario: $e');
+                                                                    }
+
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                  child: Text(
+                                                                      'Aceptar',
+                                                                      style: TextStyle(
+                                                                          color: Theme.of(context)
+                                                                              .colorScheme
+                                                                              .secondary)),
+                                                                ),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                    child: Text(
+                                                                        'Cancelar'
+                                                                            .tr(),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Theme.of(context).colorScheme.secondary)))
+                                                              ],
+                                                            );
+                                                          });
+                                                    },
+                                                    backgroundColor: Colors.red,
+                                                    icon: Icons.delete,
+                                                    label: 'borrar',
+                                                  )
+                                                ]),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            AdminDetallesHome(
+                                                                documentSnapshot:
+                                                                    documentSnapshot)));
+                                              },
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            size.width * 0.02)),
+                                                elevation: size.height * 0.0,
+                                                shadowColor: Colors.black,
+                                                color: Color.fromRGBO(
+                                                    219, 219, 219, 0),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              width: 1,
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  127,
+                                                                  211,
+                                                                  211,
+                                                                  211)))),
+                                                  child: Padding(
+                                                    padding: EdgeInsets.all(
+                                                        size.width * 0.01),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(children: [
+                                                          Icon(
+                                                            Icons.person_3,
+                                                            size: size.height *
+                                                                0.03,
                                                             color: Theme.of(
                                                                     context)
                                                                 .colorScheme
-                                                                .secondary,
+                                                                .tertiary,
                                                           ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width:
-                                                            size.width * 0.02,
-                                                      ),
-                                                    ]),
-                                                    Row(
-                                                      children: [
-                                                        SizedBox(
-                                                          width: size.width *
-                                                              0.065,
-                                                        ),
-                                                        Align(
-                                                          alignment:
-                                                              Alignment.topLeft,
-                                                          child: Text(
-                                                            snap[index]['rol'],
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  size.height *
-                                                                      0.0162,
-                                                              fontFamily:
-                                                                  'Arial',
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              color: const Color
-                                                                  .fromARGB(
-                                                                  255,
-                                                                  172,
-                                                                  172,
-                                                                  172),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .topLeft,
+                                                            child: Text(
+                                                              userData[
+                                                                      'name'] ??
+                                                                  'Sin nombre',
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    size.height *
+                                                                        0.02,
+                                                                fontFamily:
+                                                                    'Arial',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary,
+                                                              ),
                                                             ),
                                                           ),
+                                                          SizedBox(
+                                                            width: size.width *
+                                                                0.02,
+                                                          ),
+                                                        ]),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.04,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                userData[
+                                                                        'rol'] ??
+                                                                    'Sin nombre',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.016,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.04,
+                                                            ),
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                userData[
+                                                                        'email'] ??
+                                                                    'Sin nombre',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontSize: size
+                                                                          .height *
+                                                                      0.016,
+                                                                  fontFamily:
+                                                                      'Arial',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary
+                                                                      .withAlpha(
+                                                                          150),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                );
-                              },
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       );
                     } else {

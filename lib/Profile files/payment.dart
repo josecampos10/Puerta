@@ -571,7 +571,7 @@ class _PaymentState extends State<Payment> with SingleTickerProviderStateMixin {
       ? () {
           if (_controllerName.text.isEmpty || _controller.text.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Por favor completa todos los campos')),
+              SnackBar(content: Text('Llene todos los campos necesarios'.tr())),
             );
             return;
           }

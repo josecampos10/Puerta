@@ -246,12 +246,12 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                       child: SizedBox(
                         width: size.width,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(width: size.width * 0.01),
+                            
                             SizedBox(
                               height: size.height * 0.06,
-                              width: size.width * 0.98,
+                              width: size.width * 0.86,
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
                                 margin: EdgeInsets.symmetric(
@@ -266,47 +266,57 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                     borderRadius: BorderRadius.circular(15)),
                                 child: Theme(
                                   data: Theme.of(context).copyWith(
-    textSelectionTheme: TextSelectionThemeData(
-      selectionColor: Colors.blue.withOpacity(0.4), // visible highlight
-      selectionHandleColor: Theme.of(context).colorScheme.secondary,
-      cursorColor: Theme.of(context).colorScheme.secondary,
-    ),
-  ),
+                                    textSelectionTheme: TextSelectionThemeData(
+                                      selectionColor: Colors.blue.withOpacity(
+                                          0.4), // visible highlight
+                                      selectionHandleColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      cursorColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ),
                                   child: TextField(
                                     contextMenuBuilder: (BuildContext context,
                                         EditableTextState editableTextState) {
                                       return AdaptiveTextSelectionToolbar
                                           .buttonItems(
-                                        anchors:
-                                            editableTextState.contextMenuAnchors,
+                                        anchors: editableTextState
+                                            .contextMenuAnchors,
                                         buttonItems: [
                                           ContextMenuButtonItem(
                                             onPressed: () {
                                               editableTextState.copySelection(
-                                                  SelectionChangedCause.toolbar);
+                                                  SelectionChangedCause
+                                                      .toolbar);
                                             },
                                             type: ContextMenuButtonType.copy,
                                           ),
                                           ContextMenuButtonItem(
                                             onPressed: () {
                                               editableTextState.cutSelection(
-                                                  SelectionChangedCause.toolbar);
+                                                  SelectionChangedCause
+                                                      .toolbar);
                                             },
                                             type: ContextMenuButtonType.cut,
                                           ),
                                           ContextMenuButtonItem(
                                             onPressed: () {
                                               editableTextState.pasteText(
-                                                  SelectionChangedCause.toolbar);
+                                                  SelectionChangedCause
+                                                      .toolbar);
                                             },
                                             type: ContextMenuButtonType.paste,
                                           ),
                                           ContextMenuButtonItem(
                                             onPressed: () {
                                               editableTextState.selectAll(
-                                                  SelectionChangedCause.toolbar);
+                                                  SelectionChangedCause
+                                                      .toolbar);
                                             },
-                                            type: ContextMenuButtonType.selectAll,
+                                            type:
+                                                ContextMenuButtonType.selectAll,
                                           ),
                                         ],
                                       );
@@ -356,23 +366,40 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                           onPressed: () {
                                             showDialog(
                                                 context: context,
-                                                builder: (BuildContext context) {
+                                                builder:
+                                                    (BuildContext context) {
                                                   return FutureBuilder(
                                                     future: FireStoreDataBase()
                                                         .getData(),
-                                                    builder: (context, snapshot) {
+                                                    builder:
+                                                        (context, snapshot) {
                                                       if (snapshot.hasError) {
                                                         return const Text(
                                                             'Something went wrong');
                                                       }
                                                       if (snapshot
                                                               .connectionState ==
-                                                          ConnectionState.done) {
+                                                          ConnectionState
+                                                              .done) {
                                                         return AlertDialog(
                                                           title: Text(
-                                                              'Publicar mensaje'.tr(),style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                                            'Publicar mensaje'
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary),
+                                                          ),
                                                           content: Text(
-                                                              'Estás seguro que quieres publicar este mensaje?'.tr(), style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                                            'Estás seguro que quieres publicar este mensaje?'
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary),
+                                                          ),
                                                           actions: [
                                                             TextButton(
                                                               onPressed:
@@ -382,11 +409,12 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                                                         .now();
                                                                 String today =
                                                                     '${now.day}/${now.month}/${now.year}';
-                                                                String timetoday =
+                                                                String
+                                                                    timetoday =
                                                                     '${now.hour}:${now.minute}';
-                                                                String postId = now
-                                                                    .toIso8601String(); // Esto será el nuevo valor de `lastpost`
-                                  
+                                                                String postId =
+                                                                    now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
+
                                                                 // Guarda el post en la colección 'postsESL'
                                                                 await FirebaseFirestore
                                                                     .instance
@@ -414,7 +442,7 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                                                       Timestamp
                                                                           .now(),
                                                                 });
-                                  
+
                                                                 // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
                                                                 await FirebaseFirestore
                                                                     .instance
@@ -426,7 +454,7 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                                                   'lastpost':
                                                                       postId
                                                                 });
-                                  
+
                                                                 Navigator.of(
                                                                         context)
                                                                     .pop();
@@ -435,7 +463,8 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                                               },
                                                               child: Text(
                                                                 'Aceptar'.tr(),
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   color: Theme.of(
                                                                           context)
                                                                       .colorScheme
@@ -450,7 +479,8 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                                                       .pop();
                                                                 },
                                                                 child: Text(
-                                                                  'Cancelar'.tr(),
+                                                                  'Cancelar'
+                                                                      .tr(),
                                                                   style: TextStyle(
                                                                       color: Theme.of(
                                                                               context)
@@ -766,12 +796,17 @@ class _ProfeCiudadaniaState extends State<ProfeCiudadania> {
                                                                           Icon(
                                                                         Icons
                                                                             .info,
-                                                                        color: Colors
-                                                                            .yellow,
+                                                                        color: const Color
+                                                                            .fromARGB(
+                                                                            255,
+                                                                            255,
+                                                                            163,
+                                                                            59),
                                                                       ),
                                                                       content:
                                                                           Text(
-                                                                        'Desea eliminar esto?',
+                                                                        'Desea eliminar esto?'
+                                                                            .tr(),
                                                                         textAlign:
                                                                             TextAlign.center,
                                                                         style: TextStyle(

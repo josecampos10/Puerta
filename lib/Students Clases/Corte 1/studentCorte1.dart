@@ -184,7 +184,7 @@ class _StudentCorte1State extends State<StudentCorte1> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            data['Name'] ?? 'Nombre clase',
+                            data['Name'] ?? 'Nombre clase'.tr(),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: size.height * 0.04,
@@ -192,7 +192,7 @@ class _StudentCorte1State extends State<StudentCorte1> {
                                 fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            data['Subname'] ?? 'Descripción',
+                            data['Subname'] ?? 'Descripción'.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: Colors.white,

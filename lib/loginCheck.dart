@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lapuerta2/Donorboarding.dart';
 import 'package:lapuerta2/ForgotPasswordPage.dart';
 import 'package:lapuerta2/auth.dart';
 import 'package:lapuerta2/onboarding.dart';
@@ -30,55 +31,65 @@ class _LoginNowState extends State<LoginNow> {
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) return 'Ingrese una contraseña'.tr();
     if (value.length < 8) return 'Mínimo 8 caracteres'.tr();
-    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Debe tener una mayúscula'.tr();
-    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Debe tener una minúscula'.tr();
+    if (!RegExp(r'[A-Z]').hasMatch(value))
+      return 'Debe tener una mayúscula'.tr();
+    if (!RegExp(r'[a-z]').hasMatch(value))
+      return 'Debe tener una minúscula'.tr();
     if (!RegExp(r'[0-9]').hasMatch(value)) return 'Debe tener un número'.tr();
-    if (!RegExp(r'[!@#\\$&*~]').hasMatch(value)) return 'Debe tener un símbolo: !@#%?_'.tr();
+    if (!RegExp(r'[!@#\\$&*~]').hasMatch(value))
+      return 'Debe tener un símbolo: !@#%?_'.tr();
     return null;
   }
 
-  
-
-
   Future<void> signInWithEmailAndPassword() async {
-  try {
-    await Auth().signInWithEmailAndPassword(
-      email: _controllerEmail.text,
-      password: _controllerPassword.text,
-    );
-
-  } on FirebaseAuthException catch (e) {
-    setState(() {
-      errorMessage = e.message;
-      _errorMessage();
-    });
+    try {
+      await Auth().signInWithEmailAndPassword(
+        email: _controllerEmail.text,
+        password: _controllerPassword.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+        _errorMessage();
+      });
+    }
   }
-}
+
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty)
+      return 'Ingrese un correo electrónico'.tr();
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value))
+      return 'Correo no válido'.tr();
+    return null;
+  }
+
+  String? validateName(String? value) {
+    if (value == null || value.isEmpty) return 'Ingrese su nombre'.tr();
+    return null;
+  }
 
   Future<void> createUserWithEmailAndPassword() async {
-     // Quitamos espacios en blanco alrededor
-  final name     = _controllerName.text.trim();
-  final email    = _controllerEmail.text.trim();
-  final password = _controllerPassword.text.trim();
-  final role     = _selectedItem?.trim() ?? '';
+    // Quitamos espacios en blanco alrededor
+    final name = _controllerName.text.trim();
+    final email = _controllerEmail.text.trim();
+    final password = _controllerPassword.text.trim();
+    final role = _selectedItem?.trim() ?? '';
 
-  // 1️⃣  Comprobamos si falta alguno
-  if (name.isEmpty || email.isEmpty || password.isEmpty || role.isEmpty) {
-    // Aquí puedes mostrar un SnackBar, diálogo, print, etc.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Llene todos los campos necesarios')),
-    );
-    return; // ⬅️  Salimos sin llamar a Firebase
-  }
+    // 1️⃣  Comprobamos si falta alguno
+    if (name.isEmpty || email.isEmpty || password.isEmpty || role.isEmpty) {
+      // Aquí puedes mostrar un SnackBar, diálogo, print, etc.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Llene todos los campos necesarios'.tr())),
+      );
+      return; // ⬅️  Salimos sin llamar a Firebase
+    }
     try {
       await Auth().createUserWithEmailAndPassword(
-      name: name,
-      email: email,
-      password: password,
-      rol: role,
-    );
-    
-
+        name: name,
+        email: email,
+        password: password,
+        rol: role,
+      );
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -92,6 +103,7 @@ class _LoginNowState extends State<LoginNow> {
     String title,
     TextEditingController controller,
     IconData icon,
+    String? Function(String?)? validator,
   ) {
     Size size = MediaQuery.of(context).size;
     return Center(
@@ -111,13 +123,12 @@ class _LoginNowState extends State<LoginNow> {
             color: const Color.fromARGB(255, 248, 248, 248),
             borderRadius: BorderRadius.circular(10)),
         child: Center(
-          child: TextField(
-            
+          child: TextFormField(
+            validator: validator,
             onTapOutside: (event) {
-                                      print('onTapOutside');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    },
+              print('onTapOutside');
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
             cursorColor: Colors.black,
             style: TextStyle(
                 fontSize: size.height * 0.018,
@@ -132,8 +143,11 @@ class _LoginNowState extends State<LoginNow> {
               enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.transparent)),
               hintText: title,
-              prefixIcon:
-                  Icon(icon, color: const Color.fromARGB(255, 155, 155, 155), size: size.height*0.02,),
+              prefixIcon: Icon(
+                icon,
+                color: const Color.fromARGB(255, 155, 155, 155),
+                size: size.height * 0.02,
+              ),
               hintStyle: TextStyle(
                   fontSize: size.height * 0.017,
                   fontFamily: 'Arial',
@@ -163,8 +177,7 @@ class _LoginNowState extends State<LoginNow> {
         ),
         child: Center(
           child: TextFormField(
-            
-            cursorHeight: size.height*0.015,
+            cursorHeight: size.height * 0.015,
             controller: controller,
             obscureText: _isObscure,
             validator: validatePassword,
@@ -174,27 +187,30 @@ class _LoginNowState extends State<LoginNow> {
               color: const Color.fromARGB(255, 0, 0, 0),
             ),
             decoration: InputDecoration(
-              
               errorBorder: UnderlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20))),
-                focusedErrorBorder: OutlineInputBorder(
                   borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(40),
-                ),
-                errorStyle: TextStyle(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .error, // Color del texto del error
-                  fontSize: size.height * 0.015, // Tamaño del texto
-                  fontWeight: FontWeight.normal,
-                  fontFamily: 'Arial',
-                ),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              errorStyle: TextStyle(
+                color: Theme.of(context)
+                    .colorScheme
+                    .error, // Color del texto del error
+                fontSize: size.height * 0.015, // Tamaño del texto
+                fontWeight: FontWeight.normal,
+                fontFamily: 'Arial',
+              ),
               border: InputBorder.none,
               hintText: title,
-              prefixIcon: Icon(icon, color: const Color.fromARGB(255, 155, 155, 155),size: size.height*0.02,),
+              prefixIcon: Icon(
+                icon,
+                color: const Color.fromARGB(255, 155, 155, 155),
+                size: size.height * 0.02,
+              ),
               hintStyle: TextStyle(
                 fontSize: size.height * 0.017,
                 fontFamily: 'Arial',
@@ -226,37 +242,52 @@ class _LoginNowState extends State<LoginNow> {
   }
 
   Widget _submitButton() {
-  Size size = MediaQuery.of(context).size;
-  return SizedBox(
-    width: size.width * 0.9,
-    height: size.height * 0.07,
-    child: ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState?.validate() ?? false) {
-          isLogin ? signInWithEmailAndPassword() : createUserWithEmailAndPassword();
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color.fromARGB(255, 96, 146, 255),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    Size size = MediaQuery.of(context).size;
+    return SizedBox(
+      width: size.width * 0.9,
+      height: size.height * 0.056,
+      child: ElevatedButton(
+        onPressed: () {
+          // Validar campos del formulario (nombre, correo, contraseña)
+          if (_formKey.currentState?.validate() ?? false) {
+            // Si estamos en modo login, solo inicia sesión
+            if (isLogin) {
+              signInWithEmailAndPassword();
+            } else {
+              // Si estamos en modo registro, validamos el rol seleccionado
+              if (_selectedItem == null || _selectedItem!.isEmpty) {
+                // Mostrar error si no se seleccionó un rol
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Por favor seleccione un rol")),
+                );
+                return;
+              }
+
+              // Si todo está bien, registramos al usuario
+              createUserWithEmailAndPassword();
+            }
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 96, 146, 255),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: Text(
-          isLogin ? 'Inicar Sesión'.tr() : 'Registrarse',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            fontSize: size.height * 0.021,
-            fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          child: Text(
+            isLogin ? 'Inicar Sesión'.tr() : 'Registrarse'.tr(),
+            style: TextStyle(
+              color: const Color.fromARGB(255, 255, 255, 255),
+              fontSize: size.height * 0.02,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _loginOrRegisterButton() {
     Size size = MediaQuery.of(context).size;
@@ -273,7 +304,9 @@ class _LoginNowState extends State<LoginNow> {
             });
           },
           child: Text(
-            isLogin ? 'No tienes una cuenta? Registrate'.tr() : 'Ir a inicar sesión'.tr(),
+            isLogin
+                ? 'No tienes una cuenta? Registrate'.tr()
+                : 'Ir a inicar sesión'.tr(),
             style: TextStyle(
                 color: const Color.fromARGB(255, 0, 238, 255),
                 fontWeight: FontWeight.bold,
@@ -287,15 +320,24 @@ class _LoginNowState extends State<LoginNow> {
 
   bool _imagePrecached = false;
 
-@override
-void didChangeDependencies() {
-  super.didChangeDependencies();
+ final Map<String, String> rolesMap = {
+  'Estudiante': 'Student',
+  'Voluntario': 'Volunteer',
+  'Profesor': 'Teacher',
+  'Staff': 'Staff',
+  'Donante': 'Donor'
+};
 
-  if (!_imagePrecached) {
-    precacheImage(const AssetImage('assets/img/fondo_login.png'), context);
-    _imagePrecached = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_imagePrecached) {
+      precacheImage(const AssetImage('assets/img/fondo_login.png'), context);
+      _imagePrecached = true;
+    }
   }
-}
 
   @override
   void initState() {
@@ -313,7 +355,6 @@ void didChangeDependencies() {
         extendBodyBehindAppBar: true,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Container(
-          
           alignment: Alignment.topCenter,
           height: size.height,
           width: size.width,
@@ -360,9 +401,9 @@ void didChangeDependencies() {
                 ),
                 _loginOrRegisterButton(),
                 (isLogin) ? _boxLogin() : _boxRegister(),
-      
+
                 //_loginOrRegisterButton(),
-      
+
                 Padding(
                     padding: EdgeInsets.only(
                         bottom: MediaQuery.of(context).viewInsets.bottom))
@@ -386,16 +427,13 @@ void didChangeDependencies() {
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             //_loginOrRegisterButton(),
-            _entryField(
-              'correo electrónico'.tr(),
-              _controllerEmail,
-              Icons.email_outlined,
-            ),
+            _entryField('correo electrónico'.tr(), _controllerEmail,
+                Icons.email_outlined, validateEmail),
             SizedBox(
               height: size.height * 0.01,
             ),
-            _entryFieldPassword(
-                'contraseña'.tr(), _controllerPassword, Icons.lock_outline_rounded),
+            _entryFieldPassword('contraseña'.tr(), _controllerPassword,
+                Icons.lock_outline_rounded),
             SizedBox(
               height: size.height * 0.0,
             ),
@@ -440,7 +478,7 @@ void didChangeDependencies() {
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
-                    fontSize: size.width * 0.04),
+                    fontSize: size.height * 0.02),
               ),
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const OnboardingPage())),
@@ -463,17 +501,18 @@ void didChangeDependencies() {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             // _loginOrRegisterButton(),
-            _entryField('nombre'.tr(), _controllerName, Icons.person_2_outlined),
+            _entryField('nombre'.tr(), _controllerName, Icons.person_2_outlined,
+                validateName),
             SizedBox(
               height: 10.0,
             ),
-            _entryField(
-                'correo electrónico'.tr(), _controllerEmail, Icons.email_outlined),
+            _entryField('correo electrónico'.tr(), _controllerEmail,
+                Icons.email_outlined, validateEmail),
             SizedBox(
               height: 10.0,
             ),
-            _entryFieldPassword(
-                'contraseña'.tr(), _controllerPassword, Icons.lock_outline_rounded),
+            _entryFieldPassword('contraseña'.tr(), _controllerPassword,
+                Icons.lock_outline_rounded),
             SizedBox(
               height: 10.0,
             ),
@@ -499,59 +538,62 @@ void didChangeDependencies() {
                     color: const Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(10)),
                 child: DropdownButtonHideUnderline(
-                  child: DropdownButton(
-                    dropdownColor: const Color.fromARGB(255, 255, 255, 255),
-                    underline: null,
+                  child: DropdownButton<String>(
+                    alignment: Alignment.center,
                     padding: EdgeInsets.only(left: 10),
+                    //dropdownColor: Colors.white,
                     hint: _selectedItem == ''
                         ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.add_box_outlined,
-                                color: const Color.fromARGB(255, 155, 155, 155),
+                                color: Color.fromARGB(255, 155, 155, 155),
                               ),
-                              SizedBox(
-                                width: 15,
-                              ),
+                              SizedBox(width: 15),
                               Text(
                                 'elija su rol'.tr(),
                                 style: TextStyle(
-                                    fontFamily: 'Arial',
-                                    color: const Color.fromARGB(
-                                        255, 155, 155, 155),
-                                    fontSize: size.height * 0.018),
+                                  fontFamily: 'Arial',
+                                  color: Color.fromARGB(255, 155, 155, 155),
+                                  fontSize: size.height * 0.018,
+                                ),
                               ),
                             ],
                           )
-                        : Text(
-                            _selectedItem,
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 0, 0, 0)),
+                        : Center(
+                            child: Text(
+                              rolesMap[_selectedItem]!.tr(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0)),
+                            ),
                           ),
                     isExpanded: false,
-                    iconSize: 30.0,
-                    style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
-                    items:
-                        ['Estudiante', 'Voluntario', 'Profesor', 'Staff'].map(
-                      (val) {
-                        return DropdownMenuItem(
-                          alignment: Alignment.center,
-                          value: val,
-                          child: Container(
-                            color: Colors.white,
-                            //width: size.width*0.5,
-                            child: Text(val),
-                          ),
-                        );
-                      },
-                    ).toList(),
-                    onTap: () {},
-                    onChanged: (val) {
-                      setState(
-                        () {
-                          _selectedItem = val!;
-                        },
+                    elevation: 15,
+                    menuWidth: size.width * 0.57,
+                    borderRadius: BorderRadius.circular(12),
+                    iconSize: size.height * 0.01,
+                    items: rolesMap.entries.map((entry) {
+                      final key = entry.key; // Español (valor real)
+                      final translated = entry.value;
+                      return DropdownMenuItem<String>(
+                        value: key,
+                        child: Center(child: Text(translated.tr())),
                       );
+                    }).toList(),
+                    onChanged: (val) async {
+                      if (val == 'Donante') {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const DonorOnboardingScreen()),
+                        );
+                      }
+
+                      setState(() {
+                        _selectedItem = val!;
+                      });
                     },
                   ),
                 ),
@@ -571,7 +613,7 @@ void didChangeDependencies() {
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
-                    fontSize: size.width * 0.04),
+                    fontSize: size.height * 0.02),
               ),
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const OnboardingPage())),

@@ -12,7 +12,8 @@ class AdminDetailsWishlistView extends StatefulWidget {
   const AdminDetailsWishlistView({super.key});
 
   @override
-  State<AdminDetailsWishlistView> createState() => _AdminDetailsWishlistViewState();
+  State<AdminDetailsWishlistView> createState() =>
+      _AdminDetailsWishlistViewState();
 }
 
 class _AdminDetailsWishlistViewState extends State<AdminDetailsWishlistView> {
@@ -24,8 +25,6 @@ class _AdminDetailsWishlistViewState extends State<AdminDetailsWishlistView> {
     getProfilePicture();
   }
 
-
-
   final FirebaseAuth auth = FirebaseAuth.instance;
   final currentUser = FirebaseAuth.instance.currentUser!;
   final TextEditingController _controllerName = TextEditingController();
@@ -36,44 +35,11 @@ class _AdminDetailsWishlistViewState extends State<AdminDetailsWishlistView> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Color.fromRGBO(4, 99, 128, 1),
-      appBar: AppBar(
-          bottomOpacity: 0.0,
-          toolbarHeight: size.width * 0.17,
-          leadingWidth: size.width * 0.17,
-          leading: Container(
-            padding: EdgeInsets.all(6),
-            width: size.width * 0.2,
-            child: CircleAvatar(
-              backgroundColor: const Color.fromARGB(0, 240, 195, 195),
-              child: Image.asset(
-                'assets/img/logo.png',
-                fit: BoxFit.scaleDown,
-                scale: size.height * 0.008,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          title: Container(
-              padding: EdgeInsets.only(top: size.height * 0.03),
-              child: Text(
-                'Perfil',
-              )),
-          centerTitle: true,
-          titleTextStyle: TextStyle(
-              fontFamily: '',
-              fontWeight: FontWeight.bold,
-              fontSize: size.height * 0.023,
-              color: const Color.fromARGB(255, 255, 255, 255)),
-          backgroundColor: Color.fromRGBO(4, 99, 128, 1),
-          actions: [],
-        ),
       resizeToAvoidBottomInset: true,
       body: Container(
         decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(size.width * 0.08),
-                topRight: Radius.circular(size.width * 0.08))),
+          color: const Color.fromARGB(255, 255, 255, 255),
+        ),
         height: size.height,
         width: size.width,
         //color: Color.fromRGBO(255, 255, 255, 1),
@@ -89,18 +55,33 @@ class _AdminDetailsWishlistViewState extends State<AdminDetailsWishlistView> {
                     child: Column(
                       children: [
                         SizedBox(
-                          height: size.height * 0.05,
+                          height: size.height * 0.02,
                         ),
-                        Text(
-                          'Editar perfil',
-                          style: TextStyle(
-                              color: const Color.fromARGB(255, 0, 0, 0)
-                                  .withOpacity(0.5),
-                              fontSize: size.height * 0.03,
-                              fontWeight: FontWeight.bold),
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(20),
+                                      bottomRight: Radius.circular(20))),
+                              alignment: Alignment.center,
+                              width: size.width * 0.18,
+                              height: size.height * 0.055,
+                              child: Text(
+                                'Editar perfil',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontFamily: 'Arial',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: size.height * 0.02,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(
-                          height: size.height * 0.04,
+                          height: size.height * 0.02,
                         ),
                         GestureDetector(
                           onTap: onProfileTapped,
@@ -139,8 +120,8 @@ class _AdminDetailsWishlistViewState extends State<AdminDetailsWishlistView> {
                           children: [
                             Center(
                               child: Container(
-                                width: size.width - 40,
-                                height: 50.0,
+                                width: size.width*0.6,
+                                height: size.height*0.06,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20.0),
@@ -175,11 +156,11 @@ class _AdminDetailsWishlistViewState extends State<AdminDetailsWishlistView> {
                           ],
                         ),
                         SizedBox(
-                          height: size.height * 0.03,
+                          height: size.height * 0.08,
                         ),
                         SizedBox(
                           width: size.height * 0.35,
-                          height: size.height * 0.06,
+                          height: size.height * 0.07,
                           child: ElevatedButton(
                             onPressed: () {
                               if (_controllerName.text == '') {
@@ -222,20 +203,12 @@ class _AdminDetailsWishlistViewState extends State<AdminDetailsWishlistView> {
                               style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 255, 255, 255),
-                                  fontSize: size.width * 0.037),
+                                  fontSize: size.width * 0.02),
                             ),
                           ),
                         ),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'Ir atrás',
-                              style: TextStyle(
-                                  color: const Color.fromARGB(255, 0, 0, 0),
-                                  fontSize: size.width * 0.04),
-                            ))
+                        SizedBox(height: size.height*0.02,),
+                       
                       ],
                     )),
               ),

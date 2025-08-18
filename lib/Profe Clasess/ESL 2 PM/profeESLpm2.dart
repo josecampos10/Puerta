@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -23,7 +22,8 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
   final usuario =
       FirebaseFirestore.instance.collection('users').doc().snapshots();
 
-  CollectionReference users = FirebaseFirestore.instance.collection('postsESLpm2');
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('postsESLpm2');
   final controller = TextEditingController();
   final streaming = FirebaseFirestore.instance
       .collection('postsESLpm2')
@@ -73,7 +73,7 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
             child: Text(
               ez.tr('Mis clases'),
               style: TextStyle(
-                 fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.bold,
                   fontSize: size.height * 0.024,
                   color: Colors.white,
                   fontFamily: ''),
@@ -246,12 +246,11 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
                       child: SizedBox(
                         width: size.width,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(width: size.width * 0.01),
                             SizedBox(
                               height: size.height * 0.06,
-                              width: size.width * 0.98,
+                              width: size.width * 0.86,
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 5),
                                 margin: EdgeInsets.symmetric(
@@ -266,57 +265,62 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
                                     borderRadius: BorderRadius.circular(15)),
                                 child: Theme(
                                   data: Theme.of(context).copyWith(
-    textSelectionTheme: TextSelectionThemeData(
-      selectionColor: Colors.blue.withOpacity(0.4), // visible highlight
-      selectionHandleColor: Theme.of(context).colorScheme.secondary,
-      cursorColor: Theme.of(context).colorScheme.secondary,
-    ),
-  ),
+                                    textSelectionTheme: TextSelectionThemeData(
+                                      selectionColor: Colors.blue.withOpacity(
+                                          0.4), // visible highlight
+                                      selectionHandleColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      cursorColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ),
                                   child: TextField(
                                     contextMenuBuilder: (BuildContext context,
-                                          EditableTextState editableTextState) {
-                                        return AdaptiveTextSelectionToolbar
-                                            .buttonItems(
-                                          anchors: editableTextState
-                                              .contextMenuAnchors,
-                                          buttonItems: [
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.copySelection(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type: ContextMenuButtonType.copy,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.cutSelection(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type: ContextMenuButtonType.cut,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.pasteText(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type: ContextMenuButtonType.paste,
-                                            ),
-                                            ContextMenuButtonItem(
-                                              onPressed: () {
-                                                editableTextState.selectAll(
-                                                    SelectionChangedCause
-                                                        .toolbar);
-                                              },
-                                              type:
-                                                  ContextMenuButtonType.selectAll,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                      enableInteractiveSelection: true,
+                                        EditableTextState editableTextState) {
+                                      return AdaptiveTextSelectionToolbar
+                                          .buttonItems(
+                                        anchors: editableTextState
+                                            .contextMenuAnchors,
+                                        buttonItems: [
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.copySelection(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type: ContextMenuButtonType.copy,
+                                          ),
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.cutSelection(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type: ContextMenuButtonType.cut,
+                                          ),
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.pasteText(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type: ContextMenuButtonType.paste,
+                                          ),
+                                          ContextMenuButtonItem(
+                                            onPressed: () {
+                                              editableTextState.selectAll(
+                                                  SelectionChangedCause
+                                                      .toolbar);
+                                            },
+                                            type:
+                                                ContextMenuButtonType.selectAll,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                    enableInteractiveSelection: true,
                                     //ocusNode: FocusScope.of(context).unfocus(),
                                     cursorColor:
                                         Theme.of(context).colorScheme.secondary,
@@ -361,62 +365,112 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
                                           onPressed: () {
                                             showDialog(
                                                 context: context,
-                                                builder: (BuildContext context) {
+                                                builder:
+                                                    (BuildContext context) {
                                                   return FutureBuilder(
                                                     future: FireStoreDataBase()
                                                         .getData(),
-                                                    builder: (context, snapshot) {
+                                                    builder:
+                                                        (context, snapshot) {
                                                       if (snapshot.hasError) {
                                                         return const Text(
                                                             'Something went wrong');
                                                       }
                                                       if (snapshot
                                                               .connectionState ==
-                                                          ConnectionState.done) {
+                                                          ConnectionState
+                                                              .done) {
                                                         return AlertDialog(
                                                           title: Text(
-                                                              'Publicar mensaje'.tr(),style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                                            'Publicar mensaje'
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary),
+                                                          ),
                                                           content: Text(
-                                                              'Estás seguro que quieres publicar este mensaje?'.tr(), style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
+                                                            'Estás seguro que quieres publicar este mensaje?'
+                                                                .tr(),
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary),
+                                                          ),
                                                           actions: [
                                                             TextButton(
-                                    onPressed: () async {
-                                      DateTime now = DateTime.now();
-                                      String today = '${now.day}/${now.month}/${now.year}';
-                                      String timetoday = '${now.hour}:${now.minute}';
-                                      String postId = now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
-                                  
-                                      // Guarda el post en la colección 'postsESL'
-                                      await FirebaseFirestore.instance
-                                          .collection('postsESLpm2')
-                                          .doc(postId)
-                                          .set({
-                                        'Name': data['name'] ?? "",
-                                        'Comment': controller.text,
-                                        'Date': today,
-                                        'Time': timetoday,
-                                        'User': 'La Puerta',
-                                        'postUrl': 'no imagen',
-                                        'Image': snapshot.data.toString(),
-                                        'createdAt': Timestamp.now(),
-                                      });
-                                  
-                                      // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
-                                      await FirebaseFirestore.instance
-                                          .collection('postsState')
-                                          .doc('ESLpm2')
-                                          .set({'lastpost': postId});
-                                  
-                                      Navigator.of(context).pop();
-                                      controller.clear();
-                                    },
-                                    child: Text(
-                                      'Aceptar'.tr(),
-                                      style: TextStyle(
-                                        color: Theme.of(context).colorScheme.secondary,
-                                      ),
-                                    ),
-                                  ),
+                                                              onPressed:
+                                                                  () async {
+                                                                DateTime now =
+                                                                    DateTime
+                                                                        .now();
+                                                                String today =
+                                                                    '${now.day}/${now.month}/${now.year}';
+                                                                String
+                                                                    timetoday =
+                                                                    '${now.hour}:${now.minute}';
+                                                                String postId =
+                                                                    now.toIso8601String(); // Esto será el nuevo valor de `lastpost`
+
+                                                                // Guarda el post en la colección 'postsESL'
+                                                                await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'postsESLpm2')
+                                                                    .doc(postId)
+                                                                    .set({
+                                                                  'Name': data[
+                                                                          'name'] ??
+                                                                      "",
+                                                                  'Comment':
+                                                                      controller
+                                                                          .text,
+                                                                  'Date': today,
+                                                                  'Time':
+                                                                      timetoday,
+                                                                  'User':
+                                                                      'La Puerta',
+                                                                  'postUrl':
+                                                                      'no imagen',
+                                                                  'Image': snapshot
+                                                                      .data
+                                                                      .toString(),
+                                                                  'createdAt':
+                                                                      Timestamp
+                                                                          .now(),
+                                                                });
+
+                                                                // ✅ Actualiza el estado global para que todos vean que hay un nuevo post
+                                                                await FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'postsState')
+                                                                    .doc(
+                                                                        'ESLpm2')
+                                                                    .set({
+                                                                  'lastpost':
+                                                                      postId
+                                                                });
+
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                                controller
+                                                                    .clear();
+                                                              },
+                                                              child: Text(
+                                                                'Aceptar'.tr(),
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary,
+                                                                ),
+                                                              ),
+                                                            ),
                                                             TextButton(
                                                                 onPressed: () {
                                                                   Navigator.of(
@@ -424,7 +478,8 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
                                                                       .pop();
                                                                 },
                                                                 child: Text(
-                                                                  'Cancelar'.tr(),
+                                                                  'Cancelar'
+                                                                      .tr(),
                                                                   style: TextStyle(
                                                                       color: Theme.of(
                                                                               context)
@@ -568,7 +623,8 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
                             if (snapshot.data!.docs.isEmpty) {
                               return RefreshIndicator(
                                 color: Theme.of(context).colorScheme.tertiary,
-                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
                                 elevation: 0,
                                 onRefresh:
                                     () async {}, // o tu función de refresco
@@ -603,7 +659,8 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
                             return RefreshIndicator(
                               elevation: 0,
                               color: Theme.of(context).colorScheme.tertiary,
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               displacement: 1,
                               strokeWidth: 3,
                               onRefresh: () async {},
@@ -734,16 +791,19 @@ class _Profeeslpm2State extends State<Profeeslpm2> {
                                                                       (BuildContext
                                                                           context) {
                                                                     return AlertDialog(
-                                                                      title:
-                                                                          Icon(
-                                                                        Icons
-                                                                            .info,
-                                                                        color: Colors
-                                                                            .yellow,
-                                                                      ),
+                                                                      title: Icon(
+                                                                          Icons
+                                                                              .info,
+                                                                          color: const Color
+                                                                              .fromARGB(
+                                                                              255,
+                                                                              255,
+                                                                              163,
+                                                                              59)),
                                                                       content:
                                                                           Text(
-                                                                        'Desea eliminar esto?',
+                                                                        'Desea eliminar esto?'
+                                                                            .tr(),
                                                                         textAlign:
                                                                             TextAlign.center,
                                                                         style: TextStyle(

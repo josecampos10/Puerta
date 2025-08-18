@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:easy_localization/easy_localization.dart' as ez;
+import 'package:lapuerta2/administrador/admin_widget_tree.dart';
 import 'package:lapuerta2/guest/guest_mainwrapper.dart';
 import 'package:lapuerta2/widget_tree.dart';
 
@@ -135,7 +136,7 @@ class _OnboardingPage extends State<OnboardingPage>
               ),
               SizedBox(
                   width: size.width*0.8 ,
-                  height: size.height * 0.06,
+                  height: size.height * 0.05,
                   child: ElevatedButton(
                     
                     onPressed: () =>
@@ -152,7 +153,7 @@ class _OnboardingPage extends State<OnboardingPage>
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.secondary,
-                        fontSize: size.height * 0.02,
+                        fontSize: size.height * 0.018,
                       ),
                     ),
                   )),

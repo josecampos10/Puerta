@@ -498,14 +498,14 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           title: Text(
-                                            'Editar su perfil',
+                                            'Editar perfil'.tr(),
                                             style: TextStyle(
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .secondary),
                                           ),
                                           content: Text(
-                                            '¿Está seguro que desea hacer estos cambios?',
+                                            '¿Está seguro que desea hacer estos cambios?'.tr(),
                                             style: TextStyle(
                                                 color: Theme.of(context)
                                                     .colorScheme
@@ -662,7 +662,7 @@ class _DetailsWishlistViewState extends State<DetailsWishlistView> {
                                                         .showSnackBar(
                                                       SnackBar(
                                                           content: Text(
-                                                              'Perfil actualizado')),
+                                                              'Perfil actualizado'.tr())),
                                                     );
                                                     Navigator.of(context).pop();
                                                   }

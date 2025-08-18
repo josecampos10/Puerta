@@ -569,7 +569,7 @@ class _feedLaPuertaState extends State<feedLaPuerta> {
                                                                               .tertiary,
                                                                           content:
                                                                               Text(
-                                                                            'Publicado',
+                                                                            'Publicado'.tr(),
                                                                             style:
                                                                                 TextStyle(color: Colors.white),
                                                                           )),

@@ -76,7 +76,7 @@ class _Studenteslfilespm2State extends State<Studenteslfilespm2> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Archivo subido, refresque la lista de archivos',
+          'Archivo subido, refresque la lista de archivos'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,
@@ -497,7 +497,7 @@ class _Studenteslfilespm2State extends State<Studenteslfilespm2> {
         content: Text(
           'Descargado',
           style: TextStyle(
-              fontFamily: 'Arial',
+              fontFamily: 'Arial'.tr(),
               color: Colors.white,
               fontSize: size.height * 0.015),
         ),
@@ -518,7 +518,7 @@ class _Studenteslfilespm2State extends State<Studenteslfilespm2> {
           .showSnackBar(
              SnackBar(
         content: Text(
-          'Descargado',
+          'Descargado'.tr(),
           style: TextStyle(
               fontFamily: 'Arial',
               color: Colors.white,

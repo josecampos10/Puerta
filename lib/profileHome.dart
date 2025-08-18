@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,7 +38,7 @@ class _ProfileHomeState extends State<Profilehome> {
   late Stream<DocumentSnapshot<Map<String, dynamic>>> base;
   final currentUsera = FirebaseAuth.instance.currentUser!;
   bool isEnglish = false;
-
+  final callable = FirebaseFunctions.instance.httpsCallable('deleteUserData');
 
   void requestNotificationPermission() async {
     NotificationSettings settings =
@@ -108,7 +109,7 @@ class _ProfileHomeState extends State<Profilehome> {
       setState(() {}); // 🔁 Actualiza la UI si es necesario
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ Tu correo ya está verificado'),
+          content: Text('✅ Tu correo ya está verificado'.tr()),
           backgroundColor: Colors.blue,
           duration: Duration(seconds: 3),
         ),
@@ -158,22 +159,21 @@ class _ProfileHomeState extends State<Profilehome> {
   }
 
   Future<void> loadUserLanguagePreference() async {
-  final doc = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(currentUser.email)
-      .get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.email)
+        .get();
 
-  final data = doc.data();
-  final isSpanish = data?['spanish'] == 'true'; // viene como string
+    final data = doc.data();
+    final isSpanish = data?['spanish'] == 'true'; // viene como string
 
-  setState(() {
-    isEnglish = !isSpanish; // true = inglés activo
-  });
+    setState(() {
+      isEnglish = !isSpanish; // true = inglés activo
+    });
 
-  context.setLocale(Locale(isEnglish ? 'en' : 'es'));
-}
+    context.setLocale(Locale(isEnglish ? 'en' : 'es'));
+  }
 
-  
   Widget emailVerificationBadge() {
     Size size = MediaQuery.of(context).size;
     final user = FirebaseAuth.instance.currentUser;
@@ -250,7 +250,7 @@ class _ProfileHomeState extends State<Profilehome> {
         .collection('users')
         .doc(currentUsera.email) // 👈 Your document id change accordingly
         .snapshots();
-    loadUserLanguagePreference(); 
+    loadUserLanguagePreference();
   }
 
   @override
@@ -349,7 +349,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                 snapshot.data!.data() as Map<String, dynamic>;
                             return (data['rol']) != null
                                 ? Text(
-                                    data['rol'],
+                                    data['rol'].toString().tr(),
                                     style: TextStyle(
                                         fontSize: size.height * 0.018,
                                         fontFamily: 'Arial',
@@ -550,15 +550,15 @@ class _ProfileHomeState extends State<Profilehome> {
                                       .collection('users')
                                       .doc(currentUser.email)
                                       .update({'spanish': 'false'});
-                                } else{
+                                } else {
                                   await FirebaseFirestore.instance
                                       .collection('users')
                                       .doc(currentUser.email)
                                       .update({'spanish': 'true'});
                                 }
                                 setState(() {
-    isEnglish = value;
-  });
+                                  isEnglish = value;
+                                });
 
                                 context.setLocale(Locale(value ? 'en' : 'es'));
                               },
@@ -722,7 +722,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'Política de Privacidad',
+                                                  'Política de Privacidad'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.014,
@@ -739,7 +739,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'Última actualización: 6/2/2025',
+                                                  'Última actualización: 6/2/2025'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.012,
@@ -759,7 +759,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'La presente Política de Privacidad describe cómo la aplicación móvil de La Puerta Waco recopila, utiliza y protege la información personal de sus usuarios. Al utilizar esta aplicación, usted acepta los términos aquí establecidos.',
+                                                  'La presente Política de Privacidad describe cómo la aplicación móvil de La Puerta Waco recopila, utiliza y protege la información personal de sus usuarios. Al utilizar esta aplicación, usted acepta los términos aquí establecidos.'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -779,7 +779,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '1. Uso de la Aplicación',
+                                                  '1. Uso de la Aplicación'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.014,
@@ -799,7 +799,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'La aplicación de La Puerta Waco ha sido desarrollada exclusivamente con fines educativos e informativos. Su propósito es servir como un canal de comunicación y formación interna para los miembros de nuestra comunidad.',
+                                                  'La aplicación de La Puerta Waco ha sido desarrollada exclusivamente con fines educativos e informativos. Su propósito es servir como un canal de comunicación y formación interna para los miembros de nuestra comunidad.'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -819,7 +819,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '1. Información Recopilada',
+                                                  '2. Información Recopilada'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.014,
@@ -839,7 +839,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'Durante el proceso de registro, solicitamos a los usuarios los siguientes datos: Nombre completo, Correo electrónico, Contraseña. El número de teléfono es un dato que puede ser proporcionado por el usuario dentro de la aplicación (elegida por el usuario). Esta información es almacenada de forma segura en la plataforma Firebase de Google, la cual cuenta con estándares de seguridad reconocidos a nivel mundial.',
+                                                  'Durante el proceso de registro, solicitamos a los usuarios los siguientes datos: Nombre completo, Correo electrónico, Contraseña. El número de teléfono es un dato que puede ser proporcionado por el usuario dentro de la aplicación (elegida por el usuario). Esta información es almacenada de forma segura en la plataforma Firebase de Google, la cual cuenta con estándares de seguridad reconocidos a nivel mundial.'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -859,7 +859,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '3. Acceso a la Información',
+                                                  '3. Acceso a la Información'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.014,
@@ -879,7 +879,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'El acceso a los datos personales está restringido exclusivamente a los administradores del sistema, quienes los utilizarán únicamente para fines internos de la organización y para el correcto funcionamiento de la app.',
+                                                  'El acceso a los datos personales está restringido exclusivamente a los administradores del sistema, quienes los utilizarán únicamente para fines internos de la organización y para el correcto funcionamiento de la app.'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -899,7 +899,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '4. Seguriad y Privacidad',
+                                                  '4. Seguriad y Privacidad'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.014,
@@ -919,7 +919,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'Nos comprometemos a proteger la privacidad de nuestros usuarios. La información almacenada se encuentra resguardada mediante los protocolos de seguridad proporcionados por Firebase, incluyendo cifrado y control de acceso.',
+                                                  'Nos comprometemos a proteger la privacidad de nuestros usuarios. La información almacenada se encuentra resguardada mediante los protocolos de seguridad proporcionados por Firebase, incluyendo cifrado y control de acceso.'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -939,7 +939,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '5. Consentimiento del Usuario',
+                                                  '5. Consentimiento del Usuario'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.014,
@@ -959,7 +959,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  'Al registrarse en la aplicación, usted acepta los términos y condiciones de uso, incluyendo:',
+                                                  'Al registrarse en la aplicación, usted acepta los términos y condiciones de uso, incluyendo:'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -974,7 +974,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '•	El almacenamiento de su nombre, correo y contraseña en nuestra base de datos.',
+                                                  '•	El almacenamiento de su nombre, correo y contraseña en nuestra base de datos.'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -989,7 +989,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '•	El uso exclusivo de esta información para el funcionamiento de la app y los fines internos de La Puerta Waco.',
+                                                  '•	El uso exclusivo de esta información para el funcionamiento de la app y los fines internos de La Puerta Waco.'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.013,
@@ -1009,7 +1009,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                               SizedBox(
                                                 width: size.width * 0.6,
                                                 child: Text(
-                                                  '6. Cambios a esta Politica',
+                                                  '6. Cambios a esta Politica'.tr(),
                                                   style: TextStyle(
                                                       fontSize:
                                                           size.height * 0.014,
@@ -1037,7 +1037,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                                         fontWeight:
                                                             FontWeight.normal),
                                                     text:
-                                                        'Nos reservamos el derecho de actualizar esta Política de Privacidad en cualquier momento. Le notificaremos sobre cualquier cambio importante a través de la aplicación o de nuestro sitio web oficial: www.lapuertawaco.com',
+                                                        'Nos reservamos el derecho de actualizar esta Política de Privacidad en cualquier momento. Le notificaremos sobre cualquier cambio importante a través de la aplicación o de nuestro sitio web oficial: www.lapuertawaco.com'.tr(),
                                                     style: TextStyle(
                                                         fontSize:
                                                             size.height * 0.013,
@@ -1183,7 +1183,8 @@ class _ProfileHomeState extends State<Profilehome> {
                                           .secondary),
                                 ),
                                 content: Text(
-                                  'Para cambiar los ajustes de Notificaciones vaya a los ajustes de su teléfono'.tr(),
+                                  'Para cambiar los ajustes de Notificaciones vaya a los ajustes de su teléfono'
+                                      .tr(),
                                   style: TextStyle(
                                       fontFamily: 'Arial',
                                       color: Theme.of(context)
@@ -1352,7 +1353,8 @@ class _ProfileHomeState extends State<Profilehome> {
                                           .secondary),
                                 ),
                                 content: Text(
-                                    'Estás seguro que deseas cerrar sesión?'.tr(),
+                                    'Estás seguro que deseas cerrar sesión?'
+                                        .tr(),
                                     style: TextStyle(
                                         fontFamily: 'Arial',
                                         color: Theme.of(context)
@@ -1434,7 +1436,7 @@ class _ProfileHomeState extends State<Profilehome> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: Text(
-                                  'Eliminar cuenta',
+                                  'Eliminar cuenta'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Arial',
                                       color: Theme.of(context)
@@ -1442,7 +1444,7 @@ class _ProfileHomeState extends State<Profilehome> {
                                           .secondary),
                                 ),
                                 content: Text(
-                                  'Estás seguro que deseas eliminar tu cuenta? Todos tus datos serán borrados',
+                                  'Estás seguro que deseas eliminar tu cuenta? Todos tus datos serán borrados'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Arial',
                                       color: Theme.of(context)
@@ -1519,20 +1521,13 @@ class _ProfileHomeState extends State<Profilehome> {
                                           await FirebaseAuth.instance.signOut();
 
                                           // 7. Eliminar documento del usuario
-                                          final docRef = FirebaseFirestore
+                                          final callable = FirebaseFunctions
                                               .instance
-                                              .collection('users')
-                                              .doc(userEmail);
-                                          final docSnapshot =
-                                              await docRef.get();
-
-                                          if (docSnapshot.exists) {
-                                            await docRef.delete();
-                                            print(
-                                                '✅ Documento del usuario eliminado');
-                                          } else {
-                                            print('⚠️ Documento ya no existe');
-                                          }
+                                              .httpsCallable('deleteUserData');
+                                          final result = await callable
+                                              .call({'email': userEmail});
+                                          print(
+                                              '✅ Resultado función: ${result.data}');
                                         }
                                       } catch (e) {
                                         print(

@@ -12,6 +12,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart' as ez;
 
+class AppClass {
+  final String key;   // Nombre EXACTO en Firestore
+  final String label; // Nombre visible en UI
+  const AppClass(this.key, this.label);
+}
+
 class Studentvoluntarios extends StatefulWidget {
   const Studentvoluntarios({super.key});
   @override
@@ -34,6 +40,109 @@ class _StudentvoluntariosState extends State<Studentvoluntarios> {
   late Stream<QuerySnapshot> feedStream;
   late Future<DocumentSnapshot> futureUserDoc;
 
+   // Lista de clases disponibles (puedes reemplazar con una consulta si luego lo deseas)
+  final List<AppClass> availableClasses = const [
+  AppClass('ESLpm',       'ESL PM 1'),
+  AppClass('ESLpm2',      'ESL PM 2'),
+  AppClass('ESLam',       'ESL AM 1'),
+  AppClass('ESLam2',      'ESL AM 2'),
+  AppClass('Corte1',      'Corte y confección 1'),
+  AppClass('Corte2',      'Corte y confección 2'),
+  AppClass('ESLchick',    'ESL Chick-fil-A'),
+  AppClass('ESLclifton',  'ESL Clifton'),
+  AppClass('GEDam',       'GED Am - A'),
+  AppClass('GEDam2',       'GED Am - B'),
+  AppClass('GEDpm',       'GED Pm - A'),
+  AppClass('GEDpm2',       'GED Pm - B'),
+  AppClass('ciudadania',  'Ciudadanía'),
+  AppClass('cosmetologia','Cosmetología'),
+  AppClass('costuraAM',   'Costura básica'),
+];
+  // Stream del documento del usuario para saber qué clases ya tiene inscritas
+  late final Stream<DocumentSnapshot<Map<String, dynamic>>> userDocStream;
+
+  Future<void> _toggleClass(String classKey, bool toEnroll) async {
+  final userDocRef = FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.email);
+
+  try {
+    if (toEnroll) {
+      await userDocRef.set({classKey: 'inscrito'}, SetOptions(merge: true));
+    } else {
+      await userDocRef.set({classKey: ''}, SetOptions(merge: true)); // ← vacío
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('No se pudo actualizar: $e')),
+    );
+  }
+}
+
+
+  Widget _classEnrollmentBar(Size size) {
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: userDocStream,
+      builder: (context, snapshot) {
+        final Map<String, dynamic> userData =
+            (snapshot.data?.data() ?? <String, dynamic>{});
+
+        return Container(
+          padding: EdgeInsets.symmetric(
+            vertical: size.height * 0.012,
+            horizontal: size.width * 0.005,
+          ),
+          width: size.width,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(size.width * 0.087),
+              topRight: Radius.circular(size.width * 0.087),
+            ),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: availableClasses.map((c) {
+                final bool selected = (userData[c.key] == 'inscrito');
+                return Padding(
+                  padding: EdgeInsets.only(right: size.width * 0.02),
+                  child: ChoiceChip(
+                    label: Text(
+                      c.label.tr(), 
+                      style: TextStyle(
+                        fontFamily: 'Arial',
+                        fontWeight: FontWeight.w600,
+                        color: selected
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    selected: selected,
+                    // Colores según estado (gris cuando NO está seleccionada)
+                    selectedColor: Theme.of(context).colorScheme.tertiary,
+                    backgroundColor: const Color(0xFFBDBDBD), // gris
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: BorderSide(
+                        color: selected
+                            ? Theme.of(context).colorScheme.tertiary
+                            : const Color(0xFF9E9E9E),
+                        width: 1,
+                      ),
+                    ),
+                    onSelected: (val) => _toggleClass(c.key, val), // ← usa key para Firestore
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +154,10 @@ class _StudentvoluntariosState extends State<Studentvoluntarios> {
     futureUserDoc =
         FirebaseFirestore.instance.collection('clases').doc('GED').get();
 
-    //final streaming;
+    userDocStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.email) // tu estructura guardaba el email como ID
+        .snapshots();
   }
 
   @override
@@ -170,7 +282,7 @@ class _StudentvoluntariosState extends State<Studentvoluntarios> {
                     alignment: Alignment.center,
                     child: Container(
                       width: size.width,
-                      height: size.height * 0.2,
+                      height: size.height * 0.15,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           filterQuality: FilterQuality.low,
@@ -198,9 +310,25 @@ class _StudentvoluntariosState extends State<Studentvoluntarios> {
                   );
                 },
               ),
-              SizedBox(
-                height: size.height * 0.01,
+              SizedBox(height: size.height * 0.01),
+              Row(
+                children: [
+                  SizedBox(
+                    width: size.width*0.03,
+                  ),
+                  Text('Escoja sus clases:'.tr(), style: TextStyle(
+                              fontSize: size.height * 0.018,
+                              fontFamily: 'Arial',
+                              //fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary),)
+                ],
               ),
+
+    // ⬇️⬇️ Barra horizontal de clases (NUEVA)
+    _classEnrollmentBar(size),
+
+   // SizedBox(height: size.height * 0.01),
+
               
               Container(
                 height: size.height * 0.05,
@@ -309,7 +437,7 @@ class _StudentvoluntariosState extends State<Studentvoluntarios> {
                               strokeWidth: 3,
                               onRefresh: () async {},
                               child: SizedBox(
-                                height: size.height * 0.465,
+                                height: size.height * 0.417,
                                 width: double.infinity,
                                 child: Align(
                                   alignment: Alignment.topCenter,

@@ -36,7 +36,10 @@ import 'package:lapuerta2/administrador/adminPosts.dart';
 import 'package:lapuerta2/administrador/adminPublicaciones.dart';
 import 'package:lapuerta2/administrador/adminRecursos.dart';
 import 'package:lapuerta2/administrador/adminUsuarios.dart';
+import 'package:lapuerta2/administrador/admin_dashboard.dart';
 import 'package:lapuerta2/administrador/admin_panel.dart';
+import 'package:lapuerta2/administrador/admin_settings.dart';
+import 'package:lapuerta2/administrador/admin_wishlist_nav.dart';
 
 class AdminhomeNav extends StatefulWidget{
   const AdminhomeNav({super.key});
@@ -84,6 +87,11 @@ class _AdminhomeNavState extends State<AdminhomeNav> with TickerProviderStateMix
               //details page
               return AdminPosts();
             }
+            if (settings.name == '/noticias') {
+              //details page
+              return AdminSettings();
+            }
+            
 
             //***********************************PROFESORES ***************************
               //GED PM////
@@ -191,9 +199,17 @@ class _AdminhomeNavState extends State<AdminhomeNav> with TickerProviderStateMix
                 return feedLaPuerta();
               }
 
+              if (settings.name == '/detalles') {
+                return feedLaPuerta();
+              }
+
+              if (settings.name == '/detailsWishlist') {
+                return AdminWishlist();
+              }
+
 
             //main Page
-            return AdminPanel();
+            return AdminDashboard();
           }
         );
       },
