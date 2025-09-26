@@ -175,7 +175,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
           size: size.height * 0.035,
         ),
         bottomOpacity: 0.0,
-        toolbarHeight: size.height * 0.12,
+        toolbarHeight: size.height * 0.09,
         leadingWidth: size.width * 0.13,
         //leading:
         title: Container(
@@ -280,15 +280,19 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                     alignment: Alignment.center,
                     child: Container(
                       width: size.width,
-                      height: size.height * 0.2,
+                     height: size.height * 0.10,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           filterQuality: FilterQuality.low,
                           image: AssetImage('assets/img/Costuraback.png'),
                           fit: BoxFit.cover,
                         ),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(size.width * 0.087)),
+                        borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(size.width * 0.087),
+                                  topRight: Radius.circular(size.width * 0.087),
+                                  bottomLeft: Radius.circular(size.width * 0.04),
+                                  bottomRight: Radius.circular(size.width * 0.04),
+                                ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -297,19 +301,11 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                             data['Name'.tr()] ?? 'Nombre clase',
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: size.height * 0.04,
+                                fontSize: size.height * 0.03,
                                 fontFamily: 'Arial',
                                 fontWeight: FontWeight.bold),
                           ),
-                          Text(
-                            data['Subname'.tr()] ?? 'Descripción',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: size.height * 0.02,
-                                fontFamily: 'Arial',
-                                fontWeight: FontWeight.bold),
-                          ),
+                          
                           Text(
                             data['Days'] ?? 'Días',
                             textAlign: TextAlign.center,
@@ -454,7 +450,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                           final files = snapshot.data!;
                           if (files.isEmpty) {
                             return SizedBox(
-                              height: size.height * 0.515,
+                              height: size.height * 0.6,
                               child: RefreshIndicator(
                                 elevation: 0,
                                 backgroundColor:
@@ -485,7 +481,7 @@ class _ProfeCorte2filesState extends State<ProfeCorte2files> {
                           }
                           return SizedBox(
                             width: size.width,
-                            height: size.height * 0.515,
+                            height: size.height * 0.645,
                             child: NotificationListener<UserScrollNotification>(
                               onNotification: (notification) {
                                 final ScrollDirection direction =

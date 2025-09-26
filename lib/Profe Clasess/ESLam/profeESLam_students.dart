@@ -69,7 +69,7 @@ class _ProfeeslstudentsamState extends State<Profeeslstudentsam> {
     futureFiles = FirebaseStorage.instance.ref('/ESLfilesam').listAll();
     getProfilePicture();
     futureUserDoc =
-        FirebaseFirestore.instance.collection('clases').doc('esl 1').get();
+        FirebaseFirestore.instance.collection('clases').doc('esl 1 am').get();
     futureUsers = FirebaseFirestore.instance
         .collection('users')
         .orderBy('name', descending: false)
@@ -94,7 +94,7 @@ class _ProfeeslstudentsamState extends State<Profeeslstudentsam> {
           size: size.height * 0.035,
         ),
         bottomOpacity: 0.0,
-        toolbarHeight: size.height * 0.12,
+        toolbarHeight: size.height * 0.09,
         leadingWidth: size.width * 0.13,
         //leading:
         title: Container(
@@ -199,15 +199,19 @@ class _ProfeeslstudentsamState extends State<Profeeslstudentsam> {
                     alignment: Alignment.center,
                     child: Container(
                       width: size.width,
-                      height: size.height * 0.2,
+                      height: size.height * 0.1,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           filterQuality: FilterQuality.low,
                           image: AssetImage('assets/img/ESLam.png'),
                           fit: BoxFit.cover,
                         ),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(size.width * 0.087)),
+                        borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(size.width * 0.087),
+                                  topRight: Radius.circular(size.width * 0.087),
+                                  bottomLeft: Radius.circular(size.width * 0.04),
+                                  bottomRight: Radius.circular(size.width * 0.04),
+                                ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -216,16 +220,7 @@ class _ProfeeslstudentsamState extends State<Profeeslstudentsam> {
                             data['Name'] ?? 'Nombre clase',
                             style: TextStyle(
                                 color: Colors.white,
-                                fontSize: size.height * 0.06,
-                                fontFamily: 'Arial',
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            data['Subname'] ?? 'Descripción',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: size.height * 0.02,
+                                fontSize: size.height * 0.03,
                                 fontFamily: 'Arial',
                                 fontWeight: FontWeight.bold),
                           ),
@@ -339,7 +334,7 @@ final List<DocumentSnapshot> orderedList = [...profesores, ...estudiantes];
     strokeWidth: 3,
     onRefresh: _refresh,
     child: SizedBox(
-      height: size.height * 0.524,
+      height: size.height * 0.655,
       width: double.infinity,
       child: Align(
         alignment: Alignment.topCenter,

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:lapuerta2/detalles_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart' as ez;
 
@@ -23,7 +23,8 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
   final usuario =
       FirebaseFirestore.instance.collection('users').doc().snapshots();
 
-  CollectionReference users = FirebaseFirestore.instance.collection('postsCiudadania');
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('postsCiudadania');
   final controller = TextEditingController();
   final streaming = FirebaseFirestore.instance
       .collection('postsCiudadania')
@@ -227,7 +228,6 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
               SizedBox(
                 height: size.height * 0.01,
               ),
-              
               Container(
                 height: size.height * 0.05,
                 width: size.width,
@@ -238,8 +238,8 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                             width: 1,
                             color: const Color.fromARGB(148, 163, 163, 163)))),
                 child: TextButton(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/studentCiudadania_files'),
+                    onPressed: () => Navigator.pushNamed(
+                        context, '/studentCiudadania_files'),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -265,7 +265,6 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                       ],
                     )),
               ),
-              
               SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 reverse: false,
@@ -295,7 +294,8 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                             if (snapshot.data!.docs.isEmpty) {
                               return RefreshIndicator(
                                 color: Theme.of(context).colorScheme.tertiary,
-                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
                                 elevation: 0,
                                 onRefresh:
                                     () async {}, // o tu función de refresco
@@ -330,7 +330,8 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                             return RefreshIndicator(
                               elevation: 0,
                               color: Theme.of(context).colorScheme.tertiary,
-                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               displacement: 1,
                               strokeWidth: 3,
                               onRefresh: () async {},
@@ -340,94 +341,122 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                                 child: Align(
                                   alignment: Alignment.topCenter,
                                   child: MasonryGridView.builder(
-                                    padding: EdgeInsets.zero,
-                                    gridDelegate:
-                                        SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 1),
-                                    mainAxisSpacing: 1,
-                                    crossAxisSpacing: 1,
-                                    physics: ScrollPhysics(),
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    primary: true,
-                                    itemCount: snap.length,
-                                    cacheExtent: 1000.0,
-                                    itemBuilder: (context, index) {
-                                      // final DocumentSnapshot documentSnapshot =
-                                      //  snapshot.data!.docs[index];
-                                      return AnimationConfiguration
-                                          .staggeredList(
-                                        position: index,
-                                        child: ScaleAnimation(
-                                          duration: Duration(milliseconds: 300),
-                                          child: FadeInAnimation(
-                                            child: GestureDetector(
-                                              onTap: () {},
+                                      padding: EdgeInsets.zero,
+                                      gridDelegate:
+                                          SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 1),
+                                      mainAxisSpacing: 1,
+                                      crossAxisSpacing: 1,
+                                      physics: ScrollPhysics(),
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      primary: true,
+                                      itemCount: snap.length,
+                                      cacheExtent: 1000.0,
+                                      itemBuilder: (context, index) {
+                                        final doc = snap[index];
+                                        final Map<String, dynamic> dataMap =
+                                            doc.data() as Map<String, dynamic>;
+
+                                        // --- Null-safety en todos los campos ---
+                                        final String avatarUrl =
+                                            (dataMap['Image'] as String?) ?? '';
+                                        final String name =
+                                            (dataMap['User'] as String?) ?? '';
+                                        final String timeStr =
+                                            (dataMap['Time'] as String?) ?? '';
+                                        final String dateStr =
+                                            (dataMap['Date'] as String?) ?? '';
+                                        final String comment =
+                                            (dataMap['Comment'] as String?) ??
+                                                '';
+                                        final List<String> images =
+                                            ((dataMap['images'] as List?) ??
+                                                    const [])
+                                                .map((e) =>
+                                                    (e as dynamic)
+                                                        ?.toString() ??
+                                                    '')
+                                                .where((s) => s.isNotEmpty)
+                                                .toList();
+
+                                        return AnimationConfiguration
+                                            .staggeredList(
+                                          position: index,
+                                          child: ScaleAnimation(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            child: FadeInAnimation(
                                               child: Card(
                                                 shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            size.width * 0.04)),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          size.width * 0.04),
+                                                ),
                                                 elevation: size.height * 0.01,
                                                 shadowColor: Colors.black,
                                                 color: Theme.of(context)
                                                     .colorScheme
                                                     .primary,
-                                                child: Container(
-                                                  //constraints: const BoxConstraints(minHeight: ),
-                                                  //width: 180,
-                                                  //height: 20,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(
-                                                        size.width * 0.03),
-                                                    child: Column(
-                                                      children: [
-                                                        Stack(
-                                                          alignment: Alignment
-                                                              .topRight,
-                                                          children: [],
-                                                        ),
-                                                        Row(children: [
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(
+                                                      size.width * 0.03),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      // --- Cabecera ---
+                                                      Row(
+                                                        children: [
                                                           CircleAvatar(
-                                                              backgroundImage:
-                                                                  NetworkImage(
-                                                                      snap[index]
-                                                                          [
-                                                                          'Image']),
-                                                              minRadius:
-                                                                  size.height *
-                                                                      0.021,
-                                                              maxRadius:
-                                                                  size.height *
-                                                                      0.021,
-                                                              backgroundColor:
-                                                                  Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .tertiary),
-                                                          SizedBox(
-                                                            width: size.width *
-                                                                0.02,
+                                                            backgroundImage: avatarUrl
+                                                                    .isNotEmpty
+                                                                ? NetworkImage(
+                                                                    avatarUrl)
+                                                                : null,
+                                                            backgroundColor:
+                                                                Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .tertiary,
+                                                            minRadius:
+                                                                size.height *
+                                                                    0.021,
+                                                            maxRadius:
+                                                                size.height *
+                                                                    0.021,
+                                                            child: avatarUrl
+                                                                    .isEmpty
+                                                                ? Icon(
+                                                                    Icons
+                                                                        .person,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    size: size
+                                                                            .height *
+                                                                        0.02)
+                                                                : null,
                                                           ),
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: Text(
-                                                              snap[index]
-                                                                  ['Name'],
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      size.height *
-                                                                          0.018,
-                                                                  fontFamily:
-                                                                      'Arial',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary),
+                                                          SizedBox(
+                                                              width:
+                                                                  size.width *
+                                                                      0.02),
+                                                          Text(
+                                                            name,
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  size.height *
+                                                                      0.018,
+                                                              fontFamily:
+                                                                  'Arial',
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .secondary,
                                                             ),
                                                           ),
                                                           SizedBox(
@@ -435,107 +464,205 @@ class _StudentCiudadaniaState extends State<StudentCiudadania> {
                                                                   size.width *
                                                                       0.02),
                                                           Text(
-                                                            snap[index]['Time'],
+                                                            timeStr,
                                                             style: TextStyle(
-                                                                fontSize:
-                                                                    size.height *
-                                                                        0.013,
-                                                                fontFamily:
-                                                                    'Arial',
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    168,
-                                                                    168,
-                                                                    168)),
+                                                              fontSize:
+                                                                  size.height *
+                                                                      0.013,
+                                                              fontFamily:
+                                                                  'Arial',
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  168,
+                                                                  168,
+                                                                  168),
+                                                            ),
                                                           ),
-                                                          
-                                                        ]),
-                                                        Row(
-                                                          children: [
-                                                            SizedBox(
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                          height: size.height *
+                                                              0.004),
+                                                      Row(
+                                                        children: [
+                                                          SizedBox(
                                                               width:
                                                                   size.width *
-                                                                      0.12,
+                                                                      0.12),
+                                                          Text(
+                                                            dateStr,
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  size.height *
+                                                                      0.013,
+                                                              fontFamily:
+                                                                  'Arial',
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  168,
+                                                                  168,
+                                                                  168),
                                                             ),
-                                                            Text(
-                                                              snap[index]
-                                                                  ['Date'],
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      size.height *
-                                                                          0.013,
-                                                                  fontFamily:
-                                                                      'Arial',
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      168,
-                                                                      168,
-                                                                      168)),
-                                                            ),
-                                                          ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                          height: size.height *
+                                                              0.006),
+
+                                                      // --- Mensaje con links ---
+                                                      Linkify(
+                                                        text: comment,
+                                                        linkStyle: TextStyle(
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .none,
+                                                          fontSize:
+                                                              size.height *
+                                                                  0.0155,
+                                                          fontFamily: 'Arial',
+                                                          color: const Color
+                                                              .fromARGB(255, 94,
+                                                              145, 255),
                                                         ),
-                                                        Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: Linkify(
-                                                              linkStyle:
-                                                                  TextStyle(
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .none,
-                                                                fontSize:
-                                                                    size.height *
-                                                                        0.0155,
-                                                                fontFamily:
-                                                                    'Arial',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    94,
-                                                                    145,
-                                                                    255),
-                                                              ),
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      size.height *
-                                                                          0.0155,
-                                                                  fontFamily:
-                                                                      'Arial',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary),
-                                                              text: snap[index]
-                                                                  ['Comment'],
-                                                              onOpen:
-                                                                  (link) async {
-                                                                if (!await launchUrl(
-                                                                    Uri.parse(link
-                                                                        .url))) {
-                                                                  throw Exception(
-                                                                      'Could not launch ${link.url}');
-                                                                }
-                                                              },
-                                                            )),
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              size.height *
+                                                                  0.0155,
+                                                          fontFamily: 'Arial',
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .secondary,
+                                                        ),
+                                                        onOpen: (link) async {
+                                                          if (!await launchUrl(
+                                                              Uri.parse(
+                                                                  link.url))) {
+                                                            throw Exception(
+                                                                'Could not launch ${link.url}');
+                                                          }
+                                                        },
+                                                      ),
+
+                                                      // --- IMÁGENES con apertura a ImageDetallesHome ---
+                                                      if (images
+                                                          .isNotEmpty) ...[
+                                                        SizedBox(
+                                                            height:
+                                                                size.height *
+                                                                    0.01),
+                                                        ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      size.width *
+                                                                          0.03),
+                                                          child: SizedBox(
+                                                            height:
+                                                                size.height *
+                                                                    0.30,
+                                                            child: images
+                                                                        .length ==
+                                                                    1
+                                                                // ===== 1 sola imagen -> abrir en detalle (idx 0) =====
+                                                                ? GestureDetector(
+                                                                    onTap: () {
+                                                                      Navigator
+                                                                          .push(
+                                                                        context,
+                                                                        PageRouteBuilder(
+                                                                          transitionDuration:
+                                                                              const Duration(milliseconds: 500),
+                                                                          reverseTransitionDuration:
+                                                                              const Duration(milliseconds: 500),
+                                                                          pageBuilder: (_, __, ___) =>
+                                                                              ImageDetallesHome(
+                                                                            images:
+                                                                                images,
+                                                                            initialIndex:
+                                                                                0,
+                                                                            documentSnapshot:
+                                                                                doc,
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                    child: Hero(
+                                                                      tag:
+                                                                          'student_ciu_post_${doc.id}_img_0',
+                                                                      child: Image
+                                                                          .network(
+                                                                        images
+                                                                            .first,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                // ===== Varias imágenes -> carrusel; cada slide abre con su índice =====
+                                                                : PageView
+                                                                    .builder(
+                                                                    itemCount:
+                                                                        images
+                                                                            .length,
+                                                                    controller: PageController(
+                                                                        viewportFraction:
+                                                                            0.95),
+                                                                    itemBuilder:
+                                                                        (_, idx) {
+                                                                      final url =
+                                                                          images[
+                                                                              idx];
+                                                                      return Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .only(
+                                                                            right:
+                                                                                6),
+                                                                        child:
+                                                                            GestureDetector(
+                                                                          onTap:
+                                                                              () {
+                                                                            Navigator.push(
+                                                                              context,
+                                                                              PageRouteBuilder(
+                                                                                transitionDuration: const Duration(milliseconds: 500),
+                                                                                reverseTransitionDuration: const Duration(milliseconds: 500),
+                                                                                pageBuilder: (_, __, ___) => ImageDetallesHome(
+                                                                                  images: images,
+                                                                                  initialIndex: idx,
+                                                                                  documentSnapshot: doc,
+                                                                                ),
+                                                                              ),
+                                                                            );
+                                                                          },
+                                                                          child:
+                                                                              Hero(
+                                                                            tag:
+                                                                                'student_ciu_post_${doc.id}_img_$idx',
+                                                                            child:
+                                                                                Image.network(
+                                                                              url,
+                                                                              fit: BoxFit.cover,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                          ),
+                                                        ),
                                                       ],
-                                                    ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                        );
+                                      }),
                                 ),
                               ),
                             );

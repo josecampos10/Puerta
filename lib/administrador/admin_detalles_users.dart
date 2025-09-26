@@ -17,7 +17,9 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
   bool statuseslam = false;
   bool statuseslam2 = false;
   bool statusgedpm = false;
+   bool statusgedpm2 = false;
   bool statusgedam = false;
+  bool statusgedam2 = false;
   bool statusciudadania = false;
   bool statuscosmetologia = false;
   bool statuscostura = false;
@@ -61,11 +63,23 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
     } else {
       statusgedpm = true;
     }
+    ///////////////GED PM 2
+    if (widget.documentSnapshot['GEDpm2'] == '') {
+      statusgedpm2 = false;
+    } else {
+      statusgedpm2 = true;
+    }
     ///////////////GED AM
     if (widget.documentSnapshot['GEDam'] == '') {
       statusgedam = false;
     } else {
       statusgedam = true;
+    }
+    ///////////////GED AM 2
+    if (widget.documentSnapshot['GEDam2'] == '') {
+      statusgedam2 = false;
+    } else {
+      statusgedam2 = true;
     }
     ///////////////Ciudadnia
     if (widget.documentSnapshot['ciudadania'] == '') {
@@ -154,7 +168,7 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
               height: size.height*0.06,
             ),
             Container(
-              width: size.width*0.7,
+              width: size.width*0.8,
               height: size.height * 0.75,
               decoration: BoxDecoration(
                   color: const Color.fromARGB(255, 183, 95, 19).withAlpha(200),
@@ -363,7 +377,7 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
                               SizedBox(
                                 height: size.height * 0.03,
                               ),
-                              Text('GEDpm',
+                              Text('GED Pm - A',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: Colors.white,
@@ -403,7 +417,7 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
                               SizedBox(
                                 height: size.height * 0.03,
                               ),
-                              Text('GED AM',
+                              Text('GED Am - A',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       color: Colors.white,
@@ -887,7 +901,95 @@ class _AdminDetallesHomeState extends State<AdminDetallesHome> {
                               ),
                               
                             ],
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(height: size.height*0.02,),
+                              Text('GED Am - B',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: size.height * 0.017,
+                                      fontWeight: FontWeight.bold)),
+                              Container(
+                                padding: EdgeInsets.symmetric(vertical: 10.0),
+                                width: size.width * 0.2,
+                                height: size.height * 0.04,
+                                color: const Color.fromARGB(0, 255, 235, 59),
+                                child: Transform.scale(
+                                  scale: 1.1,
+                                  child: CupertinoSwitch(
+                                      inactiveTrackColor: Colors.grey,
+                                      value: statusgedam2,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          statusgedam2 = value;
+                                        });
+                                        if (statusgedam2 == true) {
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(widget
+                                                  .documentSnapshot['email'])
+                                              .update({'GEDam2': 'inscrito'});
+                                        }
+                                        if (statusgedam2 == false) {
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(widget
+                                                  .documentSnapshot['email'])
+                                              .update({'GEDam2': ''});
+                                        }
+                                      }),
+                                ),
+                              ),
+                              SizedBox(
+                                height: size.height * 0.03,
+                              ),
+                              
+                              
+                          Text('GED Pm - B',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: size.height * 0.017,
+                                  fontWeight: FontWeight.bold)),
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: 10.0),
+                            width: size.width * 0.2,
+                            height: size.height * 0.04,
+                            color: const Color.fromARGB(0, 255, 235, 59),
+                            child: Transform.scale(
+                              scale: 1.1,
+                              child: CupertinoSwitch(
+                                  inactiveTrackColor: Colors.grey,
+                                  value: statusgedpm2,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      statusgedpm2 = value;
+                                    });
+                                    if (statusgedpm2 == true) {
+                                      FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(widget
+                                              .documentSnapshot['email'])
+                                          .update({'GEDpm2': 'inscrito'});
+                                    }
+                                    if (statusgedpm2 == false) {
+                                      FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(widget
+                                              .documentSnapshot['email'])
+                                          .update({'GEDpm2': ''});
+                                    }
+                                  }),
+                            ),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.03,
                           )
+                            ],
+                          ),
+                          
                         ],
                       )
                     ],

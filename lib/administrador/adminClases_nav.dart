@@ -38,6 +38,12 @@ import 'package:lapuerta2/Profe%20Clasess/GED_am/profeGEDam_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_files.dart';
 import 'package:lapuerta2/Profe%20Clasess/GED_pm/profeGED_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDam2/profeGEDam2.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDam2/profeGEDam2_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDam2/profeGEDam2_students.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDpm2/profeGED2.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDpm2/profeGED2_files.dart';
+import 'package:lapuerta2/Profe%20Clasess/GEDpm2/profeGED2_students.dart';
 import 'package:lapuerta2/Profe%20Clasess/feed/feedlapuerta.dart';
 import 'package:lapuerta2/administrador/adminClases.dart';
 import 'package:lapuerta2/administrador/adminControl.dart';
@@ -82,6 +88,16 @@ class _AdminclasesNavState extends State<AdminclasesNav> with TickerProviderStat
               if (settings.name == '/profeGEDpm_students') {
                 return Profegedstudentspm();
               }
+               //GED PM 2////
+              if (settings.name == '/profeGEDpm2') {
+                return Profegedpm2();
+              }
+              if (settings.name == '/profeGEDpm2_files') {
+                return Profegedfilespm2();
+              }
+              if (settings.name == '/profeGEDpm2_students') {
+                return Profegedstudentspm2();
+              }
               //GED AM///
               if (settings.name == '/profeGEDam') {
                 return Profegedam();
@@ -91,6 +107,16 @@ class _AdminclasesNavState extends State<AdminclasesNav> with TickerProviderStat
               }
               if (settings.name == '/profeGEDam_students') {
                 return Profegedstudentsam();
+              }
+              //GED AM 2///
+              if (settings.name == '/profeGEDam2') {
+                return Profegedam2();
+              }
+              if (settings.name == '/profeGEDam2_files') {
+                return Profegedfilesam2();
+              }
+              if (settings.name == '/profeGEDam2_students') {
+                return Profegedstudentsam2();
               }
               //ESL PM 1 //
               if (settings.name == '/profeESLpm') {

@@ -9,6 +9,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:lapuerta2/detalles_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart' as ez;
 
@@ -353,188 +354,198 @@ class _StudentCorte1State extends State<StudentCorte1> {
                                     itemCount: snap.length,
                                     cacheExtent: 1000.0,
                                     itemBuilder: (context, index) {
-                                      // final DocumentSnapshot documentSnapshot =
-                                      //  snapshot.data!.docs[index];
-                                      return AnimationConfiguration
-                                          .staggeredList(
-                                        position: index,
-                                        child: ScaleAnimation(
-                                          duration: Duration(milliseconds: 300),
-                                          child: FadeInAnimation(
-                                            child: GestureDetector(
-                                              onTap: () {},
-                                              child: Card(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            size.width * 0.04)),
-                                                elevation: size.height * 0.01,
-                                                shadowColor: Colors.black,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                                child: Container(
-                                                  //constraints: const BoxConstraints(minHeight: ),
-                                                  //width: 180,
-                                                  //height: 20,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(
-                                                        size.width * 0.03),
-                                                    child: Column(
-                                                      children: [
-                                                        Stack(
-                                                          alignment: Alignment
-                                                              .topRight,
-                                                          children: [],
-                                                        ),
-                                                        Row(children: [
-                                                          CircleAvatar(
-                                                              backgroundImage:
-                                                                  NetworkImage(
-                                                                      snap[index]
-                                                                          [
-                                                                          'Image']),
-                                                              minRadius:
-                                                                  size.height *
-                                                                      0.021,
-                                                              maxRadius:
-                                                                  size.height *
-                                                                      0.021,
-                                                              backgroundColor:
-                                                                  Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .tertiary),
-                                                          SizedBox(
-                                                            width: size.width *
-                                                                0.02,
-                                                          ),
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: Text(
-                                                              snap[index]
-                                                                  ['Name'],
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      size.height *
-                                                                          0.018,
-                                                                  fontFamily:
-                                                                      'Arial',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary),
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                              width:
-                                                                  size.width *
-                                                                      0.02),
-                                                          Text(
-                                                            snap[index]['Time'],
-                                                            style: TextStyle(
-                                                                fontSize:
-                                                                    size.height *
-                                                                        0.013,
-                                                                fontFamily:
-                                                                    'Arial',
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    168,
-                                                                    168,
-                                                                    168)),
-                                                          ),
-                                                          
-                                                        ]),
-                                                        Row(
-                                                          children: [
-                                                            SizedBox(
-                                                              width:
-                                                                  size.width *
-                                                                      0.12,
-                                                            ),
-                                                            Text(
-                                                              snap[index]
-                                                                  ['Date'],
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      size.height *
-                                                                          0.013,
-                                                                  fontFamily:
-                                                                      'Arial',
-                                                                  color: const Color
-                                                                      .fromARGB(
-                                                                      255,
-                                                                      168,
-                                                                      168,
-                                                                      168)),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: Linkify(
-                                                              linkStyle:
-                                                                  TextStyle(
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .none,
-                                                                fontSize:
-                                                                    size.height *
-                                                                        0.0155,
-                                                                fontFamily:
-                                                                    'Arial',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    94,
-                                                                    145,
-                                                                    255),
-                                                              ),
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      size.height *
-                                                                          0.0155,
-                                                                  fontFamily:
-                                                                      'Arial',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary),
-                                                              text: snap[index]
-                                                                  ['Comment'],
-                                                              onOpen:
-                                                                  (link) async {
-                                                                if (!await launchUrl(
-                                                                    Uri.parse(link
-                                                                        .url))) {
-                                                                  throw Exception(
-                                                                      'Could not launch ${link.url}');
-                                                                }
-                                                              },
-                                                            )),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
+  final doc = snap[index];
+  final Map<String, dynamic> dataMap = doc.data() as Map<String, dynamic>;
+
+  // --- Null-safety en todos los campos del post ---
+  final String avatarUrl = (dataMap['Image'] as String?) ?? '';
+  final String name      = (dataMap['User']  as String?) ?? '';
+  final String timeStr   = (dataMap['Time']  as String?) ?? '';
+  final String dateStr   = (dataMap['Date']  as String?) ?? '';
+  final String comment   = (dataMap['Comment'] as String?) ?? '';
+
+  // Lista de imágenes segura (filtra nulls y vacíos)
+  final List<String> images = ((dataMap['images'] as List?) ?? const [])
+      .map((e) => (e as dynamic)?.toString() ?? '')
+      .where((s) => s.isNotEmpty)
+      .toList();
+
+  return AnimationConfiguration.staggeredList(
+    position: index,
+    child: ScaleAnimation(
+      duration: const Duration(milliseconds: 300),
+      child: FadeInAnimation(
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(size.width * 0.04),
+          ),
+          elevation: size.height * 0.01,
+          shadowColor: Colors.black,
+          color: Theme.of(context).colorScheme.primary,
+          child: Padding(
+            padding: EdgeInsets.all(size.width * 0.03),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // --- Cabecera (avatar, nombre, hora) ---
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage:
+                          avatarUrl.isNotEmpty ? NetworkImage(avatarUrl) : null,
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      minRadius: size.height * 0.021,
+                      maxRadius: size.height * 0.021,
+                      child: avatarUrl.isEmpty
+                          ? Icon(Icons.person,
+                              color: Colors.white, size: size.height * 0.02)
+                          : null,
+                    ),
+                    SizedBox(width: size.width * 0.02),
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: size.height * 0.018,
+                        fontFamily: 'Arial',
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    SizedBox(width: size.width * 0.02),
+                    Text(
+                      timeStr,
+                      style: TextStyle(
+                        fontSize: size.height * 0.013,
+                        fontFamily: 'Arial',
+                        color: const Color.fromARGB(255, 168, 168, 168),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: size.height * 0.004),
+                Row(
+                  children: [
+                    SizedBox(width: size.width * 0.12),
+                    Text(
+                      dateStr,
+                      style: TextStyle(
+                        fontSize: size.height * 0.013,
+                        fontFamily: 'Arial',
+                        color: const Color.fromARGB(255, 168, 168, 168),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: size.height * 0.006),
+
+                // --- Mensaje con links (seguro) ---
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Linkify(
+                    text: comment,
+                    linkStyle: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontSize: size.height * 0.0155,
+                      fontFamily: 'Arial',
+                      color: const Color.fromARGB(255, 94, 145, 255),
+                    ),
+                    style: TextStyle(
+                      fontSize: size.height * 0.0155,
+                      fontFamily: 'Arial',
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    onOpen: (link) async {
+                      if (!await launchUrl(Uri.parse(link.url))) {
+                        throw Exception('Could not launch ${link.url}');
+                      }
+                    },
+                  ),
+                ),
+
+                // --- Imágenes con apertura a ImageDetallesHome ---
+                if (images.isNotEmpty) ...[
+                  SizedBox(height: size.height * 0.01),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(size.width * 0.03),
+                    child: SizedBox(
+                      height: size.height * 0.30,
+                      child: images.length == 1
+                          // 1 sola imagen -> abrir detalle (idx 0)
+                          ? GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        const Duration(milliseconds: 500),
+                                    reverseTransitionDuration:
+                                        const Duration(milliseconds: 500),
+                                    pageBuilder: (_, __, ___) => ImageDetallesHome(
+                                      images: images,
+                                      initialIndex: 0,
+                                      documentSnapshot: doc,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Hero(
+                                tag: 'student_corte1_post_${doc.id}_img_0',
+                                child: Image.network(
+                                  images.first,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
+                          // Varias imágenes -> carrusel; cada slide abre con su índice
+                          : PageView.builder(
+                              itemCount: images.length,
+                              controller: PageController(viewportFraction: 0.95),
+                              itemBuilder: (_, idx) {
+                                final url = images[idx];
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          transitionDuration:
+                                              const Duration(milliseconds: 500),
+                                          reverseTransitionDuration:
+                                              const Duration(milliseconds: 500),
+                                          pageBuilder: (_, __, ___) =>
+                                              ImageDetallesHome(
+                                            images: images,
+                                            initialIndex: idx,
+                                            documentSnapshot: doc,
                                           ),
                                         ),
                                       );
                                     },
+                                    child: Hero(
+                                      tag:
+                                          'student_corte1_post_${doc.id}_img_$idx',
+                                      child: Image.network(
+                                        url,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
                                   ),
                                 ),
                               ),

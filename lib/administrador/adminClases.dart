@@ -980,8 +980,11 @@ class _AdminclasesState extends State<Adminclases> {
                                                   width: size.width,
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      if(snap[index]['Name'] == 'GED'){
+                                                      if(snap[index]['Name'] == 'GED Pm - A'){
                                                         Navigator.pushNamed(context, '/profeGEDpm');
+                                                      }
+                                                      if(snap[index]['Name'] == 'GED Pm - B'){
+                                                        Navigator.pushNamed(context, '/profeGEDpm2');
                                                       }
                                                       if(snap[index]['Name'] == 'Corte y Confección 1'){
                                                         Navigator.pushNamed(context, '/profeCorte1');
@@ -998,8 +1001,11 @@ class _AdminclasesState extends State<Adminclases> {
                                                       if(snap[index]['Name'] == 'ESL Clifton'){
                                                         Navigator.pushNamed(context, '/profeESLclifton');
                                                       }
-                                                      if(snap[index]['Name'] == 'GED AM'){
+                                                      if(snap[index]['Name'] == 'GED Am - A'){
                                                         Navigator.pushNamed(context, '/profeGEDam');
+                                                      }
+                                                      if(snap[index]['Name'] == 'GED Am - B'){
+                                                        Navigator.pushNamed(context, '/profeGEDam2');
                                                       }
                                                       if(snap[index]['Name'] == 'Ciudadanía'){
                                                         Navigator.pushNamed(context, '/profeCiudadania');
@@ -1019,6 +1025,7 @@ class _AdminclasesState extends State<Adminclases> {
                                                       if(snap[index]['Name'] == 'ESL Chick-fil-A'){
                                                         Navigator.pushNamed(context, '/profechick');
                                                       }
+                                                      
                                                     },
                                                     child: Card(
                                                       margin: const EdgeInsets

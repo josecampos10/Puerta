@@ -5,13 +5,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:lapuerta2/main.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ImageDetallesHome extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
-  const ImageDetallesHome({super.key, required this.documentSnapshot});
+
+  /// Opcional: lista completa de imágenes para carrusel
+  final List<String>? images;
+
+  /// Opcional: índice inicial cuando hay múltiples imágenes
+  final int initialIndex;
+
+  /// Opcional: prefijo para Hero en modo múltiples (debe coincidir con el tag del feed)
+  final String? heroTagPrefix;
+
+  const ImageDetallesHome({
+    super.key,
+    required this.documentSnapshot,
+    this.images,
+    this.initialIndex = 0,
+    this.heroTagPrefix,
+  });
 
   @override
   State<ImageDetallesHome> createState() => _ImageDetallesHomeState();
@@ -19,174 +34,219 @@ class ImageDetallesHome extends StatefulWidget {
 
 class _ImageDetallesHomeState extends State<ImageDetallesHome> {
   final currentUser = FirebaseAuth.instance.currentUser!;
+  late final PageController _pageController;
 
   Uint8List? pickedImage;
   bool showInfo = true;
 
+  bool get _isMulti =>
+      widget.images != null && widget.images!.isNotEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: Color.fromRGBO(0, 0, 0, 1),
+      backgroundColor: const Color.fromRGBO(0, 0, 0, 1),
       body: GestureDetector(
-        onTap: () {
-          setState(() {
-            showInfo = !showInfo;
-          });
-        },
+        onTap: () => setState(() => showInfo = !showInfo),
         child: Stack(
           children: [
-            // Imagen en pantalla completa con zoom
+            // ======== IMAGEN(ES) ========
             Positioned.fill(
-              child: PinchZoom(
-                maxScale: 5.0,
-                child: Hero(
-                  tag: widget.documentSnapshot,
-                  flightShuttleBuilder: (
-                    flightContext,
-                    animation,
-                    flightDirection,
-                    fromHeroContext,
-                    toHeroContext,
-                  ) {
-                    return FadeTransition(
-                      opacity: animation.drive(
-                          Tween(begin: size.height, end: 1.0)
-                              .chain(CurveTween(curve: Curves.easeInOut))),
-                      child: toHeroContext.widget,
-                    );
-                  },
-                  child: CachedNetworkImage(
-                    imageUrl: widget.documentSnapshot['postUrl'],
-                    fit: BoxFit.contain,
-                    width: double.infinity,
-                    placeholder: (context, url) =>
-                        Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => Center(
-                      child: Text(
-                        'No se pudo cargar la imagen',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              child: _isMulti
+                  ? _buildMultiViewer(size)
+                  : _buildSingleViewer(size),
             ),
 
-            // Botón de cerrar en la parte superior derecha
+            // ======== BOTÓN CERRAR ========
             Positioned(
               top: size.height * 0.07,
               right: 20,
               child: AnimatedOpacity(
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 opacity: showInfo ? 1.0 : 0.0,
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
                       color: Colors.black45,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.close, color: Colors.white),
+                    child: const Icon(Icons.close, color: Colors.white),
                   ),
                 ),
               ),
             ),
 
-            // Información del usuario en la parte inferior
+            // ======== INFO USUARIO ABAJO ========
             Positioned(
               left: 0,
               right: 0,
               bottom: size.height * 0.04,
               child: AnimatedOpacity(
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 opacity: showInfo ? 1.0 : 0.0,
-                child: Container(
-                  padding: EdgeInsets.all(1),
-                  decoration: BoxDecoration(
-                    color: Colors.black
-                        .withOpacity(0.2), // sombreado oscuro con opacidad
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: size.height * 0.003,
-                      ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: size.width * 0.014,
-                          ),
-                          CircleAvatar(
-                            radius: size.height * 0.018,
-                            backgroundImage:
-                                NetworkImage(widget.documentSnapshot['Image']),
-                          ),
-                          SizedBox(
-                            width: size.width * 0.01,
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      (widget.documentSnapshot['Name'] !=
-                                                  null &&
-                                              widget.documentSnapshot['Name']
-                                                  .toString()
-                                                  .trim()
-                                                  .isNotEmpty)
-                                          ? widget.documentSnapshot['Name']
-                                          : widget.documentSnapshot['User'],
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: size.height * 0.017,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      widget.documentSnapshot['Date'],
-                                      style: TextStyle(
-                                        color: Colors.grey[300],
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          Text(
-                            widget.documentSnapshot['Time'],
-                            style: TextStyle(
-                              color: Colors.grey[300],
-                              fontSize: size.height * 0.016,
-                            ),
-                          ),
-                          SizedBox(
-                            width: size.width * 0.014,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: size.height * 0.018,
-                      )
-                    ],
-                  ),
-                ),
+                child: _buildFooterInfo(size),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // ---- SINGLE IMAGE (comportamiento original) ----
+  Widget _buildSingleViewer(Size size) {
+    return PinchZoom(
+      maxScale: 5.0,
+      child: Hero(
+        tag: widget.documentSnapshot, // tu tag original
+        flightShuttleBuilder: (
+          flightContext,
+          animation,
+          flightDirection,
+          fromHeroContext,
+          toHeroContext,
+        ) {
+          return FadeTransition(
+            opacity: animation.drive(
+              Tween<double>(begin: 0.0, end: 1.0)
+                  .chain(CurveTween(curve: Curves.easeInOut)),
+            ),
+            child: toHeroContext.widget,
+          );
+        },
+        child: CachedNetworkImage(
+          imageUrl: widget.documentSnapshot['postUrl'],
+          fit: BoxFit.contain,
+          width: double.infinity,
+          placeholder: (_, __) =>
+              const Center(child: CircularProgressIndicator()),
+          errorWidget: (_, __, ___) => const Center(
+            child: Text('No se pudo cargar la imagen',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---- MULTIPLE IMAGES (carrusel con PageView) ----
+  Widget _buildMultiViewer(Size size) {
+    final images = widget.images!;
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: images.length,
+      itemBuilder: (_, idx) {
+        final url = images[idx];
+
+        final child = CachedNetworkImage(
+          imageUrl: url,
+          fit: BoxFit.contain,
+          width: double.infinity,
+          placeholder: (_, __) =>
+              const Center(child: CircularProgressIndicator()),
+          errorWidget: (_, __, ___) => const Center(
+            child: Text('No se pudo cargar la imagen',
+                style: TextStyle(color: Colors.white)),
+          ),
+        );
+
+        // Si quieres Hero también en múltiples, usa heroTagPrefix + idx (debe coincidir con el feed)
+        final withHero = (widget.heroTagPrefix != null)
+            ? Hero(tag: '${widget.heroTagPrefix}_$idx', child: child)
+            : child;
+
+        return Center(
+          child: PinchZoom(
+            maxScale: 5.0,
+            child: withHero,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFooterInfo(Size size) {
+    return Container(
+      padding: const EdgeInsets.all(1),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: size.height * 0.003),
+          Row(
+            children: [
+              SizedBox(width: size.width * 0.014),
+              CircleAvatar(
+                radius: size.height * 0.018,
+                backgroundImage: NetworkImage(widget.documentSnapshot['Image']),
+              ),
+              SizedBox(width: size.width * 0.01),
+              Expanded(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          (widget.documentSnapshot['User'] != null &&
+                                  widget.documentSnapshot['User']
+                                      .toString()
+                                      .trim()
+                                      .isNotEmpty)
+                              ? widget.documentSnapshot['User']
+                              : widget.documentSnapshot['User'],
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: size.height * 0.017,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          widget.documentSnapshot['Date'],
+                          style: TextStyle(
+                            color: Colors.grey[300],
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Text(
+                widget.documentSnapshot['Time'],
+                style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: size.height * 0.016,
+                ),
+              ),
+              SizedBox(width: size.width * 0.014),
+            ],
+          ),
+          SizedBox(height: size.height * 0.018),
+        ],
       ),
     );
   }
@@ -200,15 +260,13 @@ class _ImageDetallesHomeState extends State<ImageDetallesHome> {
       if (imageBytes == null) return;
       setState(() => pickedImage = imageBytes);
     } catch (e) {
-      print('Profile Picture could not be found');
+      // ignore
     }
   }
 }
 
 Future _launchUrlclass() async {
-  final Uri url = Uri.parse(
-      "https://www.lapuertawaco.com/educacion"); // Replace with your YouTube video URL
-
+  final Uri url = Uri.parse("https://www.lapuertawaco.com/educacion");
   if (!await launchUrl(url)) {
     throw Exception("Could not launch $url");
   }
